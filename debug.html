@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><title>Debug</title></head>
+<body>
+<h1>Debug Page</h1>
+<div id="test"></div>
+<script type="module">
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('test').textContent = '✓ DOMContentLoaded fired!';
+    console.log('DOMContentLoaded OK');
+  });
+  
+  window.addEventListener('load', () => {
+    console.log('window.load OK');
+    document.getElementById('test').textContent += ' | window.load OK';
+  });
+  
+  console.log('Script inline executed');
+  document.getElementById('test').textContent = 'Inline script OK';
+</script>
+</body>
+</html>

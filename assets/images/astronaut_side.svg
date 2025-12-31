@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Custom astronaut side SVG: clean, recognizable silhouette with visor and subtle details -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 320" width="240" height="320">
+  <defs>
+    <linearGradient id="visor" x1="0" x2="1">
+      <stop offset="0" stop-color="#dff6ff"/>
+      <stop offset="1" stop-color="#a9d8ff"/>
+    </linearGradient>
+  </defs>
+  <!-- body shadow -->
+  <g transform="translate(0,20)">
+    <ellipse cx="120" cy="260" rx="68" ry="20" fill="rgba(0,0,0,0.12)" />
+    <!-- torso -->
+    <rect x="64" y="120" width="112" height="120" rx="20" fill="#f2fbff" stroke="#07202a" stroke-width="2"/>
+    <!-- backpack -->
+    <rect x="46" y="136" width="28" height="72" rx="6" fill="#d7eefc" opacity="0.22" stroke="#07202a" stroke-width="1"/>
+    <rect x="166" y="136" width="28" height="72" rx="6" fill="#d7eefc" opacity="0.18" stroke="#07202a" stroke-width="1"/>
+  </g>
+  <!-- helmet -->
+  <g>
+    <ellipse cx="120" cy="64" rx="56" ry="56" fill="#f8fdff" stroke="#07202a" stroke-width="2.4"/>
+    <path d="M82 64 C94 40,146 40,158 64 C146 82,94 82,82 64 Z" fill="#0a2030" opacity="0.9"/>
+    <rect x="94" y="58" width="52" height="22" rx="8" fill="url(#visor)" opacity="0.94" />
+    <!-- small reflective dots -->
+    <circle cx="106" cy="62" r="2.2" fill="#e8fbff" opacity="0.9" />
+    <circle cx="140" cy="60" r="1.6" fill="#dff6ff" opacity="0.75" />
+  </g>
+  <!-- arms as simple shapes to imply action -->
+  <g transform="translate(0,120)">
+    <rect x="32" y="16" width="22" height="64" rx="10" fill="#f2fbff" stroke="#07202a" stroke-width="1.2" transform="rotate(-6 32 16)" />
+    <rect x="186" y="16" width="22" height="64" rx="10" fill="#f2fbff" stroke="#07202a" stroke-width="1.2" transform="rotate(6 186 16)" />
+  </g>
+</svg>

@@ -1,0 +1,9 @@
+{
+  "swap": "swap.wav",
+  "match": "match.wav",
+  "hint": "swap.wav",
+  "power": "match.wav",
+  "bomb": "match.wav",
+  "colorbomb": "match.wav",
+  "ambient": "ambient.wav"
+}

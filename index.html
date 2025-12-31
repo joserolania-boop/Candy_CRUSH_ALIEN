@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Candy Crush Alien — Prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="space-bg" aria-hidden="true">
+      <div class="planet p1" aria-hidden="true"></div>
+      <div class="planet p2" aria-hidden="true"></div>
+      <div class="planet p3" aria-hidden="true"></div>
+      <div class="sun" aria-hidden="true"></div>
+      <div class="ship s1" aria-hidden="true"></div>
+      <div class="ship s2" aria-hidden="true"></div>
+      <div class="moving-ship ship-1" aria-hidden="true"></div>
+      <div class="moving-ship ship-2" aria-hidden="true"></div>
+      <div class="moving-astronaut astro-1" aria-hidden="true"></div>
+      <div class="moving-astronaut astro-2" aria-hidden="true"></div>
+      <div class="nebula neb1" aria-hidden="true"></div>
+      <div class="nebula neb2" aria-hidden="true"></div>
+      <div class="milkyway" aria-hidden="true"></div>
+      <div class="stars-small"></div>
+      <div class="stars-mid"></div>
+      <div class="sun"></div>
+      <!-- Concept-specific layered placeholders (controlled by backgrounds.js) -->
+      <div class="bg-concept-layers" aria-hidden="true">
+        <div class="silhouette hangar" aria-hidden="true"></div>
+        <div class="silhouette base" aria-hidden="true"></div>
+        <div class="astronauts" aria-hidden="true"></div>
+        <div class="drones" aria-hidden="true"></div>
+      </div>
+      <!-- Decorative side figures placed here so they stay behind the board -->
+      <div class="side-figure left" id="side-left" aria-hidden="true"></div>
+      <div class="side-figure right" id="side-right" aria-hidden="true"></div>
+    </div>
+    <header>
+      <h1>Candy Crush Alien — Prototype</h1>
+      <p class="subtitle">Match-3 prototype (alien theme). Phase 2: project scaffold.</p>
+    </header>
+
+    <main>
+      <!-- Main Menu -->
+      <div id="main-menu" class="menu-container">
+        <div class="menu-panel">
+          <h2>Candy Crush Alien</h2>
+          <p class="menu-subtitle">Match 3 Alien Adventure</p>
+          <div class="menu-buttons">
+            <button id="btn-play" class="btn btn-large">Play</button>
+            <button id="btn-instructions" class="btn btn-large">Instructions</button>
+            <button id="btn-settings" class="btn btn-large">Settings</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions Modal -->
+      <div id="instructions-modal" class="modal hidden">
+        <div class="modal-content">
+          <button id="btn-close-instructions" class="btn-close">&times;</button>
+          <h2>How to Play</h2>
+          <div class="instructions-text">
+            <p><strong>Objective:</strong> Match 3 or more tiles of the same type to eliminate them.</p>
+            <ul>
+              <li><strong>Swap:</strong> Click or drag two adjacent tiles to swap them</li>
+              <li><strong>Match:</strong> Arrange tiles in a row or column of 3 or more</li>
+              <li><strong>Power-ups:</strong>
+                <ul>
+                  <li><strong>Bomb (4 in a row):</strong> Eliminates nearby tiles</li>
+                  <li><strong>Wrapped (T or L shape):</strong> Creates a 3x3 explosion</li>
+                  <li><strong>Color Bomb (5+ in a row):</strong> Eliminates all tiles of a color</li>
+                </ul>
+              </li>
+              <li><strong>Score:</strong> Earn points for each match and advance to new levels</li>
+            </ul>
+          </div>
+          <button id="btn-back-menu" class="btn">Back to Menu</button>
+        </div>
+      </div>
+
+      <!-- Game Screen (initially hidden) -->
+      <div id="game-container" class="hidden">
+        <div id="game-root">
+        <!-- Board and UI live here. Side figures moved to #space-bg to avoid overlapping the board. -->
+        <div id="board-header" class="panel">
+          <div id="hud">
+            <div id="score">Score: <span id="score-value">0</span></div>
+            <div id="moves">Moves: <span id="moves-value">0</span></div>
+            <div id="level">Level: <span id="level-value">1</span></div>
+            <div id="objective-display" style="padding:4px 8px; background:transparent; border-radius:4px; border:1px solid #6dd5ff; font-weight:400; color:#aabbdd; font-size:0.9em; min-width:150px; text-align:center; display:none;">Objective</div>
+          </div>
+          <div id="controls">
+            <button id="btn-start" class="btn">Start</button>
+            <button id="btn-reset" class="btn">Reset</button>
+            <button id="btn-shuffle" class="btn">Shuffle</button>
+              <div class="theme-controls">
+                <label for="bg-theme-select">Fondo</label>
+                <select id="bg-theme-select" aria-label="Seleccionar tema de fondo">
+                  <option value="deep_nebula">Deep Nebula</option>
+                  <option value="alien_green">Alien Green</option>
+                  <option value="cosmic_blue">Cosmic Blue</option>
+                  <option value="void_dark">Void Dark</option>
+                  <option value="inferno">Inferno</option>
+                  <option value="station_orbit">Station Orbit</option>
+                  <option value="aurora">Aurora</option>
+                  <option value="galaxy_core">Galaxy Core</option>
+                  <option value="binary_sunset">Binary Sunset</option>
+                  <option value="quantum_realm">Quantum Realm</option>
+                </select>
+            </div>
+            <div class="settings-controls" aria-label="Game settings">
+              <label for="sfx-toggle"><input id="sfx-toggle" type="checkbox" checked /> SFX</label>
+              <label for="music-toggle" style="margin-left:8px"><input id="music-toggle" type="checkbox" checked /> Music</label>
+              <label for="reduced-motion-toggle" style="margin-left:8px"><input id="reduced-motion-toggle" type="checkbox" /> Reduced motion</label>
+            </div>
+            <div id="audio-controls" class="audio-controls">
+              <button id="btn-play-music" class="btn">Play Music</button>
+              <button id="btn-test-tone" class="btn">Test Tone</button>
+              <button id="btn-mute" class="btn">Mute</button>
+              <label for="volume">Vol</label>
+              <input id="volume" type="range" min="0" max="100" value="60" />
+            </div>
+          </div>
+        </div>
+
+        <div id="board-root"></div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="src/game.js"></script>
+  </body>
+</html>

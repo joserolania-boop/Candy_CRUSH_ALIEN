@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Test - Candy Crush Alien</title>
+    <style>
+        body { background: #1a1a2e; color: white; font-family: Arial; padding: 40px; text-align: center; }
+        button { padding: 15px 30px; font-size: 16px; margin: 10px; cursor: pointer; background: #8b6cff; color: white; border: none; border-radius: 8px; }
+        button:hover { background: #a589ff; }
+        #log { background: #0f3460; padding: 20px; margin-top: 30px; text-align: left; height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>🔊 Audio Test - Candy Crush Alien</h1>
+    <p>Prueba de sonido directo</p>
+    
+    <button onclick="testPlayNote(523, 0.1, 0.3, 'triangle')">Play C5 (523 Hz)</button>
+    <button onclick="testPlayNote(659, 0.1, 0.3, 'triangle')">Play E5 (659 Hz)</button>
+    <button onclick="testPlayNote(784, 0.15, 0.35, 'triangle')">Play G5 (784 Hz)</button>
+    <button onclick="testMatch()">Play Match Sound (Arpeggio)</button>
+    <button onclick="testSwap()">Play Swap Sound</button>
+    
+    <div id="log">Console log aquí:</div>
+
+    <script>
+        let audioCtx = null;
+        let masterGain = null;
+        
+        function log(msg) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += msg + '\n';
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(msg);
+        }
+        
+        function initAudio() {
+            if (audioCtx) return;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                masterGain = audioCtx.createGain();
+                masterGain.gain.value = 0.6;
+                masterGain.connect(audioCtx.destination);
+                
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                log('✓ AudioContext inicializado');
+            } catch(e) {
+                log('✗ Error inicializando audio: ' + e);
+            }
+        }
+        
+        function playNote(freq, duration = 0.1, gain = 0.3, waveform = 'sine') {
+            if (!audioCtx) initAudio();
+            
+            try {
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const amp = audioCtx.createGain();
+                
+                osc.type = waveform;
+                osc.frequency.value = freq;
+                
+                const finalGain = gain * 0.6; // volume multiplier
+                amp.gain.setValueAtTime(finalGain, now);
+                amp.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                
+                osc.connect(amp);
+                amp.connect(masterGain);
+                
+                osc.start(now);
+                osc.stop(now + duration);
+                
+                log(`▶️ Sonido: ${freq}Hz × ${duration.toFixed(3)}s, gain: ${finalGain.toFixed(3)}`);
+            } catch(e) {
+                log('✗ Error: ' + e);
+            }
+        }
+        
+        function testPlayNote(freq, dur, gain, wave) {
+            playNote(freq, dur, gain, wave);
+        }
+        
+        function testMatch() {
+            log('--- MATCH SOUND ---');
+            playNote(523, 0.12, 0.3, 'triangle');  // C5
+            setTimeout(() => playNote(659, 0.12, 0.3, 'triangle'), 80);   // E5
+            setTimeout(() => playNote(784, 0.18, 0.35, 'triangle'), 160); // G5
+        }
+        
+        function testSwap() {
+            log('--- SWAP SOUND ---');
+            playNote(880, 0.08, 0.35, 'sine');
+        }
+        
+        // Init on first interaction
+        document.addEventListener('click', () => {
+            if (!audioCtx) initAudio();
+        });
+        
+        log('Página cargada. Haz clic en un botón para reproducir sonido.');
+    </script>
+</body>
+</html>

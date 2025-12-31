@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 140" width="240" height="140">
+  <!-- Simple space-hangar / structure silhouette -->
+  <g fill="#dfeeff" stroke="#07121a" stroke-width="2">
+    <rect x="12" y="40" width="216" height="86" rx="8" fill="#dfeeff" opacity="0.12" />
+    <rect x="36" y="56" width="64" height="64" rx="6" fill="#cfe8ff" opacity="0.16" />
+    <rect x="140" y="56" width="64" height="64" rx="6" fill="#cfe8ff" opacity="0.16" />
+    <rect x="110" y="20" width="20" height="20" fill="#cfe8ff" opacity="0.18" />
+  </g>
+</svg>

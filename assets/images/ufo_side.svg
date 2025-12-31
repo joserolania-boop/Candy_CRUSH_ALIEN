@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Custom UFO side SVG: small saucer with soft beam -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140" width="220" height="140">
+  <defs>
+    <linearGradient id="ufoTop" x1="0" x2="1">
+      <stop offset="0" stop-color="#fff9cc"/>
+      <stop offset="1" stop-color="#ffd88a"/>
+    </linearGradient>
+  </defs>
+  <!-- beam -->
+  <path d="M110 54 L70 130 L150 130 Z" fill="#ffeaa3" opacity="0.14"/>
+  <!-- saucer -->
+  <ellipse cx="110" cy="64" rx="72" ry="26" fill="#e7f8ff" stroke="#07303a" stroke-width="1.6"/>
+  <ellipse cx="110" cy="58" rx="40" ry="14" fill="url(#ufoTop)" opacity="0.95" />
+  <!-- dome lights -->
+  <g>
+    <circle cx="78" cy="64" r="4" fill="#fff" opacity="0.95"/>
+    <circle cx="110" cy="60" r="4.4" fill="#fff" opacity="0.95"/>
+    <circle cx="142" cy="64" r="3.6" fill="#fff" opacity="0.9"/>
+  </g>
+</svg>

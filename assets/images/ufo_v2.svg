@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- UFO v2: saucer with dome and central light -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 100" width="220" height="100">
+  <g stroke="#07101a" stroke-width="1.6" fill="#eaf8ff">
+    <ellipse cx="110" cy="56" rx="96" ry="28" fill="#cfeeff" />
+    <ellipse cx="110" cy="42" rx="52" ry="18" fill="#eaf8ff" />
+    <circle cx="110" cy="40" r="6" fill="#081426" />
+  </g>
+  <!-- beam (empty, painted by CSS overlay) -->
+</svg>

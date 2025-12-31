@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Syntax Test</title>
+    <style>
+        body { font-family: monospace; background: #000; color: #0f0; padding: 20px; }
+        .error { color: #f00; }
+        .success { color: #0f0; }
+        pre { border: 1px solid #0f0; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Module Syntax Test</h1>
+    <pre id="output"></pre>
+    
+    <script>
+        const output = document.getElementById('output');
+        const log = (msg) => { output.textContent += msg + '\n'; console.log(msg); };
+        
+        const testFile = async (path) => {
+            try {
+                log(`\n[Testing] ${path}...`);
+                const resp = await fetch(path);
+                const code = await resp.text();
+                
+                // Try to parse as module
+                const blob = new Blob([code], { type: 'application/javascript' });
+                const url = URL.createObjectURL(blob);
+                
+                try {
+                    await import(url);
+                    log(`✓ ${path} - OK (no syntax errors)`);
+                    return true;
+                } catch(e) {
+                    log(`✗ ${path} - FAILED`);
+                    log(`  Error: ${e.message}`);
+                    
+                    // Try to find the error line
+                    if(e.stack) {
+                        const lines = e.stack.split('\n');
+                        lines.forEach(line => {
+                            if(line.includes('.js') || line.includes('Ln')) {
+                                log(`  ${line.trim()}`);
+                            }
+                        });
+                    }
+                    
+                    return false;
+                }
+            } catch(e) {
+                log(`✗ ${path} - FETCH FAILED: ${e.message}`);
+                return false;
+            }
+        };
+        
+        (async () => {
+            log('Starting syntax checks...\n');
+            
+            const files = [
+                './src/board.js',
+                './src/engine.js',
+                './src/ui.js',
+                './src/sound.js',
+                './src/decorations.js',
+                './src/particles.js',
+                './src/particles_helper.js',
+                './src/settings.js',
+                './src/backgrounds.js',
+                './src/game.js'
+            ];
+            
+            let passed = 0, failed = 0;
+            for (const file of files) {
+                const ok = await testFile(file);
+                if (ok) passed++; else failed++;
+            }
+            
+            log(`\n${'='.repeat(50)}`);
+            log(`Results: ${passed} passed, ${failed} failed`);
+            if (failed === 0) {
+                log('✓ All modules are OK!');
+            } else {
+                log('✗ Some modules have syntax errors');
+            }
+        })();
+    </script>
+</body>
+</html>

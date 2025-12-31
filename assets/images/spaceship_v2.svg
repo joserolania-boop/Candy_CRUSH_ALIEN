@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spaceship v2: clear rocket with window, fins and exhaust detail -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 220" width="360" height="220">
+  <g stroke="#07101a" stroke-width="2.4" fill="#e9f7ff">
+    <path d="M180 16 C230 54,260 94,266 132 C272 170,238 196,180 210 C122 196,88 170,94 132 C100 94,150 54,180 16 Z" fill="#e5f6ff"/>
+    <circle cx="180" cy="116" r="20" fill="#07101a" />
+    <path d="M110 150 L64 188 L106 176 Z" fill="#d6efff"/>
+    <path d="M250 150 L296 188 L254 176 Z" fill="#d6efff"/>
+  </g>
+  <!-- subtle exhaust glow -->
+  <g opacity="0.06">
+    <ellipse cx="180" cy="206" rx="44" ry="10" fill="#bfe6ff" />
+  </g>
+</svg>

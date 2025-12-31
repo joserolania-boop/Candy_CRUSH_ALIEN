@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 80" width="180" height="80">
+  <!-- UFO / saucer silhouette -->
+  <g fill="#e8f6ff" stroke="#07101a" stroke-width="1.6">
+    <ellipse cx="90" cy="40" rx="70" ry="22" fill="#bcdfff" />
+    <ellipse cx="90" cy="30" rx="42" ry="12" fill="#e8f6ff" />
+    <circle cx="90" cy="30" r="6" fill="#081426" />
+  </g>
+</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="80" viewBox="0 0 160 80">
+  <defs>
+    <linearGradient id="u1" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#e8f9ff"/>
+      <stop offset="1" stop-color="#b8f1ff"/>
+    </linearGradient>
+    <linearGradient id="u2" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#9f7bff"/>
+      <stop offset="1" stop-color="#6b2cff"/>
+    </linearGradient>
+  </defs>
+  <!-- main disc -->
+  <ellipse cx="80" cy="36" rx="72" ry="20" fill="url(#u2)" opacity="0.95"/>
+  <!-- dome -->
+  <ellipse cx="80" cy="24" rx="30" ry="14" fill="url(#u1)" stroke="#cfefff" stroke-width="1"/>
+  <!-- lights -->
+  <g fill="#ffd966" opacity="0.9">
+    <circle cx="28" cy="36" r="3"/>
+    <circle cx="52" cy="38" r="3"/>
+    <circle cx="80" cy="39" r="3"/>
+    <circle cx="108" cy="38" r="3"/>
+    <circle cx="132" cy="36" r="3"/>
+  </g>
+  <!-- shimmer -->
+  <ellipse cx="48" cy="18" rx="10" ry="4" fill="#ffffff" opacity="0.08"/>
+</svg>

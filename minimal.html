@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head><title>Minimal Test</title></head>
+<body>
+<h1>Test</h1>
+<script type="module">
+  console.log('Module script loaded');
+  
+  try {
+    console.log('Test 1: Importing board...');
+    const board = await import('./src/board.js');
+    console.log('✓ board imported, DEFAULT_COLS:', board.DEFAULT_COLS);
+  } catch(e) {
+    console.error('✗ board error:', e.message);
+  }
+  
+  try {
+    console.log('Test 2: Importing story...');
+    const story = await import('./src/story.js');
+    console.log('✓ story imported, has showScene:', !!story.default.showScene);
+  } catch(e) {
+    console.error('✗ story error:', e.message);
+  }
+  
+  try {
+    console.log('Test 3: Importing sound...');
+    const sound = await import('./src/sound.js');
+    console.log('✓ sound imported, has playBackground:', !!sound.playBackground);
+  } catch(e) {
+    console.error('✗ sound error:', e.message);
+  }
+</script>
+</body>
+</html>
