@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
+        <div id="debug-panel" style="position:fixed;top:10px;right:10px;z-index:1000;background:rgba(20,20,40,0.92);padding:10px 16px;border-radius:10px;box-shadow:0 2px 12px #0006;display:none;gap:8px;flex-direction:column;">
+          <b style="color:#fff176;font-size:1.1em;">DEBUG Power-Ups</b>
+          <button onclick="window.CCA_ui && window.CCA_ui.forcePower('bomb')">💣 Bomb</button>
+          <button onclick="window.CCA_ui && window.CCA_ui.forcePower('colorbomb')">⭐ Colorbomb</button>
+          <button onclick="window.CCA_ui && window.CCA_ui.forcePower('wrapped')">🌀 Wrapped</button>
+          <button onclick="window.CCA_ui && window.CCA_ui.toggleDebugPanel()" style="margin-top:6px;font-size:0.9em;">Cerrar</button>
+        </div>
+        <button id="show-debug-btn" style="position:fixed;top:10px;right:10px;z-index:999;background:#fff176;color:#222;padding:6px 14px;border-radius:8px;border:none;box-shadow:0 2px 8px #0004;cursor:pointer;">Debug</button>
     <div id="space-bg" aria-hidden="true">
       <div class="planet p1" aria-hidden="true"></div>
       <div class="planet p2" aria-hidden="true"></div>
@@ -78,12 +86,76 @@
         </div>
       </div>
 
+      <!-- Pause Menu -->
+      <div id="pause-menu" class="modal hidden">
+        <div class="modal-content pause-panel">
+          <h2>⏸️ Game Paused</h2>
+          <div class="pause-buttons">
+            <button id="btn-resume" class="btn btn-large btn-primary">▶️ Resume</button>
+            <button id="btn-restart-level" class="btn btn-large">Restart Level</button>
+            <button id="btn-quit-level" class="btn btn-large">Quit to Menu</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pre-Level Screen (replaces booster modal) -->
+      <div id="pre-level-screen" class="modal hidden">
+        <div class="modal-content pre-level-panel">
+          <div class="level-header">
+            <h2 id="pre-level-number">Level 1</h2>
+            <div id="pre-level-name" class="level-name">First Contact</div>
+          </div>
+          
+          <div class="objective-preview">
+            <div class="objective-title">Objective</div>
+            <div id="pre-level-objective" class="objective-description">
+              <span class="objective-icon">🎯</span>
+              <span class="objective-text">Reach 300 points</span>
+            </div>
+            <div id="pre-level-moves" class="moves-info">
+              <span class="moves-icon">⏱️</span>
+              <span class="moves-text">30 moves available</span>
+            </div>
+          </div>
+          
+          <div class="boosters-section">
+            <h3>Power-ups</h3>
+            <p class="section-subtitle">Boost your chances with special items</p>
+            <div id="pre-level-boosters" class="booster-grid">
+              <!-- Boosters will be populated by JavaScript -->
+            </div>
+          </div>
+          
+          <div class="modal-actions">
+            <button id="btn-start-level" class="btn btn-large btn-primary">🚀 Start Level</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Game Screen (initially hidden) -->
       <div id="game-container" class="hidden">
         <div id="game-root">
         <!-- Board and UI live here. Side figures moved to #space-bg to avoid overlapping the board. -->
         <div id="board-header" class="panel">
+          <!-- Economy HUD -->
+          <div id="economy-hud" class="economy-panel">
+            <div class="economy-item" id="lives-display">
+              <span class="icon">❤️</span>
+              <span id="lives-count">5</span>
+              <span id="lives-timer" class="timer-text">Full</span>
+            </div>
+            <div class="economy-item" id="coins-display">
+              <span class="icon">💰</span>
+              <span id="coins-count">100</span>
+            </div>
+            <div class="economy-item" id="stars-display">
+              <span class="icon">⭐</span>
+              <span id="stars-count">0</span>
+            </div>
+          </div>
+          
           <div id="hud">
+            <button id="btn-pause" class="btn-icon" title="Pause">⏸️</button>
             <div id="score">Score: <span id="score-value">0</span></div>
             <div id="moves">Moves: <span id="moves-value">0</span></div>
             <div id="level">Level: <span id="level-value">1</span></div>
@@ -129,5 +201,11 @@
     </main>
 
     <script type="module" src="src/game.js"></script>
+      <script>
+      // Debug panel logic
+      document.getElementById('show-debug-btn').onclick = function() {
+        document.getElementById('debug-panel').style.display = 'flex';
+      };
+      </script>
   </body>
 </html>

@@ -179,9 +179,9 @@ export class UIManager{
         try{ this._playSFX('bomb', { volume:0.72, pan: this._mapColToPan(origin.c) }); }catch(e){}
         const mappedRemovals = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
         if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.add('bomb-primed'); }
-        await new Promise(res=> setTimeout(res,200));
+        await new Promise(res=> setTimeout(res,100));
         for(const p of mappedRemovals){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.add('anim-remove'); }
-        await new Promise(res=> setTimeout(res,300));
+        await new Promise(res=> setTimeout(res,120));
         for(const p of mappedRemovals){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
         if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('bomb-primed'); }
         this._animating=false; continue;
@@ -189,7 +189,7 @@ export class UIManager{
 
       this.resetHintTimer();
 
-      // match-found animations
+      // match-found animations y power-up creation feedback
       if(next.type==='match-found' && next.groups && next.groups.length>0){
         this._animating=true;
         // play staggered match SFX per group, pitch up slightly per combo
@@ -206,23 +206,59 @@ export class UIManager{
           const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`);
           if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} }
         }
-        await new Promise(res=> setTimeout(res,260));
+        // Feedback visual para creación de power-ups
+        if(next.powerCreations && next.powerCreations.length>0){
+          for(const pc of next.powerCreations){
+            const el=this.root.querySelector(`.cell[data-r="${pc.r}"][data-c="${pc.c}"]`);
+            if(el){
+              el.classList.add('powerup-created');
+              setTimeout(()=>{ el.classList.remove('powerup-created'); }, 400);
+            }
+          }
+        }
+        await new Promise(res=> setTimeout(res,90));
         for(const p of cellsToAnimate){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
         this._animating=false; continue;
       }
 
-      // power activated (e.g., bomb)
+      // power activated (e.g., bomb, wrapped, colorbomb)
       if(next.type==='power-activated'){
         if(next.power==='bomb'){
           this._animating=true; try{ this._playSFX('bomb', { volume:0.72, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('bomb-primed'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
-          await new Promise(res=> setTimeout(res,220));
+          await new Promise(res=> setTimeout(res,80));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
-          await new Promise(res=> setTimeout(res,280));
+          await new Promise(res=> setTimeout(res,100));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('bomb-primed'); }
+          if(next.board){ this._applySnapshot(next.board); }
+          this._animating=false; continue;
+        }
+        if(next.power==='wrapped'){
+          this._animating=true; try{ this._playSFX('power', { volume:0.8, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          const origin = next.origin || null;
+          const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('power-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,60));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,120));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('power-activated'); }
+          if(next.board){ this._applySnapshot(next.board); }
+          this._animating=false; continue;
+        }
+        if(next.power==='colorbomb'){
+          this._animating=true; try{ this._playSFX('colorbomb', { volume:0.9, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          const origin = next.origin || null;
+          const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('colorbomb-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,100));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,150));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('colorbomb-activated'); }
           if(next.board){ this._applySnapshot(next.board); }
           this._animating=false; continue;
         }
@@ -242,7 +278,7 @@ export class UIManager{
       }
 
       if(next.type && next.type==='after-swap'){ try{ const midC = Math.round((a.c + b.c)/2); this._playSFX('swap', { volume:0.28, pan: this._mapColToPan(midC) }); }catch(e){} }
-      await new Promise(res=> setTimeout(res,180));
+      await new Promise(res=> setTimeout(res,60));
     }
     this._processingPreview=false;
   }
@@ -278,4 +314,29 @@ export class UIManager{
     return move;
   }
   findHintMove(){ for(let r=0;r<this.rows;r++){ for(let c=0;c<this.cols;c++){ const a={r,c}; const neighbors=[{r:r,c:c+1},{r:r+1,c:c}]; for(const b of neighbors){ if(b.r<0||b.r>=this.rows||b.c<0||b.c>=this.cols) continue; const copy = cloneBoard(this.board); try{ Engine.swapTiles(copy,a,b); }catch(e){ continue; } const groups = Engine.findMatches(copy); if(groups && groups.length>0){ const best = groups.reduce((acc,g)=> Math.max(acc,g.len||0),0); return {a,b,bestLen:best,groups}; } } } } return null; }
+
+  // --- DEBUG: Forzar power-ups en celda seleccionada ---
+  forcePower(type) {
+    if (!this.selected) { alert('Selecciona una celda primero'); return; }
+    const {r, c} = this.selected;
+    if (!this.board[r] || !this.board[r][c]) return;
+
+    // Ensure cell is an object with v and p properties
+    if (typeof this.board[r][c] === 'string') {
+      this.board[r][c] = {v: this.board[r][c], p: null};
+    }
+    this.board[r][c].p = type;
+    console.log(`[forcePower] Applied ${type} to cell [${r},${c}]`, this.board[r][c]);
+    this.render();
+  }
+
+  toggleDebugPanel() {
+    const panel = document.getElementById('debug-panel');
+    if(panel) panel.style.display = (panel.style.display==='none'||!panel.style.display)?'flex':'none';
+  }
 }
+
+// Exponer helpers debug globalmente
+window.CCA_ui = window.CCA_ui || {};
+window.CCA_ui.forcePower = (type) => { if(window.ui && typeof window.ui.forcePower==='function') window.ui.forcePower(type); };
+window.CCA_ui.toggleDebugPanel = () => { if(window.ui && typeof window.ui.toggleDebugPanel==='function') window.ui.toggleDebugPanel(); };

@@ -6,6 +6,8 @@ import Particles from './particles.js';
 import Settings from './settings.js';
 import * as Backgrounds from './backgrounds.js';
 import Story from './story.js';
+import economy from './economy.js';
+import boosters, { BOOSTER_TYPES } from './boosters.js';
 
 const THEME_KEY = 'candy_bg_theme';
 const DEFAULT_THEME = 'deep_nebula';
@@ -22,31 +24,31 @@ const createLevel = (name, theme, moves, objective, storyCheckpoint) => ({
 });
 
 const LEVELS = [
-  createLevel('First Contact', 'deep_nebula', 30, { type: 'score', target: 300 }, 'intro'),
-  createLevel('City Defense', 'alien_green', 30, { type: 'pieces', target: 15 }),
-  createLevel('Building Power', 'cosmic_blue', 30, { type: 'score', target: 500 }),
-  createLevel('Combo Training', 'void_dark', 32, { type: 'power_ups', target: 3 }),
-  createLevel('Final Prep', 'inferno', 32, { type: 'score', target: 800 }),
-  createLevel('Wave One', 'station_orbit', 32, { type: 'score', target: 1000 }, 'act1'),
-  createLevel('Coastal Raid', 'aurora', 34, { type: 'pieces', target: 20 }),
-  createLevel('Arsenal Build', 'galaxy_core', 34, { type: 'power_ups', target: 5 }),
-  createLevel('Mid-Battle', 'binary_sunset', 34, { type: 'score', target: 1200 }),
-  createLevel('Sector Clear', 'quantum_realm', 34, { type: 'pieces', target: 25 }),
-  createLevel('Base Assault', 'deep_nebula', 36, { type: 'score', target: 1500 }, 'act2'),
-  createLevel('Fortified Base', 'alien_green', 36, { type: 'pieces', target: 25 }),
-  createLevel('Maximum Firepower', 'cosmic_blue', 36, { type: 'power_ups', target: 7 }),
-  createLevel('Strategic Victory', 'void_dark', 36, { type: 'score', target: 1800 }),
-  createLevel('Precision Bombing', 'inferno', 36, { type: 'combo', target: 3 }),
-  createLevel('Archaeological Dig', 'station_orbit', 38, { type: 'score', target: 2000 }, 'act3'),
-  createLevel('Deep Excavation', 'aurora', 38, { type: 'pieces', target: 30 }),
-  createLevel('Full Potential', 'galaxy_core', 38, { type: 'power_ups', target: 10 }),
-  createLevel('Ancient Knowledge', 'binary_sunset', 38, { type: 'score', target: 2200 }),
-  createLevel('Master the Ruins', 'quantum_realm', 38, { type: 'power_ups', target: 12 }),
-  createLevel('Peace Offering', 'deep_nebula', 40, { type: 'score', target: 2500 }, 'act4'),
-  createLevel('Shared Sacrifice', 'alien_green', 40, { type: 'pieces', target: 40 }),
-  createLevel('Combined Might', 'cosmic_blue', 40, { type: 'power_ups', target: 15 }),
-  createLevel('United Strength', 'void_dark', 40, { type: 'score', target: 3000 }),
-  createLevel('Final Battle', 'inferno', 42, { type: 'score', target: 3500 })
+  createLevel('First Contact', 'deep_nebula', 30, { type: 'score', target: 300, description: 'Channel your magic to create a protective barrier around the approaching ship' }, 'intro'),
+  createLevel('City Defense', 'alien_green', 30, { type: 'pieces', target: 15, description: 'Destroy 15 alien probes threatening our cities with candy blasts' }),
+  createLevel('Building Power', 'cosmic_blue', 30, { type: 'score', target: 500, description: 'Build up magical energy to power our defense shields' }),
+  createLevel('Combo Training', 'void_dark', 32, { type: 'power_ups', target: 3, description: 'Master the art of creating power-ups to unleash devastating attacks' }),
+  createLevel('Final Prep', 'inferno', 32, { type: 'score', target: 800, description: 'Prepare the ultimate counter-spell against the alien invasion' }),
+  createLevel('Wave One', 'station_orbit', 32, { type: 'score', target: 1000, description: 'Lead the first wave of magical defense against the alien fleet' }, 'act1'),
+  createLevel('Coastal Raid', 'aurora', 34, { type: 'pieces', target: 20, description: 'Protect our coastlines by eliminating 20 alien landing craft' }),
+  createLevel('Arsenal Build', 'galaxy_core', 34, { type: 'power_ups', target: 5, description: 'Forge 5 powerful artifacts to strengthen our magical arsenal' }),
+  createLevel('Mid-Battle', 'binary_sunset', 34, { type: 'score', target: 1200, description: 'Turn the tide of battle with overwhelming magical force' }),
+  createLevel('Sector Clear', 'quantum_realm', 34, { type: 'pieces', target: 25, description: 'Clear Sector 7 of all alien presence - destroy 25 enemy units' }),
+  createLevel('Base Assault', 'deep_nebula', 36, { type: 'score', target: 1500, description: 'Assault the alien command base with coordinated magical strikes' }, 'act2'),
+  createLevel('Fortified Base', 'alien_green', 36, { type: 'pieces', target: 25, description: 'Breach the fortified alien base defenses - eliminate 25 guard units' }),
+  createLevel('Maximum Firepower', 'cosmic_blue', 36, { type: 'power_ups', target: 7, description: 'Unleash maximum firepower by creating 7 devastating power-ups' }),
+  createLevel('Strategic Victory', 'void_dark', 36, { type: 'score', target: 1800, description: 'Achieve strategic victory through superior magical tactics' }),
+  createLevel('Precision Bombing', 'inferno', 36, { type: 'combo', target: 3, description: 'Execute precision strikes with 3 massive combo explosions' }),
+  createLevel('Archaeological Dig', 'station_orbit', 38, { type: 'score', target: 2000, description: 'Unearth ancient artifacts that hold the key to understanding our visitors' }, 'act3'),
+  createLevel('Deep Excavation', 'aurora', 38, { type: 'pieces', target: 30, description: 'Excavate deeper to find 30 crucial alien artifacts' }),
+  createLevel('Full Potential', 'galaxy_core', 38, { type: 'power_ups', target: 10, description: 'Unlock the full potential of ancient magic by creating 10 power-ups' }),
+  createLevel('Ancient Knowledge', 'binary_sunset', 38, { type: 'score', target: 2200, description: 'Master the ancient knowledge to bridge our worlds' }),
+  createLevel('Master the Ruins', 'quantum_realm', 38, { type: 'power_ups', target: 12, description: 'Master the ancient ruins by harnessing 12 powerful artifacts' }),
+  createLevel('Peace Offering', 'deep_nebula', 40, { type: 'score', target: 2500, description: 'Create a grand peace offering through masterful magical displays' }, 'act4'),
+  createLevel('Shared Sacrifice', 'alien_green', 40, { type: 'pieces', target: 40, description: 'Make the ultimate sacrifice - destroy 40 enemy units in a final stand' }),
+  createLevel('Combined Might', 'cosmic_blue', 40, { type: 'power_ups', target: 15, description: 'Combine human and alien might by forging 15 legendary artifacts' }),
+  createLevel('United Strength', 'void_dark', 40, { type: 'score', target: 3000, description: 'Demonstrate united strength against the greater cosmic threat' }),
+  createLevel('Final Battle', 'inferno', 42, { type: 'score', target: 3500, description: 'Lead humanity and aliens together in the final battle for survival' })
 ];
 
 function resolveSavedLevel() {
@@ -70,6 +72,10 @@ let currentObjective = null;
 let objectiveProgress = 0;
 let levelInProgress = false;
 let cutsceneActive = false;
+
+// Economy state
+let economyInitialized = false;
+let livesTimerInterval = null;
 
 function applyTheme(themeKey = DEFAULT_THEME) {
   const theme = Backgrounds.applyTheme(themeKey, { crossfade: true }) || Backgrounds.getTheme(DEFAULT_THEME);
@@ -103,6 +109,133 @@ function showStoryScene(checkpointId) {
 
 function startGame(resetScore = true){
   console.log('[startGame] Iniciando... resetScore=', resetScore);
+  
+  // Check if player has lives
+  if (!economy.hasLives()) {
+    showNoLivesModal();
+    return;
+  }
+  
+  // Show pre-level screen instead of directly starting
+  showPreLevelScreen();
+}
+
+function showPreLevelScreen() {
+  const screen = document.getElementById('pre-level-screen');
+  const levelNumber = document.getElementById('pre-level-number');
+  const levelName = document.getElementById('pre-level-name');
+  const objectiveEl = document.getElementById('pre-level-objective');
+  const movesEl = document.getElementById('pre-level-moves');
+  const boostersContainer = document.getElementById('pre-level-boosters');
+  
+  if (!screen) {
+    console.warn('[showPreLevelScreen] Screen not found, starting game directly');
+    actuallyStartGame(true);
+    return;
+  }
+  
+  const levelDef = LEVELS[level - 1] || LEVELS[0];
+  
+  // Update level info
+  if (levelNumber) levelNumber.textContent = `Level ${level}`;
+  if (levelName) levelName.textContent = levelDef.name;
+  
+  // Format objective in human-readable way
+  if (objectiveEl) {
+    const { icon, text } = formatObjective(levelDef.objective);
+    objectiveEl.innerHTML = `
+      <span class="objective-icon">${icon}</span>
+      <span class="objective-text">${text}</span>
+    `;
+  }
+  
+  // Show moves
+  if (movesEl) {
+    movesEl.innerHTML = `
+      <span class="moves-icon">⏱️</span>
+      <span class="moves-text">${levelDef.moves} moves available</span>
+    `;
+  }
+  
+  // Populate boosters
+  if (boostersContainer) {
+    boostersContainer.innerHTML = '';
+    const allBoosters = boosters.getAllBoosterTypes();
+    
+    for (const booster of allBoosters) {
+      const card = document.createElement('div');
+      card.className = 'booster-card';
+      card.dataset.boosterId = booster.id;
+      
+      const inventory = boosters.getBoosterCount(booster.id);
+      const canAfford = economy.hasCoins(booster.cost);
+      const isActive = boosters.isBoosterActive(booster.id);
+      
+      if (!canAfford && inventory === 0) {
+        card.classList.add('insufficient-funds');
+      }
+      
+      if (isActive) {
+        card.classList.add('active');
+      }
+      
+      card.innerHTML = `
+        <span class="booster-icon">${booster.icon}</span>
+        <div class="booster-name">${booster.name}</div>
+        <div class="booster-description">${booster.description}</div>
+        <div class="booster-cost">💰 ${booster.cost}</div>
+        ${inventory > 0 ? `<div class="booster-inventory">×${inventory}</div>` : ''}
+      `;
+      
+      card.addEventListener('click', () => toggleBoosterInPreLevel(booster.id));
+      boostersContainer.appendChild(card);
+    }
+  }
+  
+  // Show screen
+  screen.classList.remove('hidden');
+  
+  // Setup start button
+  const btnStart = document.getElementById('btn-start-level');
+  if (btnStart) {
+    btnStart.onclick = () => {
+      screen.classList.add('hidden');
+      actuallyStartGame(true);
+    };
+  }
+}
+
+function formatObjective(objective) {
+  if (!objective) return { icon: '🎯', text: 'Complete the level' };
+  
+  const typeMap = {
+    score: {
+      icon: '⭐',
+      format: (target) => `Reach ${target.toLocaleString()} points`
+    },
+    pieces: {
+      icon: '👽',
+      format: (target) => `Collect ${target} alien pieces`
+    },
+    power_ups: {
+      icon: '💣',
+      format: (target) => `Create ${target} power-ups`
+    },
+    combo: {
+      icon: '🔥',
+      format: (target) => `Make ${target} combo chains`
+    }
+  };
+  
+  const config = typeMap[objective.type] || typeMap.score;
+  return {
+    icon: config.icon,
+    text: config.format(objective.target)
+  };
+}
+
+function actuallyStartGame(resetScore = true){
+  console.log('[actuallyStartGame] Iniciando juego...');
   levelInProgress = false;
   if(resetScore) score = 0;
 
@@ -112,15 +245,37 @@ function startGame(resetScore = true){
   const levelDef = LEVELS[level - 1] || LEVELS[0];
   currentObjective = levelDef.objective || {type: 'score', target: 500};
   objectiveProgress = 0;
-  movesLeft = levelDef.moves;
+  
+  // Apply booster effects
+  const boosterEffects = boosters.applyPreGameBoosters();
+  movesLeft = levelDef.moves + boosterEffects.extraMoves;
+  
+  // Consume the boosters from inventory
+  boosters.consumeActiveBoosters();
+  
   updateUI();
+  updateEconomyUI();
 
   const launchBoard = () => {
     boardState = createBoardState();
-    console.log('[startGame] boardState creado:', !!boardState);
+    console.log('[actuallyStartGame] boardState creado:', !!boardState);
+    
+    // Apply starting power-ups from boosters
+    const boosterEffects = boosters.applyPreGameBoosters();
+    if (boosterEffects.startingPowerUps && boosterEffects.startingPowerUps.length > 0) {
+      for (const powerUp of boosterEffects.startingPowerUps) {
+        // Place color bomb at random position
+        const randomRow = Math.floor(Math.random() * DEFAULT_ROWS);
+        const randomCol = Math.floor(Math.random() * DEFAULT_COLS);
+        if (boardState[randomRow] && boardState[randomRow][randomCol]) {
+          boardState[randomRow][randomCol].p = powerUp.type;
+        }
+      }
+    }
+    
     if(boardRoot) {
       boardRoot.innerHTML = '';
-      console.log('[startGame] board-root limpiado');
+      console.log('[actuallyStartGame] board-root limpiado');
     }
 
     try {
@@ -147,7 +302,6 @@ function startGame(resetScore = true){
               }
               
               updateUI();
-              
               if(currentObjective && objectiveProgress >= currentObjective.target) {
                 console.log('[UIManager.onChange] ✅ OBJETIVO COMPLETADO!', objectiveProgress, 'vs', currentObjective.target);
                 levelWon();
@@ -166,6 +320,7 @@ function startGame(resetScore = true){
         }
       });
       console.log('[startGame] UIManager creado');
+      window.ui = ui; // Exponer instancia global para debug
       ui.render();
       console.log('[startGame] Tablero renderizado');
     } catch(e) {
@@ -174,9 +329,10 @@ function startGame(resetScore = true){
     }
 
     updateUI();
+    updateEconomyUI();
     try { Sound.playBackground().catch(() => {}); } catch(e) { console.warn('Background music error:', e); }
     try{ ui.playPreview(); }catch(e){ console.warn('Preview failed:', e); }
-    console.log('[startGame] ✓ Completado');
+    console.log('[actuallyStartGame] ✓ Completado');
   };
 
   const startScene = () => {
@@ -192,7 +348,7 @@ function startGame(resetScore = true){
         launchBoard();
       })
       .catch((err) => {
-        console.warn('[startGame] Story scene rejected', err);
+        console.warn('[actuallyStartGame] Story scene rejected', err);
         if(boardRoot) boardRoot.classList.remove(BOARD_HIDE_CLASS);
         launchBoard();
       });
@@ -227,22 +383,50 @@ function levelWon(){
   levelInProgress = true;
   
   console.log('[levelWon] Level', level, 'completed! Objective:', currentObjective);
-  showMessage(`✅ LEVEL ${level} COMPLETE!`, 2000);
-  setTimeout(() => {
-    if(level < LEVELS.length) {
-      levelUp();
-    } else {
-      gameEnded('victory');
+  
+  // Award stars and coins
+  const result = economy.onLevelComplete(level, score, currentObjective.target);
+  
+  if (result.success) {
+    const starText = '⭐'.repeat(result.stars);
+    const coinsText = result.coinsEarned > 0 ? ` +${result.coinsEarned}💰` : '';
+    showMessage(`✅ LEVEL ${level} COMPLETE! ${starText}${coinsText}`, 3000);
+    
+    // Show star animations
+    if (result.newStars > 0) {
+      for (let i = 0; i < result.stars; i++) {
+        setTimeout(() => showStarAnimation(), i * 300);
+      }
     }
-  }, 2000);
+    
+    updateEconomyUI();
+    
+    setTimeout(() => {
+      if(level < LEVELS.length) {
+        levelUp();
+      } else {
+        gameEnded('victory');
+      }
+    }, 3000);
+  }
 }
 
 function levelFailed(){
   console.log('[levelFailed] Level', level, 'failed. Out of moves.');
-  showMessage(`❌ Out of Moves! Needed ${currentObjective.target}, got ${objectiveProgress}`, 2000);
+  
+  // Deduct a life
+  economy.spendLife();
+  updateEconomyUI();
+  
+  showMessage(`❌ Out of Moves! Lost 1 life ❤️ (${economy.getLives()} remaining)`, 3000);
+  
   setTimeout(() => {
-    startGame(false); // Restart same level, keep score
-  }, 2000);
+    if (economy.hasLives()) {
+      startGame(false); // Restart same level, keep score
+    } else {
+      showNoLivesModal();
+    }
+  }, 3000);
 }
 
 function shuffleGame(){
@@ -290,11 +474,6 @@ async function levelUp(){
   // Save progress
   localStorage.setItem('candy_current_level', level);
   
-  // Reset board
-  boardState = createBoardState();
-  ui?.refresh(boardState);
-  updateUI();
-  
   // Show story checkpoint if applicable - wait for overlay to finish
   if(levelDef.story_checkpoint) {
     setTimeout(() => {
@@ -307,8 +486,13 @@ async function levelUp(){
           if(boardRoot) {
             boardRoot.classList.remove(BOARD_HIDE_CLASS);
           }
+          // After story, show pre-level screen
+          setTimeout(() => showPreLevelScreen(), 500);
         });
     }, 3000);
+  } else {
+    // No story checkpoint, go directly to pre-level screen after overlay
+    setTimeout(() => showPreLevelScreen(), 3000);
   }
 }
 
@@ -339,7 +523,8 @@ function showLevelOverlay(){
   const objective = document.createElement('div');
   const objType = levelDef.objective.type.toUpperCase();
   const objTarget = levelDef.objective.target;
-  objective.textContent = `Objective: ${objType} ${objTarget}`;
+  const objDescription = levelDef.objective.description || `${objType} ${objTarget}`;
+  objective.textContent = `Objective: ${objDescription}`;
   objective.style.cssText = 'font-size:1.1em; color:#ffdd88; margin-top:10px; background:rgba(255,200,50,0.1); padding:10px 20px; border-radius:8px; border-left: 4px solid #ffdd88;';
   
   overlay.appendChild(title);
@@ -405,24 +590,193 @@ function updateUI(){
   if(movesEl) movesEl.textContent = movesLeft;
   if(levelEl) levelEl.textContent = level;
   
-  // Update objective progress display
+  // Update objective progress display with improved formatting
   if(currentObjective) {
-    let objDisplay = `${currentObjective.target}`;
+    const { icon, text } = formatObjective(currentObjective);
+    let progressText = '';
+    
     switch(currentObjective.type) {
-      case 'score': objDisplay = `Score: ${objectiveProgress}/${currentObjective.target}`; break;
-      case 'pieces': objDisplay = `Pieces: ${objectiveProgress}/${currentObjective.target}`; break;
-      case 'power_ups': objDisplay = `Power-ups: ${objectiveProgress}/${currentObjective.target}`; break;
-      case 'combo': objDisplay = `Combos: ${objectiveProgress}/${currentObjective.target}`; break;
+      case 'score': 
+        progressText = `${icon} ${objectiveProgress.toLocaleString()} / ${currentObjective.target.toLocaleString()}`;
+        break;
+      case 'pieces': 
+        progressText = `${icon} ${objectiveProgress} / ${currentObjective.target} pieces`;
+        break;
+      case 'power_ups': 
+        progressText = `${icon} ${objectiveProgress} / ${currentObjective.target} power-ups`;
+        break;
+      case 'combo': 
+        progressText = `${icon} ${objectiveProgress} / ${currentObjective.target} combos`;
+        break;
+      default:
+        progressText = `${icon} ${objectiveProgress} / ${currentObjective.target}`;
     }
     
     const objEl = document.getElementById('objective-display');
     if(objEl) {
-      objEl.textContent = objDisplay;
-      objEl.style.display = 'block'; // Show when updating
+      objEl.textContent = progressText;
+      objEl.style.display = 'block';
       // Color progress bar based on progress percentage
       const progress = Math.min(100, (objectiveProgress / currentObjective.target) * 100);
       objEl.style.background = `linear-gradient(90deg, rgba(100,200,255,0.4) ${progress}%, transparent ${progress}%)`;
     }
+  }
+}
+
+// ============================================================================
+// ECONOMY UI FUNCTIONS
+// ============================================================================
+
+function updateEconomyUI() {
+  // Update lives
+  const livesCount = document.getElementById('lives-count');
+  const livesTimer = document.getElementById('lives-timer');
+  if (livesCount) {
+    livesCount.textContent = economy.getLives();
+  }
+  if (livesTimer) {
+    livesTimer.textContent = economy.getTimeToNextLifeFormatted();
+  }
+  
+  // Update coins
+  const coinsCount = document.getElementById('coins-count');
+  if (coinsCount) {
+    coinsCount.textContent = economy.getCoins();
+  }
+  
+  // Update stars
+  const starsCount = document.getElementById('stars-count');
+  if (starsCount) {
+    starsCount.textContent = economy.getTotalStars();
+  }
+}
+
+function startLivesTimer() {
+  if (livesTimerInterval) clearInterval(livesTimerInterval);
+  
+  livesTimerInterval = setInterval(() => {
+    const livesTimer = document.getElementById('lives-timer');
+    if (livesTimer) {
+      livesTimer.textContent = economy.getTimeToNextLifeFormatted();
+    }
+    
+    // Update lives count in case it regenerated
+    const livesCount = document.getElementById('lives-count');
+    if (livesCount) {
+      livesCount.textContent = economy.getLives();
+    }
+  }, 1000); // Update every second
+}
+
+// showBoosterModal removed - replaced by showPreLevelScreen
+
+function toggleBoosterInPreLevel(boosterId) {
+  const card = document.querySelector(`.booster-card[data-booster-id="${boosterId}"]`);
+  if (!card) return;
+  
+  const boosterInfo = boosters.getBoosterInfo(boosterId);
+  const inventory = boosters.getBoosterCount(boosterId);
+  const isActive = boosters.isBoosterActive(boosterId);
+  
+  if (isActive) {
+    // Deactivate
+    boosters.deactivatePreGameBooster(boosterId);
+    card.classList.remove('active');
+    return;
+  }
+  
+  // Try to activate - need to own or buy
+  if (inventory > 0) {
+    boosters.activatePreGameBooster(boosterId);
+    card.classList.add('active');
+  } else {
+    // Try to purchase
+    const result = boosters.purchaseBooster(boosterId);
+    if (result.success) {
+      showMessage(`✅ Purchased ${boosterInfo.name}!`, 1500);
+      boosters.activatePreGameBooster(boosterId);
+      card.classList.add('active');
+      
+      // Update inventory display
+      const invEl = card.querySelector('.booster-inventory');
+      if (invEl) {
+        invEl.textContent = `×${result.newCount}`;
+      } else {
+        card.insertAdjacentHTML('beforeend', `<div class="booster-inventory">×${result.newCount}</div>`);
+      }
+      
+      updateEconomyUI();
+    } else {
+      showMessage(`❌ ${result.error}`, 2000);
+    }
+  }
+}
+
+function showNoLivesModal() {
+  const message = `
+    ❤️ Out of Lives!
+    
+    Wait ${economy.getTimeToNextLifeFormatted()} for next life
+    or
+    Get more lives from the shop (Coming soon!)
+  `;
+  
+  alert(message);
+}
+
+function showStarAnimation() {
+  const popup = document.createElement('div');
+  popup.className = 'star-popup';
+  popup.textContent = '⭐';
+  popup.style.left = `${Math.random() * window.innerWidth}px`;
+  popup.style.top = `${Math.random() * (window.innerHeight / 2)}px`;
+  document.body.appendChild(popup);
+  
+  setTimeout(() => popup.remove(), 1500);
+}
+
+// ============================================================================
+// PAUSE MENU
+// ============================================================================
+
+function showPauseMenu() {
+  const menu = document.getElementById('pause-menu');
+  if (!menu) return;
+  
+  menu.classList.remove('hidden');
+  
+  // Pause game logic here if needed (stop timers, etc.)
+  
+  const btnResume = document.getElementById('btn-resume');
+  const btnRestart = document.getElementById('btn-restart-level');
+  const btnQuit = document.getElementById('btn-quit-level');
+  
+  if (btnResume) {
+    btnResume.onclick = () => {
+      menu.classList.add('hidden');
+    };
+  }
+  
+  if (btnRestart) {
+    btnRestart.onclick = () => {
+      menu.classList.add('hidden');
+      if (confirm('Restart level? This will not cost a life if you have coins.')) {
+        startGame(false);
+      }
+    };
+  }
+  
+  if (btnQuit) {
+    btnQuit.onclick = () => {
+      menu.classList.add('hidden');
+      if (confirm('Quit to menu? Progress will be lost.')) {
+        // Return to main menu
+        const gameContainer = document.getElementById('game-container');
+        const mainMenu = document.getElementById('main-menu');
+        if (gameContainer) gameContainer.classList.add('hidden');
+        if (mainMenu) mainMenu.classList.remove('hidden');
+      }
+    };
   }
 }
 
@@ -438,6 +792,12 @@ function setupGameUI(){
   }).catch(e => { 
     console.warn('[setupGameUI] Audio warning:', e); 
   });
+  
+  // Setup pause button
+  const btnPause = document.getElementById('btn-pause');
+  if (btnPause) {
+    btnPause.addEventListener('click', () => showPauseMenu());
+  }
   
   volumeEl = document.getElementById('volume');
   if(volumeEl) {
@@ -592,13 +952,16 @@ function initializeGame(){
   console.log('[initializeGame] board-root encontrado, inicializando...');
   setupGameUI();
   
+  // Initialize economy UI
+  updateEconomyUI();
+  startLivesTimer();
+  
   // ESPERAR a que audio esté listo ANTES de jugar
   Sound.initAudio().then(() => {
     console.log('[initializeGame] ✓ Audio context está listo');
-    startGame(true);
+    // Don't auto-start, wait for user to click Play button
   }).catch(e => {
-    console.warn('[initializeGame] Audio warning (no crítico), iniciando juego igual:', e);
-    startGame(true);
+    console.warn('[initializeGame] Audio warning (no crítico):', e);
   });
 }
 
@@ -651,6 +1014,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       initializeGame();
     });
+  }
+  
+  // Connect Start button in game to restart functionality  
+  const btnGameStart = document.getElementById('btn-start');
+  if(btnGameStart) {
+    btnGameStart.addEventListener('click', () => startGame(true));
   }
   
   if(btnInstructions) {
