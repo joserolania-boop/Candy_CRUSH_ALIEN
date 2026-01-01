@@ -9,9 +9,9 @@
   <body>
         <div id="debug-panel" style="position:fixed;top:10px;right:10px;z-index:1000;background:rgba(20,20,40,0.92);padding:10px 16px;border-radius:10px;box-shadow:0 2px 12px #0006;display:none;gap:8px;flex-direction:column;">
           <b style="color:#fff176;font-size:1.1em;">DEBUG Power-Ups</b>
-          <button onclick="window.CCA_ui && window.CCA_ui.forcePower('bomb')">� Bomb</button>
-          <button onclick="window.CCA_ui && window.CCA_ui.forcePower('colorbomb')">🌟 Colorbomb</button>
-          <button onclick="window.CCA_ui && window.CCA_ui.forcePower('wrapped')">🎉 Wrapped</button>
+          <button onclick="window.CCA_ui && window.CCA_ui.forcePower('bomb')">B Bomb</button>
+          <button onclick="window.CCA_ui && window.CCA_ui.forcePower('colorbomb')">C Colorbomb</button>
+          <button onclick="window.CCA_ui && window.CCA_ui.forcePower('wrapped')">W Wrapped</button>
           <button onclick="window.CCA_ui && window.CCA_ui.toggleDebugPanel()" style="margin-top:6px;font-size:0.9em;">Cerrar</button>
         </div>
         <button id="show-debug-btn" style="position:fixed;top:10px;right:10px;z-index:999;background:#fff176;color:#222;padding:6px 14px;border-radius:8px;border:none;box-shadow:0 2px 8px #0004;cursor:pointer;">Debug</button>
@@ -56,7 +56,8 @@
           <h2>Candy Crush Alien</h2>
           <p class="menu-subtitle">Match 3 Alien Adventure</p>
           <div class="menu-buttons">
-            <button id="btn-play" class="btn btn-large">Play</button>
+            <button id="btn-continue" class="btn btn-large">Continue</button>
+            <button id="btn-new-game" class="btn btn-large">New Game</button>
             <button id="btn-instructions" class="btn btn-large">Instructions</button>
             <button id="btn-settings" class="btn btn-large">Settings</button>
           </div>

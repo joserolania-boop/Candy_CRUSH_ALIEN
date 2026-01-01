@@ -791,12 +791,12 @@ main{width:100%; max-width:760px; padding:12px}
 
 .cell.selected{outline:3px solid rgba(139,108,255,0.28); transform:scale(1.03)}
 .cell.power-striped::after{content:'\2192'; position:absolute; color:#ffd966; font-size:14px}
-.cell.power-wrapped::after{content:'\1F389'; position:absolute; color:#ff8ba7; font-size:14px}
+.cell.power-wrapped::after{content:'W'; position:absolute; color:#ff8ba7; font-size:14px; font-weight: bold;}
 .cell.power-colorbomb{box-shadow:0 0 8px #fff6; position:relative}
-.cell.power-colorbomb::after{content:'\1F31F'; position:absolute; color:#fffacd; font-size:16px}
+.cell.power-colorbomb::after{content:'C'; position:absolute; color:#fffacd; font-size:16px; font-weight: bold;}
 /* Bomb power visuals */
 .cell.power-bomb{ position:relative; }
-.cell.power-bomb::after{ content:'\1F4A5'; position:absolute; font-size:18px; line-height:1; transform:translateY(-2px); }
+.cell.power-bomb::after{ content:'B'; position:absolute; font-size:18px; line-height:1; transform:translateY(-2px); color: #ff4444; font-weight: bold; }
 .cell.bomb-primed{ animation: bomb-pulse 440ms ease-in-out infinite; box-shadow: 0 0 18px 6px rgba(200,130,255,0.18), 0 0 30px rgba(120,60,220,0.12) inset; }
 @keyframes bomb-pulse{ 0%{ transform:scale(1) } 50%{ transform:scale(1.08) } 100%{ transform:scale(1) } }
 

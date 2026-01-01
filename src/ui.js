@@ -284,7 +284,7 @@ export class UIManager{
           this._animating=false; continue;
         }
         if(next.power==='mega-bomb'){
-          this.showNotification('💥 MEGA BOMB! 💥');
+          this.showNotification('B MEGA BOMB! B');
           this._animating=true; try{ this._playSFX('bomb', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
@@ -298,7 +298,7 @@ export class UIManager{
           this._animating=false; continue;
         }
         if(next.power==='mega-wrapped'){
-          this.showNotification('🎉 MEGA WRAPPED! 🎉');
+          this.showNotification('W MEGA WRAPPED! W');
           this._animating=true; try{ this._playSFX('power', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
@@ -312,7 +312,7 @@ export class UIManager{
           this._animating=false; continue;
         }
         if(next.power==='rainbow-bomb'){
-          this.showNotification('🌈 RAINBOW BOMB! 🌈');
+          this.showNotification('C RAINBOW BOMB! C');
           this._animating=true; try{ this._playSFX('colorbomb', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });

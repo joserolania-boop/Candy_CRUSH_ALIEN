@@ -973,6 +973,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const gameContainer = document.getElementById('game-container');
   
   const btnPlay = document.getElementById('btn-play');
+  const btnContinue = document.getElementById('btn-continue');
+  const btnNewGame = document.getElementById('btn-new-game');
   const btnInstructions = document.getElementById('btn-instructions');
   const btnSettings = document.getElementById('btn-settings');
   const btnCloseInstructions = document.getElementById('btn-close-instructions');
@@ -980,6 +982,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   console.log('[DOMContentLoaded] Elementos encontrados:', {
     btnPlay: !!btnPlay,
+    btnContinue: !!btnContinue,
+    btnNewGame: !!btnNewGame,
     btnInstructions: !!btnInstructions,
     btnSettings: !!btnSettings,
     btnCloseInstructions: !!btnCloseInstructions,
@@ -988,6 +992,16 @@ document.addEventListener('DOMContentLoaded', () => {
     instructionsModal: !!instructionsModal,
     gameContainer: !!gameContainer
   });
+  
+  // Check if there's saved progress
+  const savedLevel = localStorage.getItem('candy_current_level');
+  if(savedLevel && parseInt(savedLevel, 10) > 0) {
+    if(btnContinue) btnContinue.style.display = 'block';
+    if(btnPlay) btnPlay.style.display = 'none'; // Hide old play button
+  } else {
+    if(btnContinue) btnContinue.style.display = 'none';
+    if(btnPlay) btnPlay.style.display = 'block';
+  }
   
   if(btnPlay) {
     console.log('[btnPlay] Registrando click listener');
@@ -1015,6 +1029,70 @@ document.addEventListener('DOMContentLoaded', () => {
       initializeGame();
     });
   }
+
+  if(btnContinue) {
+    console.log('[btnContinue] Registrando click listener');
+    btnContinue.addEventListener('click', async ()=>{
+      console.log('[btnContinue] Clicked!');
+      if(mainMenu) {
+        mainMenu.classList.add('hidden');
+      }
+      if(gameContainer) {
+        gameContainer.classList.remove('hidden');
+      }
+      // Ensure audio is initialized/resumed as part of the user gesture
+      try{
+        await Sound.initAudio();
+        console.log('[btnContinue] Audio initialized from user gesture');
+        try{ Sound.testTone(); showMessage('Sonido activado ✅', 1200); }catch(e){ console.warn('[btnContinue] testTone failed', e); showMessage('Sonido: fallo al reproducir tono', 1400); }
+      }catch(e){ console.warn('[btnContinue] Audio init failed on click', e); showMessage('No se pudo activar sonido', 1800); }
+
+      // Start background decorations so astronauts/ships spawn
+      try{ Decorations.startDecorations('#space-bg', 0.7); console.log('[btnContinue] Decorations started');
+        // debug: force show any decorations in case they are hidden behind layers
+        try{ const shown = Decorations.debugShowAll(); console.log('[btnContinue] debugShowAll applied ->', shown); if(shown>0) showMessage('Astronautas visibles ✅', 1200); else showMessage('Astronautas: no aparecen (ver consola)', 1800); }catch(e){ }
+      }catch(e){ console.warn('[btnContinue] Decorations start failed', e); showMessage('Decoraciones no activas', 1800); }
+
+      initializeGame();
+      actuallyStartGame(false);
+    });
+  }
+
+  if(btnNewGame) {
+    console.log('[btnNewGame] Registrando click listener');
+    btnNewGame.addEventListener('click', async ()=>{
+      console.log('[btnNewGame] Clicked!');
+      // Reset all progress
+      localStorage.removeItem('candy_current_level');
+      level = 1;
+      score = 0;
+      objectiveProgress = 0;
+      movesLeft = 0;
+      currentObjective = null;
+
+      if(mainMenu) {
+        mainMenu.classList.add('hidden');
+      }
+      if(gameContainer) {
+        gameContainer.classList.remove('hidden');
+      }
+      // Ensure audio is initialized/resumed as part of the user gesture
+      try{
+        await Sound.initAudio();
+        console.log('[btnNewGame] Audio initialized from user gesture');
+        try{ Sound.testTone(); showMessage('Sonido activado ✅', 1200); }catch(e){ console.warn('[btnNewGame] testTone failed', e); showMessage('Sonido: fallo al reproducir tono', 1400); }
+      }catch(e){ console.warn('[btnNewGame] Audio init failed on click', e); showMessage('No se pudo activar sonido', 1800); }
+
+      // Start background decorations so astronauts/ships spawn
+      try{ Decorations.startDecorations('#space-bg', 0.7); console.log('[btnNewGame] Decorations started');
+        // debug: force show any decorations in case they are hidden behind layers
+        try{ const shown = Decorations.debugShowAll(); console.log('[btnNewGame] debugShowAll applied ->', shown); if(shown>0) showMessage('Astronautas visibles ✅', 1200); else showMessage('Astronautas: no aparecen (ver consola)', 1800); }catch(e){ }
+      }catch(e){ console.warn('[btnNewGame] Decorations start failed', e); showMessage('Decoraciones no activas', 1800); }
+
+      initializeGame();
+      actuallyStartGame(true);
+    });
+  }
   
   // Connect Start button in game to restart functionality  
   const btnGameStart = document.getElementById('btn-start');
@@ -1037,6 +1115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     backBtn.addEventListener('click', ()=>{
       console.log('[btnBackMenu] Clicked!');
       if(instructionsModal) instructionsModal.classList.add('hidden');
+      if(gameContainer) gameContainer.classList.add('hidden');
       if(mainMenu) mainMenu.classList.remove('hidden');
     });
   }
