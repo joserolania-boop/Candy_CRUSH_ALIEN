@@ -12,82 +12,243 @@ an ancient magic hidden in crystallized candy.
 Only you can wield it.
 Match, create, combine—
 your power is our hope.`,
-      animation: 'intro'
+      actors: [
+        { id: 'earth', asset: 'earth_silhouette.svg', x: 50, y: 80, scale: 4, anim: 'float' },
+        { id: 'ship', asset: 'spaceship_v2.svg', x: 50, y: 30, scale: 2.5, anim: 'descend' },
+        { id: 'crystal1', asset: 'candy_crystal.svg', x: 20, y: 20, scale: 0.8, anim: 'twinkle' },
+        { id: 'crystal2', asset: 'candy_crystal.svg', x: 80, y: 40, scale: 0.6, anim: 'twinkle' },
+        { id: 'crystal3', asset: 'candy_crystal.svg', x: 30, y: 60, scale: 0.7, anim: 'twinkle' }
+      ]
+    },
+    lvl2: {
+      title: 'The Singularity',
+      act: 1,
+      narrative: `Sensors are picking up strange probes.
+They are scanning our cities, looking for something.
+We must intercept them before they transmit our coordinates.
+
+Use the candy magic to disrupt their signals!`,
+      actors: [
+        { id: 'city', asset: 'city_skyline.svg', x: 50, y: 90, scale: 3, anim: 'none' },
+        { id: 'probe1', asset: 'probe_drone.svg', x: 20, y: 40, scale: 1, anim: 'scan' },
+        { id: 'probe2', asset: 'probe_drone.svg', x: 50, y: 30, scale: 0.8, anim: 'scan' },
+        { id: 'probe3', asset: 'probe_drone.svg', x: 80, y: 45, scale: 1.2, anim: 'scan' },
+        { id: 'defense', asset: 'spaceship_side.svg', x: -10, y: 50, scale: 1, anim: 'fly-across' }
+      ]
+    },
+    lvl3: {
+      title: 'Hyper-Jump',
+      act: 1,
+      narrative: `They're retreating! 
+We've engaged the hyper-drive to follow them.
+The space-time continuum is warping around us.
+
+Keep the energy levels stable with your matches!`,
+      actors: [{ id: 'ship', asset: 'spaceship_side.svg', x: 50, y: 50, scale: 1.2, anim: 'strafe' }]
+    },
+    lvl4: {
+      title: 'Quantum Realm',
+      act: 1,
+      narrative: `We've entered a sub-atomic dimension.
+Physics don't work the same here.
+The candies are vibrating with quantum energy.
+
+Master the chaos to move forward!`,
+      actors: [{ id: 'astro', asset: 'astronaut.svg', x: 50, y: 50, scale: 1.5, anim: 'float' }]
+    },
+    lvl5: {
+      title: 'Inferno Core',
+      act: 1,
+      narrative: `The heat is unbearable. 
+We're approaching a binary star system.
+The alien trail leads straight into the fire.
+
+Cool down the systems with powerful combos!`,
+      actors: [{ id: 'ufo', asset: 'ufo_v2.svg', x: 50, y: 30, scale: 1.2, anim: 'shake' }]
     },
     act1: {
-      title: 'Wave One - First Contact',
+      title: 'Wave One - Supernova Blast',
       act: 1,
-      narrative: `The aliens are attacking our cities!
-Use your magic to defend!
+      narrative: `The first wave of the alien fleet is here!
+They're not just probes anymore—these are warships.
 
-Every combination of candies is a blast of protective energy!
+Stand your ground. The defense of Earth begins now!`,
+      animation: 'wave_attack'
+    },
+    lvl7: {
+      title: 'Alien Outpost',
+      act: 2,
+      narrative: `We've found a hidden base on the dark side of the moon.
+It's a staging ground for a full-scale invasion.
 
-Stand strong—we're counting on you!`,
-      actors: [
-        { id: 'ufo1', asset: 'ufo_side.svg', x: -10, y: 40, scale: 1.2, anim: 'fly-across' },
-        { id: 'ufo2', asset: 'ufo_v2.svg', x: 110, y: 20, scale: 1, anim: 'fly-across-reverse' },
-        { id: 'astro', asset: 'astronaut_side.svg', x: 50, y: 70, scale: 1.5, anim: 'walk' }
-      ]
+Infiltrate their perimeter and take out their scouts!`,
+      actors: [{ id: 'base', asset: 'structure.svg', x: 50, y: 60, scale: 2, anim: 'glow' }]
+    },
+    lvl8: {
+      title: 'Event Horizon',
+      act: 2,
+      narrative: `A massive black hole is pulling everything in.
+The aliens are using its gravity to slingshot their fleet.
+
+Don't let the void consume you!`,
+      actors: [{ id: 'ship', asset: 'spaceship_v2.svg', x: 30, y: 40, scale: 1, anim: 'descend' }]
+    },
+    lvl9: {
+      title: 'Warp Tunnel',
+      act: 2,
+      narrative: `We're inside their transport network.
+Everything is moving at impossible speeds.
+
+Stay focused. One wrong move and we're lost in space!`,
+      actors: [{ id: 'ufo', asset: 'ufo_side.svg', x: 50, y: 50, scale: 1.5, anim: 'fly-across' }]
+    },
+    lvl10: {
+      title: 'Void Echoes',
+      act: 2,
+      narrative: `The silence here is deafening.
+But wait... do you hear that?
+A voice... calling from the darkness.
+
+Is someone—or something—trying to talk to us?`,
+      actors: [{ id: 'astro', asset: 'astronaut_side.svg', x: 50, y: 70, scale: 1.2, anim: 'walk' }]
     },
     act2: {
-      title: 'Operation Counter-Strike',
+      title: 'Operation Base Assault',
       act: 2,
-      narrative: `We're counterattacking their bases!
-The military is with us.
+      narrative: `This is it. The main command center.
+If we take this down, we stop the invasion.
 
-Stay focused. Together, magic and science will prevail!
+All units, engage!`,
+      animation: 'base_attack'
+    },
+    lvl12: {
+      title: 'Fortified Base',
+      act: 3,
+      narrative: `Their shields are too strong for conventional weapons.
+Only the pure energy of candy magic can pierce them.
 
-Destroy their forward positions!`,
-      actors: [
-        { id: 'base', asset: 'structure.svg', x: 50, y: 60, scale: 2.5, anim: 'shake' },
-        { id: 'ship', asset: 'spaceship_side.svg', x: 20, y: 30, scale: 1.2, anim: 'strafe' }
-      ]
+Break through their defenses!`,
+      actors: [{ id: 'base', asset: 'structure_side.svg', x: 50, y: 50, scale: 2.5, anim: 'shake' }]
+    },
+    lvl13: {
+      title: 'Maximum Firepower',
+      act: 3,
+      narrative: `They're throwing everything they have at us.
+The sky is filled with plasma fire.
+
+Unleash your full power!`,
+      actors: [{ id: 'ufo', asset: 'ufo_v2.svg', x: 80, y: 30, scale: 1, anim: 'float-delayed' }]
+    },
+    lvl14: {
+      title: 'Strategic Victory',
+      act: 3,
+      narrative: `We've captured one of their high-ranking officers.
+He's not fighting back. He looks... terrified.
+
+What is he so afraid of?`,
+      actors: [{ id: 'ufo', asset: 'ufo.svg', x: 50, y: 50, scale: 1.5, anim: 'jump' }]
+    },
+    lvl15: {
+      title: 'Precision Bombing',
+      act: 3,
+      narrative: `We need to disable their main reactor.
+A single, well-placed explosion should do it.
+
+Aim for the core!`,
+      actors: [{ id: 'ship', asset: 'spaceship.svg', x: 50, y: 30, scale: 1.8, anim: 'descend' }]
     },
     act3: {
-      title: 'The Artifact Discovery',
+      title: 'The Archaeological Discovery',
       act: 3,
-      narrative: `Wait... these artifacts...
-I think I understand.
+      narrative: `Deep beneath the base, we found ancient ruins.
+They're older than the aliens... older than humanity.
 
-The aliens... they're not our enemy.
-They were fleeing.
-Running from something in the void...
+The truth is finally coming to light.`,
+      animation: 'artifact_glow'
+    },
+    lvl17: {
+      title: 'Deep Excavation',
+      act: 4,
+      narrative: `The records speak of 'The Devourer'.
+A cosmic entity that eats entire galaxies.
+The aliens weren't invading us... they were running from IT.
 
-This changes everything.`,
-      actors: [
-        { id: 'artifact', asset: 'structure_side.svg', x: 50, y: 50, scale: 2, anim: 'glow' },
-        { id: 'astro', asset: 'astronaut_high.svg', x: 30, y: 60, scale: 1.2, anim: 'float' }
-      ]
+We've been fighting the wrong enemy.`,
+      actors: [{ id: 'astro', asset: 'astronaut_high.svg', x: 50, y: 50, scale: 1.5, anim: 'float' }]
+    },
+    lvl18: {
+      title: 'Full Potential',
+      act: 4,
+      narrative: `The candy magic isn't just a weapon.
+It's a key. A way to harmonize with the universe.
+
+Unlock your true potential!`,
+      actors: [{ id: 'artifact', asset: 'structure.svg', x: 50, y: 50, scale: 2, anim: 'glow' }]
+    },
+    lvl19: {
+      title: 'Ancient Knowledge',
+      act: 4,
+      narrative: `We've learned to translate their language.
+They're asking for help. They want to join forces.
+
+Will you extend the hand of friendship?`,
+      actors: [{ id: 'ufo', asset: 'ufo_v2.svg', x: 30, y: 50, scale: 1.2, anim: 'float' }, { id: 'astro', asset: 'astronaut_v2.svg', x: 70, y: 50, scale: 1.2, anim: 'float-delayed' }]
+    },
+    lvl20: {
+      title: 'Master the Ruins',
+      act: 4,
+      narrative: `We need to activate the ancient defense system.
+It requires a massive amount of magical energy.
+
+Prepare the ritual!`,
+      actors: [{ id: 'base', asset: 'structure_side.svg', x: 50, y: 60, scale: 2, anim: 'shake' }]
     },
     act4: {
-      title: 'Alliance Forged',
+      title: 'The Alliance Forged',
       act: 4,
-      narrative: `They call it 'The Devourer.'
-An ancient force that consumes worlds.
+      narrative: `Humans and Aliens, standing together.
+Two worlds, one goal: survival.
 
-Humans and aliens—united by candy magic—
-we must stand against it.
+The Devourer is coming. We are ready.`,
+      animation: 'alliance'
+    },
+    lvl22: {
+      title: 'Shared Sacrifice',
+      act: 5,
+      narrative: `The Devourer's shadow is falling over the sun.
+Many have already fallen. 
 
-Are you ready for the final battle?`,
-      actors: [
-        { id: 'astro', asset: 'astronaut.svg', x: 40, y: 50, scale: 1.5, anim: 'float' },
-        { id: 'alien', asset: 'ufo.svg', x: 60, y: 50, scale: 1.5, anim: 'float-delayed' }
-      ]
+We must hold the line, no matter the cost!`,
+      actors: [{ id: 'ship', asset: 'spaceship_side.svg', x: 20, y: 40, scale: 1.2, anim: 'strafe' }]
+    },
+    lvl23: {
+      title: 'Combined Might',
+      act: 5,
+      narrative: `Our combined fleets are launching a final assault.
+Magic and technology, working as one.
+
+For the future of the galaxy!`,
+      actors: [{ id: 'ufo', asset: 'ufo_side.svg', x: 30, y: 30, scale: 1, anim: 'fly-across' }, { id: 'ship', asset: 'spaceship_v2.svg', x: 70, y: 70, scale: 1, anim: 'fly-across-reverse' }]
+    },
+    lvl24: {
+      title: 'United Strength',
+      act: 5,
+      narrative: `We're pushing it back! 
+The darkness is receding. 
+One last push and we can end this forever!
+
+Give it everything you've got!`,
+      actors: [{ id: 'astro', asset: 'astronaut_v2.svg', x: 50, y: 50, scale: 2, anim: 'jump' }]
     },
     victory: {
-      title: 'Victory!',
+      title: 'The Final Victory',
       act: 5,
-      narrative: `The Devourer is defeated!
-The worlds are safe.
+      narrative: `The Devourer is gone. 
+The stars are bright once more.
+A new era of peace has begun between our peoples.
 
-Humans and aliens now stand together,
-defending each other against the darkness.
-
-You did it. You saved us all.`,
-      actors: [
-        { id: 'ship', asset: 'spaceship.svg', x: 50, y: 40, scale: 2, anim: 'ascend' },
-        { id: 'astro', asset: 'astronaut_v2.svg', x: 50, y: 70, scale: 1.5, anim: 'jump' }
-      ]
+You are the hero of two worlds.`,
+      animation: 'victory'
     }
   },
 
@@ -341,10 +502,21 @@ You did it. You saved us all.`,
           0%, 100% { transform: translate(-50%, -50%) scale(1.5); }
           50% { transform: translate(-50%, -50%) scale(1.5) translateY(-40px); }
         }
+        @keyframes scan {
+          0%, 100% { filter: brightness(1) drop-shadow(0 0 5px #ff0000); }
+          50% { filter: brightness(1.5) drop-shadow(0 0 15px #ff0000); }
+        }
+        @keyframes twinkle-actor {
+          0%, 100% { opacity: 0.4; filter: brightness(0.8) blur(1px); }
+          50% { opacity: 1; filter: brightness(1.2) blur(0px); }
+        }
         @keyframes slide-in-up {
           from { transform: translateY(100px); opacity: 0; }
           to { transform: translateY(0); opacity: 1; }
         }
+        .actor-none { animation: none; }
+        .actor-scan { animation: scan 1s infinite; }
+        .actor-twinkle { animation: twinkle-actor 2s infinite; }
         .actor-descend { animation: descend 3s ease-out forwards; }
         .actor-float { animation: float 3s ease-in-out infinite; }
         .actor-float-delayed { animation: float-delayed 3.5s ease-in-out infinite; }

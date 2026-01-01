@@ -29,30 +29,30 @@ const createLevel = (name, theme, moves, objective, storyCheckpoint, luck = 0) =
 
 const LEVELS = [
   createLevel('First Contact', 'deep_nebula', 20, { type: 'score', target: 1200, description: 'Channel your magic to create a protective barrier around the approaching ship' }, 'intro', 0.8),
-  createLevel('The Singularity', 'black_hole_void', 22, { type: 'pieces', target: 40, description: 'Destroy 40 alien probes threatening our cities with candy blasts' }, null, 0.75),
-  createLevel('Hyper-Jump', 'warp_speed', 22, { type: 'score', target: 2500, description: 'Build up magical energy to power our defense shields' }, null, 0.7),
-  createLevel('Quantum Realm', 'quantum_realm', 24, { type: 'score', target: 3500, description: 'Master the art of creating combos to unleash devastating attacks' }, null, 0.65),
-  createLevel('Inferno Core', 'inferno', 24, { type: 'score', target: 4000, description: 'Prepare the ultimate counter-spell against the alien invasion' }, null, 0.6),
+  createLevel('The Singularity', 'black_hole_void', 22, { type: 'pieces', target: 40, description: 'Destroy 40 alien probes threatening our cities with candy blasts' }, 'lvl2', 0.75),
+  createLevel('Hyper-Jump', 'warp_speed', 22, { type: 'score', target: 2500, description: 'Build up magical energy to power our defense shields' }, 'lvl3', 0.7),
+  createLevel('Quantum Realm', 'quantum_realm', 24, { type: 'score', target: 3500, description: 'Master the art of creating combos to unleash devastating attacks' }, 'lvl4', 0.65),
+  createLevel('Inferno Core', 'inferno', 24, { type: 'score', target: 4000, description: 'Prepare the ultimate counter-spell against the alien invasion' }, 'lvl5', 0.6),
   createLevel('Supernova Blast', 'supernova', 25, { type: 'score', target: 5000, description: 'Lead the first wave of magical defense against the alien fleet' }, 'act1', 0.55),
-  createLevel('Alien Outpost', 'alien_green', 26, { type: 'pieces', target: 60, description: 'Protect our coastlines by eliminating 60 alien landing craft' }, null, 0.5),
-  createLevel('Event Horizon', 'event_horizon', 26, { type: 'score', target: 6500, description: 'Forge powerful artifacts to strengthen our magical arsenal' }, null, 0.45),
-  createLevel('Warp Tunnel', 'warp_speed', 28, { type: 'score', target: 7000, description: 'Turn the tide of battle with overwhelming magical force' }, null, 0.4),
-  createLevel('Void Echoes', 'void_echo', 28, { type: 'pieces', target: 80, description: 'Clear Sector 7 of all alien presence - destroy 80 enemy units' }, null, 0.35),
+  createLevel('Alien Outpost', 'alien_green', 26, { type: 'pieces', target: 60, description: 'Protect our coastlines by eliminating 60 alien landing craft' }, 'lvl7', 0.5),
+  createLevel('Event Horizon', 'event_horizon', 26, { type: 'score', target: 6500, description: 'Forge powerful artifacts to strengthen our magical arsenal' }, 'lvl8', 0.45),
+  createLevel('Warp Tunnel', 'warp_speed', 28, { type: 'score', target: 7000, description: 'Turn the tide of battle with overwhelming magical force' }, 'lvl9', 0.4),
+  createLevel('Void Echoes', 'void_echo', 28, { type: 'pieces', target: 80, description: 'Clear Sector 7 of all alien presence - destroy 80 enemy units' }, 'lvl10', 0.35),
   createLevel('Base Assault', 'deep_nebula', 30, { type: 'score', target: 10000, description: 'Assault the alien command base with coordinated magical strikes' }, 'act2', 0.3),
-  createLevel('Fortified Base', 'alien_green', 30, { type: 'pieces', target: 100, description: 'Breach the fortified alien base defenses - eliminate 100 guard units' }, null, 0.3),
-  createLevel('Maximum Firepower', 'black_hole_void', 32, { type: 'score', target: 12000, description: 'Unleash maximum firepower by creating devastating combos' }, null, 0.25),
-  createLevel('Strategic Victory', 'warp_speed', 32, { type: 'score', target: 15000, description: 'Achieve strategic victory through superior magical tactics' }, null, 0.25),
-  createLevel('Precision Bombing', 'inferno', 34, { type: 'score', target: 18000, description: 'Execute precision strikes with massive combo explosions' }, null, 0.25),
+  createLevel('Fortified Base', 'alien_green', 30, { type: 'pieces', target: 100, description: 'Breach the fortified alien base defenses - eliminate 100 guard units' }, 'lvl12', 0.3),
+  createLevel('Maximum Firepower', 'black_hole_void', 32, { type: 'score', target: 12000, description: 'Unleash maximum firepower by creating devastating combos' }, 'lvl13', 0.25),
+  createLevel('Strategic Victory', 'warp_speed', 32, { type: 'score', target: 15000, description: 'Achieve strategic victory through superior magical tactics' }, 'lvl14', 0.25),
+  createLevel('Precision Bombing', 'inferno', 34, { type: 'score', target: 18000, description: 'Execute precision strikes with massive combo explosions' }, 'lvl15', 0.25),
   createLevel('Archaeological Dig', 'quantum_realm', 34, { type: 'score', target: 20000, description: 'Unearth ancient artifacts that hold the key to understanding our visitors' }, 'act3', 0.2),
-  createLevel('Deep Excavation', 'deep_nebula', 36, { type: 'pieces', target: 150, description: 'Excavate deeper to find 150 crucial alien artifacts' }, null, 0.2),
-  createLevel('Full Potential', 'alien_green', 36, { type: 'score', target: 22000, description: 'Unlock the full potential of ancient magic through high scores' }, null, 0.2),
-  createLevel('Ancient Knowledge', 'black_hole_void', 38, { type: 'score', target: 25000, description: 'Master the ancient knowledge to bridge our worlds' }, null, 0.2),
-  createLevel('Master the Ruins', 'warp_speed', 38, { type: 'score', target: 28000, description: 'Master the ancient ruins by harnessing powerful magical energy' }, null, 0.2),
+  createLevel('Deep Excavation', 'deep_nebula', 36, { type: 'pieces', target: 150, description: 'Excavate deeper to find 150 crucial alien artifacts' }, 'lvl17', 0.2),
+  createLevel('Full Potential', 'alien_green', 36, { type: 'score', target: 22000, description: 'Unlock the full potential of ancient magic through high scores' }, 'lvl18', 0.2),
+  createLevel('Ancient Knowledge', 'black_hole_void', 38, { type: 'score', target: 25000, description: 'Master the ancient knowledge to bridge our worlds' }, 'lvl19', 0.2),
+  createLevel('Master the Ruins', 'warp_speed', 38, { type: 'score', target: 28000, description: 'Master the ancient ruins by harnessing powerful magical energy' }, 'lvl20', 0.2),
   createLevel('Peace Offering', 'quantum_realm', 40, { type: 'score', target: 30000, description: 'Create a grand peace offering through masterful magical displays' }, 'act4', 0.1),
-  createLevel('Shared Sacrifice', 'inferno', 40, { type: 'pieces', target: 200, description: 'Make the ultimate sacrifice - destroy 200 enemy units in a final stand' }, null, 0.1),
-  createLevel('Combined Might', 'deep_nebula', 42, { type: 'score', target: 35000, description: 'Combine human and alien might by forging legendary artifacts' }, null, 0.1),
-  createLevel('United Strength', 'alien_green', 42, { type: 'score', target: 40000, description: 'Demonstrate united strength against the greater cosmic threat' }, null, 0.1),
-  createLevel('Final Battle', 'black_hole_void', 45, { type: 'score', target: 50000, description: 'Lead humanity and aliens together in the final battle for survival' }, null, 0.1)
+  createLevel('Shared Sacrifice', 'inferno', 40, { type: 'pieces', target: 200, description: 'Make the ultimate sacrifice - destroy 200 enemy units in a final stand' }, 'lvl22', 0.1),
+  createLevel('Combined Might', 'deep_nebula', 42, { type: 'score', target: 35000, description: 'Combine human and alien might by forging legendary artifacts' }, 'lvl23', 0.1),
+  createLevel('United Strength', 'alien_green', 42, { type: 'score', target: 40000, description: 'Demonstrate united strength against the greater cosmic threat' }, 'lvl24', 0.1),
+  createLevel('Final Battle', 'black_hole_void', 45, { type: 'score', target: 50000, description: 'Lead humanity and aliens together in the final battle for survival' }, 'victory', 0.1)
 ];
 
 function resolveSavedLevel() {
@@ -134,9 +134,9 @@ function startGame(resetScore = true){
   
   const levelDef = LEVELS[level - 1] || LEVELS[0];
   
-  // If it's the very first level, show the intro story before the pre-level screen
-  if (levelDef.story_checkpoint === 'intro') {
-    showStoryScene('intro').then(() => {
+  // If there's a story checkpoint, show it before the pre-level screen
+  if (levelDef.story_checkpoint) {
+    showStoryScene(levelDef.story_checkpoint).then(() => {
       showPreLevelScreen();
     });
   } else {
@@ -368,25 +368,8 @@ function actuallyStartGame(resetScore = true){
   levelInProgress = true;
   if(resetScore) score = 0;
 
-  const levelDef = LEVELS[level - 1] || LEVELS[0];
-  
-  const proceedToGame = () => {
-    if(boardRoot) boardRoot.classList.remove(BOARD_HIDE_CLASS);
-    startLevel();
-  };
-
-  // Only show story if it's NOT the intro (which is handled by startGame)
-  if(levelDef.story_checkpoint && levelDef.story_checkpoint !== 'intro') {
-    if(boardRoot) boardRoot.classList.add(BOARD_HIDE_CLASS);
-    showStoryScene(levelDef.story_checkpoint)
-      .then(proceedToGame)
-      .catch((err) => {
-        console.warn('[actuallyStartGame] Story scene rejected', err);
-        proceedToGame();
-      });
-  } else {
-    proceedToGame();
-  }
+  if(boardRoot) boardRoot.classList.remove(BOARD_HIDE_CLASS);
+  startLevel();
 }
 
 function resetGame(){
