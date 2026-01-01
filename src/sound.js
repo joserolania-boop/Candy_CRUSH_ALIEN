@@ -6,7 +6,7 @@ let swapAudio = null;
 let matchAudio = null;
 let synthRefs = null; // store synth intervals/oscillators for cleanup
 let _muted = false;
-let _volume = 0.6;  // Increased default volume
+let _volume = 0.8;  // Increased default volume for more attractive music
 let _sfxEnabled = true;
 let _musicEnabled = true;
 let backgroundPlaying = false;
@@ -167,7 +167,7 @@ export function playBackground(){
           ambientAudio.play().then(() => {
             backgroundPlaying = true;
             // fade in
-            const fadeTo = _volume; 
+            const fadeTo = _volume * 0.9; 
             let v = 0; 
             const step = 0.06; 
             const iv = setInterval(()=>{ 
@@ -321,3 +321,13 @@ export function loadSettingsEnhanced(){
 export function setMuted(val){ _muted = !!val; try{ localStorage.setItem('cca_muted', _muted? '1':'0'); }catch(e){} if(_muted){ if(masterGain) masterGain.gain.value = 0; try{ if(ambientAudio) ambientAudio.pause(); }catch(e){} } else { if(masterGain) masterGain.gain.value = _volume; try{ if(ambientAudio) ambientAudio.play().catch(()=>{}); }catch(e){} } }
 
 export function playLevelUp(){ try{ if(!audioCtx) initAudio(); const now = audioCtx.currentTime; const g = audioCtx.createGain(); g.gain.value = 0.001; g.connect(masterGain); const o = audioCtx.createOscillator(); o.type = 'sawtooth'; o.connect(g); const freqs = [523.25,659.25,783.99,1046.5]; let t = now + 0.02; for(let i=0;i<freqs.length;i++){ o.frequency.setValueAtTime(freqs[i], t); g.gain.setValueAtTime(0.001 + 0.5*(1 - i/freqs.length), t); t += 0.12; } g.gain.setValueAtTime(0.0001, t+0.18); o.start(now+0.01); o.stop(t+0.2); }catch(e){ console.warn('playLevelUp failed', e); } }
+
+export function setDynamicMusic(comboLevel = 0){
+  try{
+    if(ambientAudio && !ambientAudio.paused){
+      const baseRate = 1.0;
+      const rate = baseRate + Math.min(comboLevel * 0.05, 0.5); // up to 1.5x speed
+      ambientAudio.playbackRate = rate;
+    }
+  }catch(e){ console.warn('setDynamicMusic failed', e); }
+}

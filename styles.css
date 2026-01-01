@@ -791,12 +791,12 @@ main{width:100%; max-width:760px; padding:12px}
 
 .cell.selected{outline:3px solid rgba(139,108,255,0.28); transform:scale(1.03)}
 .cell.power-striped::after{content:'\2192'; position:absolute; color:#ffd966; font-size:14px}
-.cell.power-wrapped::after{content:'*'; position:absolute; color:#ff8ba7; font-size:14px}
+.cell.power-wrapped::after{content:'\1F389'; position:absolute; color:#ff8ba7; font-size:14px}
 .cell.power-colorbomb{box-shadow:0 0 8px #fff6; position:relative}
-.cell.power-colorbomb::after{content:'\2605'; position:absolute; color:#fffacd; font-size:16px}
+.cell.power-colorbomb::after{content:'\1F31F'; position:absolute; color:#fffacd; font-size:16px}
 /* Bomb power visuals */
 .cell.power-bomb{ position:relative; }
-.cell.power-bomb::after{ content:'\1F4A3'; position:absolute; font-size:18px; line-height:1; transform:translateY(-2px); }
+.cell.power-bomb::after{ content:'\1F4A5'; position:absolute; font-size:18px; line-height:1; transform:translateY(-2px); }
 .cell.bomb-primed{ animation: bomb-pulse 440ms ease-in-out infinite; box-shadow: 0 0 18px 6px rgba(200,130,255,0.18), 0 0 30px rgba(120,60,220,0.12) inset; }
 @keyframes bomb-pulse{ 0%{ transform:scale(1) } 50%{ transform:scale(1.08) } 100%{ transform:scale(1) } }
 
@@ -996,6 +996,29 @@ body[data-theme="blackhole"] #space-bg .milkyway{ opacity:0.15; }
   box-shadow: 0 20px 80px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05);
   max-width: 500px;
   animation: fadeIn 0.6s ease-out;
+}
+
+.notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 20px 40px;
+  border-radius: 10px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  z-index: 2000;
+  animation: notificationFade 2s ease-out forwards;
+}
+
+@keyframes notificationFade {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  10% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  90% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
 }
 
 .menu-panel h2{

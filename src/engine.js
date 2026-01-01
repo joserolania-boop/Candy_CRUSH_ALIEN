@@ -132,7 +132,41 @@ export function handleSwapAndResolve(board, a, b, opts = {}){
   let activationType = undefined;
   let activationOrigin = undefined;
 
-  // colorbomb combos
+  // same power-up combinations
+  if(ta && tb && ta.p && tb.p && ta.p === tb.p){
+    if(ta.p === 'bomb'){
+      // two bombs -> mega bomb: clear 5x5 area
+      activationType = 'mega-bomb';
+      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+      for(let dr=-2; dr<=2; dr++){
+        for(let dc=-2; dc<=2; dc++){
+          const nr = a.r + dr, nc = a.c + dc;
+          if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length){
+            activationRemovals.add(`${nr},${nc}`);
+          }
+        }
+      }
+    } else if(ta.p === 'wrapped'){
+      // two wrapped -> mega wrapped: clear 5x5 area with wrapped effect
+      activationType = 'mega-wrapped';
+      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+      for(let dr=-2; dr<=2; dr++){
+        for(let dc=-2; dc<=2; dc++){
+          const nr = a.r + dr, nc = a.c + dc;
+          if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length){
+            activationRemovals.add(`${nr},${nc}`);
+          }
+        }
+      }
+    } else if(ta.p === 'colorbomb'){
+      // two colorbombs -> rainbow bomb: clear entire board
+      activationType = 'rainbow-bomb';
+      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+      for(let r=0;r<board.length;r++) for(let c=0;c<board[0].length;c++) activationRemovals.add(`${r},${c}`);
+    }
+    activationRemovals.add(`${a.r},${a.c}`);
+    activationRemovals.add(`${b.r},${b.c}`);
+  } else if(ta && ta.p==='colorbomb' && tb){
   if(ta && ta.p==='colorbomb' && tb){
     // colorbomb + X
     if(tb.p==='colorbomb'){
