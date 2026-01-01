@@ -23,7 +23,11 @@ Use your magic to defend!
 Every combination of candies is a blast of protective energy!
 
 Stand strong—we're counting on you!`,
-      animation: 'wave_attack'
+      actors: [
+        { id: 'ufo1', asset: 'ufo_side.svg', x: -10, y: 40, scale: 1.2, anim: 'fly-across' },
+        { id: 'ufo2', asset: 'ufo_v2.svg', x: 110, y: 20, scale: 1, anim: 'fly-across-reverse' },
+        { id: 'astro', asset: 'astronaut_side.svg', x: 50, y: 70, scale: 1.5, anim: 'walk' }
+      ]
     },
     act2: {
       title: 'Operation Counter-Strike',
@@ -34,7 +38,10 @@ The military is with us.
 Stay focused. Together, magic and science will prevail!
 
 Destroy their forward positions!`,
-      animation: 'base_attack'
+      actors: [
+        { id: 'base', asset: 'structure.svg', x: 50, y: 60, scale: 2.5, anim: 'shake' },
+        { id: 'ship', asset: 'spaceship_side.svg', x: 20, y: 30, scale: 1.2, anim: 'strafe' }
+      ]
     },
     act3: {
       title: 'The Artifact Discovery',
@@ -47,7 +54,10 @@ They were fleeing.
 Running from something in the void...
 
 This changes everything.`,
-      animation: 'artifact_glow'
+      actors: [
+        { id: 'artifact', asset: 'structure_side.svg', x: 50, y: 50, scale: 2, anim: 'glow' },
+        { id: 'astro', asset: 'astronaut_high.svg', x: 30, y: 60, scale: 1.2, anim: 'float' }
+      ]
     },
     act4: {
       title: 'Alliance Forged',
@@ -59,7 +69,10 @@ Humans and aliens—united by candy magic—
 we must stand against it.
 
 Are you ready for the final battle?`,
-      animation: 'alliance'
+      actors: [
+        { id: 'astro', asset: 'astronaut.svg', x: 40, y: 50, scale: 1.5, anim: 'float' },
+        { id: 'alien', asset: 'ufo.svg', x: 60, y: 50, scale: 1.5, anim: 'float-delayed' }
+      ]
     },
     victory: {
       title: 'Victory!',
@@ -71,12 +84,16 @@ Humans and aliens now stand together,
 defending each other against the darkness.
 
 You did it. You saved us all.`,
-      animation: 'victory'
+      actors: [
+        { id: 'ship', asset: 'spaceship.svg', x: 50, y: 40, scale: 2, anim: 'ascend' },
+        { id: 'astro', asset: 'astronaut_v2.svg', x: 50, y: 70, scale: 1.5, anim: 'jump' }
+      ]
     }
   },
 
   // Show a story scene fullscreen
   showScene: function(checkpointId) {
+    console.log('[Story] Showing scene:', checkpointId);
     const scene = this.scenes[checkpointId];
     if (!scene) {
       console.warn('[Story] Scene not found:', checkpointId);
@@ -84,155 +101,260 @@ You did it. You saved us all.`,
     }
 
     const seenScenes = JSON.parse(localStorage.getItem('candy_seen_stories') || '{}');
-    const autoAdvance = !seenScenes[checkpointId];
     seenScenes[checkpointId] = true;
     localStorage.setItem('candy_seen_stories', JSON.stringify(seenScenes));
 
     // Create fullscreen overlay
     const overlay = document.createElement('div');
-    overlay.className = 'story-overlay';
+    overlay.id = 'story-overlay-container';
+    overlay.className = 'story-overlay retro-ps1';
     overlay.style.cssText = `
       position: fixed;
       inset: 0;
-      background: linear-gradient(180deg, rgba(2,5,20,1) 0%, rgba(6,8,25,0.96) 60%, rgba(0,0,0,1) 100%);
+      background: #000;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
+      z-index: 10000;
       overflow: hidden;
-      gap: 30px;
-      padding: 40px;
+      gap: 10px;
+      padding: 20px;
+      color: white;
+      opacity: 1;
+      transition: opacity 0.5s ease;
     `;
     document.body.classList.add('story-active');
+
+    // Add Skip Button
+    const btnSkip = document.createElement('button');
+    btnSkip.textContent = 'SKIP >>';
+    btnSkip.style.cssText = `
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.5);
+      color: rgba(255,255,255,0.5);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 5px 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8em;
+      cursor: pointer;
+      z-index: 1000;
+    `;
+    overlay.appendChild(btnSkip);
+
+    // Add Dithering/Scanline Overlay
+    const scanlines = document.createElement('div');
+    scanlines.className = 'ps1-scanlines';
+    overlay.appendChild(scanlines);
 
     const starfield = Story.createStarfield();
     overlay.appendChild(starfield);
 
     const animContainer = document.createElement('div');
+    animContainer.className = 'actor-stage';
     animContainer.style.cssText = `
       position: relative;
       width: 100%;
-      max-width: 600px;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      max-width: 800px;
+      height: 400px;
       z-index: 10;
+      perspective: 1000px;
     `;
-    Story.playAnimation(scene.animation, animContainer);
+    
+    if (scene.actors) {
+      scene.actors.forEach(actor => {
+        const el = document.createElement('img');
+        el.src = `assets/images/${actor.asset}`;
+        el.className = `actor actor-${actor.anim}`;
+        el.style.cssText = `
+          position: absolute;
+          left: ${actor.x}%;
+          top: ${actor.y}%;
+          transform: translate(-50%, -50%) scale(${actor.scale});
+          width: 120px;
+          height: auto;
+          image-rendering: pixelated;
+          filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+        `;
+        animContainer.appendChild(el);
+      });
+    } else {
+      Story.playAnimation(scene.animation, animContainer);
+    }
+    
     overlay.appendChild(animContainer);
 
     const textBox = document.createElement('div');
+    textBox.className = 'retro-text-box';
     textBox.style.cssText = `
-      background: rgba(8, 16, 40, 0.95);
-      border: 2px solid rgba(109, 213, 255, 0.6);
-      border-radius: 12px;
-      padding: 30px;
+      background: rgba(0, 0, 20, 0.9);
+      border: 4px solid #444;
+      border-top-color: #888;
+      border-left-color: #888;
+      padding: 20px;
       max-width: 700px;
-      text-align: center;
-      backdrop-filter: blur(12px);
-      animation: slide-in-up 0.8s ease-out;
-      box-shadow: 0 0 40px rgba(10, 20, 60, 0.8);
+      width: 90%;
+      text-align: left;
+      animation: slide-in-up 0.5s steps(5);
       z-index: 10;
+      position: relative;
     `;
 
     const title = document.createElement('div');
     title.style.cssText = `
-      font-size: 1.8em;
+      font-family: 'Courier New', monospace;
+      font-size: 1.5em;
       font-weight: bold;
-      color: #fff;
-      margin-bottom: 20px;
-      text-shadow: 0 0 20px rgba(100, 200, 255, 0.6);
+      color: #00ffcc;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     `;
-    title.textContent = scene.title;
+    title.textContent = `> ${scene.title}`;
     textBox.appendChild(title);
 
     const narrative = document.createElement('div');
+    narrative.className = 'typewriter-text';
     narrative.style.cssText = `
+      font-family: 'Courier New', monospace;
       font-size: 1.1em;
-      color: #dfe9ff;
-      line-height: 1.8;
+      color: #fff;
+      line-height: 1.6;
       white-space: pre-wrap;
-      font-family: 'Georgia', serif;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+      min-height: 100px;
     `;
-    narrative.textContent = scene.narrative;
+    
+    // Typewriter effect
+    let i = 0;
+    const text = scene.narrative;
+    narrative.textContent = '';
+    const type = () => {
+      if (i < text.length) {
+        narrative.textContent += text.charAt(i);
+        i++;
+        setTimeout(type, 30);
+      }
+    };
+    setTimeout(type, 600);
+    
     textBox.appendChild(narrative);
 
     const btnContinue = document.createElement('button');
-    btnContinue.textContent = autoAdvance ? 'Continue' : '▶ Continue';
+    btnContinue.textContent = 'PRESS START';
+    btnContinue.className = 'ps1-btn';
     btnContinue.style.cssText = `
-      background: linear-gradient(135deg, #6dd5ff, #00a8e8);
-      color: #020c1a;
-      border: none;
-      padding: 12px 40px;
-      border-radius: 8px;
-      font-size: 1.1em;
-      font-weight: bold;
+      background: #222;
+      color: #fff;
+      border: 3px solid #666;
+      padding: 10px 30px;
+      font-family: 'Courier New', monospace;
+      font-size: 1em;
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      box-shadow: 0 0 20px rgba(100, 200, 255, 0.5);
+      display: block;
+      margin: 0 auto;
+      animation: blink 1s steps(2) infinite;
     `;
-    btnContinue.onmouseover = () => {
-      btnContinue.style.transform = 'scale(1.05)';
-      btnContinue.style.boxShadow = '0 0 30px rgba(100, 200, 255, 0.85)';
-    };
-    btnContinue.onmouseout = () => {
-      btnContinue.style.transform = 'scale(1)';
-      btnContinue.style.boxShadow = '0 0 20px rgba(100, 200, 255, 0.5)';
-    };
 
     const scenePromise = new Promise((resolve) => {
       const removeScene = () => {
         if(overlay.dataset.closed === '1') return;
         overlay.dataset.closed = '1';
         overlay.style.opacity = '0';
-        overlay.style.transition = 'opacity 0.5s ease-out';
+        overlay.style.transition = 'opacity 0.3s steps(3)';
         setTimeout(() => {
           overlay.remove();
           document.body.classList.remove('story-active');
           resolve();
-        }, 500);
+        }, 300);
       };
 
       btnContinue.onclick = () => removeScene();
+      btnSkip.onclick = () => removeScene();
       textBox.appendChild(btnContinue);
       overlay.appendChild(textBox);
       document.body.appendChild(overlay);
-
-      if(autoAdvance) {
-        const timer = setTimeout(removeScene, 3600);
-        overlay.addEventListener('transitionend', () => clearTimeout(timer));
-      }
     });
 
     if (!document.querySelector('style[data-story-animations]')) {
       const style = document.createElement('style');
       style.setAttribute('data-story-animations', '1');
       style.textContent = `
-        @keyframes slide-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+        .ps1-scanlines {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                      linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)),
+                      url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMMAEYB8iBchBKoBwAENQH6jzS2j0AAAAASUVORK5CYII=");
+          background-size: 100% 4px, 3px 100%, 4px 4px;
+          pointer-events: none;
+          z-index: 100;
+          opacity: 0.4;
+        }
+        .retro-ps1 {
+          filter: contrast(1.2) brightness(0.9) saturate(1.1);
+        }
+        @keyframes blink {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        @keyframes descend {
+          from { transform: translate(-50%, -200%) scale(2); }
+          to { transform: translate(-50%, -50%) scale(2); }
         }
         @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
+          0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+          50% { transform: translate(-50%, -50%) translateY(-20px); }
         }
-        @keyframes glow-pulse {
-          0%, 100% { box-shadow: 0 0 20px rgba(100, 200, 255, 0.6); }
-          50% { box-shadow: 0 0 40px rgba(100, 200, 255, 1); }
+        @keyframes float-delayed {
+          0%, 100% { transform: translate(-50%, -50%) translateY(-10px); }
+          50% { transform: translate(-50%, -50%) translateY(10px); }
         }
-        @keyframes rotate-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+        @keyframes fly-across {
+          from { left: -20%; }
+          to { left: 120%; }
         }
+        @keyframes fly-across-reverse {
+          from { left: 120%; }
+          to { left: -20%; }
+        }
+        @keyframes walk {
+          0%, 100% { transform: translate(-50%, -50%) rotate(-5deg); }
+          50% { transform: translate(-50%, -50%) rotate(5deg) translateY(-5px); }
+        }
+        @keyframes shake {
+          0%, 100% { transform: translate(-50%, -50%) rotate(0); }
+          25% { transform: translate(-50%, -50%) rotate(2deg); }
+          75% { transform: translate(-50%, -50%) rotate(-2deg); }
+        }
+        @keyframes strafe {
+          0%, 100% { left: 20%; }
+          50% { left: 30%; }
+        }
+        @keyframes glow {
+          0%, 100% { filter: brightness(1) drop-shadow(0 0 10px #00ffcc); }
+          50% { filter: brightness(1.5) drop-shadow(0 0 30px #00ffcc); }
+        }
+        @keyframes jump {
+          0%, 100% { transform: translate(-50%, -50%) scale(1.5); }
+          50% { transform: translate(-50%, -50%) scale(1.5) translateY(-40px); }
+        }
+        @keyframes slide-in-up {
+          from { transform: translateY(100px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .actor-descend { animation: descend 3s ease-out forwards; }
+        .actor-float { animation: float 3s ease-in-out infinite; }
+        .actor-float-delayed { animation: float-delayed 3.5s ease-in-out infinite; }
+        .actor-fly-across { animation: fly-across 8s linear infinite; }
+        .actor-fly-across-reverse { animation: fly-across-reverse 10s linear infinite; }
+        .actor-walk { animation: walk 0.5s ease-in-out infinite; }
+        .actor-shake { animation: shake 0.2s infinite; }
+        .actor-strafe { animation: strafe 4s ease-in-out infinite; }
+        .actor-glow { animation: glow 2s infinite; }
+        .actor-jump { animation: jump 0.6s ease-out infinite; }
       `;
       document.head.appendChild(style);
     }
@@ -341,7 +463,7 @@ You did it. You saved us all.`,
 
     // Main Mothership - Large detailed vessel
     const shipGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    shipGroup.setAttribute('style', 'animation: descend 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; filter: drop-shadow(0 0 15px rgba(100, 200, 255, 0.9));');
+    shipGroup.setAttribute('style', 'animation: intro-descend 4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; filter: drop-shadow(0 0 15px rgba(100, 200, 255, 0.9));');
 
     // Main hull
     const hull = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse');
@@ -472,7 +594,7 @@ You did it. You saved us all.`,
       const style = document.createElement('style');
       style.setAttribute('data-intro-animations', '1');
       style.textContent = `
-        @keyframes descend {
+        @keyframes intro-descend {
           0% { transform: translateY(-200px) scale(0.5); opacity: 0; }
           20% { opacity: 1; }
           80% { opacity: 1; }

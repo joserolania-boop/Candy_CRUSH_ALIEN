@@ -70,5 +70,42 @@ export default {
         setTimeout(()=>{ try{ node._inUse=false; /* keep in DOM for reuse but hide */ node.style.transition=''; node.style.opacity='0'; /* leave size for reuse */ }catch(e){} }, dur + 60);
       }
     }catch(e){ console.warn('spawnBurst failed', e); }
+  },
+  // spawnLucky: show a "Lucky!" text or special burst at a position
+  spawnLucky(parent, x, y){
+    try {
+      if(window.CCA_reduced_motion) return;
+      const pEl = (typeof parent === 'string') ? (document.querySelector(parent) || document.body) : parent || parentEl || document.body;
+      
+      const el = document.createElement('div');
+      el.className = 'lucky-text';
+      el.textContent = '✨ LUCKY! ✨';
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      pEl.appendChild(el);
+      
+      // Small burst around it
+      this.spawnBurst(pEl, x, y, { count: 8, size: 'small', colors: ['#fff', '#ffd166', '#6ee7c5'] });
+      
+      setTimeout(() => {
+        try { el.remove(); } catch(e) {}
+      }, 1200);
+    } catch(e) {}
+  },
+  // spawnTrail: create a trail of particles between two points
+  spawnTrail(parent, x1, y1, x2, y2, opts={}){
+    try {
+      if(window.CCA_reduced_motion) return;
+      const pEl = (typeof parent === 'string') ? (document.querySelector(parent) || document.body) : parent || parentEl || document.body;
+      const steps = opts.steps || 5;
+      for(let i=0; i<=steps; i++){
+        const t = i / steps;
+        const x = x1 + (x2 - x1) * t;
+        const y = y1 + (y2 - y1) * t;
+        setTimeout(() => {
+          this.spawnBurst(pEl, x, y, { count: 2, size: 'tiny', spread: 10, colors: opts.colors });
+        }, i * 20);
+      }
+    } catch(e) {}
   }
 };

@@ -211,6 +211,13 @@ export class UIManager{
     while(this.previewQueue.length>0){
       const next=this.previewQueue.shift(); if(!next) break;
 
+      // Reset background pulse if no more matches in queue
+      if (this.previewQueue.length === 0) {
+        import('./backgrounds.js').then(m => {
+          m.applyTheme(this.theme || 'deep_nebula', { pulse: 0, glitch: false });
+        });
+      }
+
       // Bomb explosions
       if(next.type==='bomb-explode'){
         this._animating=true;
@@ -218,9 +225,9 @@ export class UIManager{
         try{ this._playSFX('bomb', { volume:0.72, pan: this._mapColToPan(origin.c) }); }catch(e){}
         const mappedRemovals = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
         if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.add('bomb-primed'); }
-        await new Promise(res=> setTimeout(res,30));
+        await new Promise(res=> setTimeout(res,20));
         for(const p of mappedRemovals){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.add('anim-remove'); }
-        await new Promise(res=> setTimeout(res,40));
+        await new Promise(res=> setTimeout(res,30));
         for(const p of mappedRemovals){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
         if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('bomb-primed'); }
         this._animating=false; continue;
@@ -233,9 +240,9 @@ export class UIManager{
         try{ this._playSFX('power', { volume:0.8, pan: this._mapColToPan(origin.c) }); }catch(e){}
         const mappedRemovals = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
         if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.add('hammer-activated'); }
-        await new Promise(res=> setTimeout(res,20));
+        await new Promise(res=> setTimeout(res,15));
         for(const p of mappedRemovals){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.add('anim-remove'); }
-        await new Promise(res=> setTimeout(res,40));
+        await new Promise(res=> setTimeout(res,30));
         for(const p of mappedRemovals){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
         if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('hammer-activated'); }
         this._animating=false; continue;
@@ -249,7 +256,16 @@ export class UIManager{
         this._combo++;
         if(this._combo > 1) {
           this.showComboFeedback(this._combo);
-          if(this._combo > 3) this.shakeBoard(this._combo);
+          if(this._combo > 3) {
+            this.shakeBoard(this._combo);
+            // Trigger background pulse/glitch on combos
+            import('./backgrounds.js').then(m => {
+              m.applyTheme(this.theme || 'deep_nebula', { 
+                pulse: Math.min(1.0, this._combo * 0.1),
+                glitch: this._combo > 5
+              });
+            });
+          }
         }
 
         // play staggered match SFX per group, pitch up slightly per combo
@@ -276,7 +292,7 @@ export class UIManager{
             }
           }
         }
-        await new Promise(res=> setTimeout(res,30));
+        await new Promise(res=> setTimeout(res,20));
         for(const p of cellsToAnimate){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
         this._animating=false; continue;
       }
@@ -288,9 +304,9 @@ export class UIManager{
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('bomb-primed'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
-          await new Promise(res=> setTimeout(res,50));
+          await new Promise(res=> setTimeout(res,30));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
-          await new Promise(res=> setTimeout(res,60));
+          await new Promise(res=> setTimeout(res,40));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('bomb-primed'); }
           if(next.board){ this._applySnapshot(next.board); }
@@ -301,9 +317,39 @@ export class UIManager{
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('power-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
-          await new Promise(res=> setTimeout(res,20));
+          await new Promise(res=> setTimeout(res,15));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
-          await new Promise(res=> setTimeout(res,40));
+          await new Promise(res=> setTimeout(res,30));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('power-activated'); }
+          if(next.board){ this._applySnapshot(next.board); }
+          this._animating=false; continue;
+        }
+        if(next.power==='striped'){
+          this._animating=true; try{ this._playSFX('power', { volume:0.8, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          const origin = next.origin || null;
+          const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          if(origin){ 
+            const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); 
+            if(oel){ 
+              oel.classList.add('power-activated'); 
+              try{ 
+                this._spawnMatchParticlesAtCell(oel); 
+                // Spawn trails for striped beam
+                const rect = oel.getBoundingClientRect();
+                const rootRect = this.root.getBoundingClientRect();
+                const x = rect.left - rootRect.left + rect.width/2;
+                const y = rect.top - rootRect.top + rect.height/2;
+                // Horizontal trail
+                Particles.spawnTrail(this.root, 0, y, this.root.offsetWidth, y, { steps: 20, colors: ['#4fc3f7', '#fff'] });
+                // Vertical trail
+                Particles.spawnTrail(this.root, x, 0, x, this.root.offsetHeight, { steps: 20, colors: ['#4fc3f7', '#fff'] });
+              }catch(e){} 
+            } 
+          }
+          await new Promise(res=> setTimeout(res,15));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,30));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('power-activated'); }
           if(next.board){ this._applySnapshot(next.board); }
@@ -314,9 +360,9 @@ export class UIManager{
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('colorbomb-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
-          await new Promise(res=> setTimeout(res,30));
+          await new Promise(res=> setTimeout(res,20));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
-          await new Promise(res=> setTimeout(res,50));
+          await new Promise(res=> setTimeout(res,30));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('colorbomb-activated'); }
           if(next.board){ this._applySnapshot(next.board); }
@@ -440,11 +486,66 @@ export class UIManager{
           if(next.board){ this._applySnapshot(next.board); }
           this._animating=false; continue;
         }
+        if(next.power==='ultra-cross'){
+          this.showNotification('⚡ ULTRA CROSS! ⚡');
+          this.shakeBoard(15);
+          this._animating=true; try{ this._playSFX('power', { volume:1.1, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          const origin = next.origin || null;
+          const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('power-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,40));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,80));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('power-activated'); }
+          if(next.board){ this._applySnapshot(next.board); }
+          this._animating=false; continue;
+        }
+        if(next.power==='super-nova'){
+          this.showNotification('🌟 SUPER NOVA! 🌟');
+          this.shakeBoard(18);
+          this._animating=true; try{ this._playSFX('bomb', { volume:1.1, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          const origin = next.origin || null;
+          const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('bomb-primed'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,50));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,100));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('bomb-primed'); }
+          if(next.board){ this._applySnapshot(next.board); }
+          this._animating=false; continue;
+        }
       }
 
       // Render phases that update board state
-      if(next.type==='after-remove' || next.type==='after-gravity'){
+      if(next.type==='after-remove' || next.type==='after-gravity' || next.type==='after-refill'){
         if(next.board){ this._applySnapshot(next.board); }
+        
+        // Handle lucky positions from smart refill
+        if(next.type==='after-refill' && next.luckyPositions && next.luckyPositions.length > 0){
+          let playedLuckySFX = false;
+          for(const pos of next.luckyPositions){
+            const el = this.root.querySelector(`.cell[data-r="${pos.r}"][data-c="${pos.c}"]`);
+            if(el){
+              const rect = el.getBoundingClientRect();
+              const rootRect = this.root.getBoundingClientRect();
+              const x = rect.left - rootRect.left + rect.width/2;
+              const y = rect.top - rootRect.top + rect.height/2;
+              
+              // Use the new spawnLucky helper
+              Particles.spawnLucky(this.root, x, y);
+              
+              // Play a high-pitched match sound for the first lucky tile in this refill
+              if(!playedLuckySFX){
+                try {
+                  this._playSFX('match', { volume: 0.4, playbackRate: 1.8, pan: this._mapColToPan(pos.c) });
+                  playedLuckySFX = true;
+                } catch(e) {}
+              }
+            }
+          }
+        }
         continue;
       }
 
@@ -456,7 +557,7 @@ export class UIManager{
       }
 
       if(next.type && next.type==='after-swap'){ try{ const midC = Math.round((a.c + b.c)/2); this._playSFX('swap', { volume:0.28, pan: this._mapColToPan(midC) }); }catch(e){} }
-      await new Promise(res=> setTimeout(res,40));
+      await new Promise(res=> setTimeout(res,20));
     }
     this._processingPreview=false;
   }
@@ -471,7 +572,7 @@ export class UIManager{
     this.render();
   }
 
-  playPreview(speed=120){ if(this.previewTimer) return; this.previewTimer = setInterval(()=>{ if(this.previewQueue.length===0){ this.stopPreview(); return; } this.stepPreview(); }, speed); }
+  playPreview(speed=80){ if(this.previewTimer) return; this.previewTimer = setInterval(()=>{ if(this.previewQueue.length===0){ this.stopPreview(); return; } this.stepPreview(); }, speed); }
 
   stopPreview(){ if(this.previewTimer){ clearInterval(this.previewTimer); this.previewTimer=null; } this.previewQueue=[]; }
 
@@ -484,6 +585,13 @@ export class UIManager{
       this._comboEl.style.top = '40%';
       this._comboEl.style.transform = 'translate(-50%, -50%)';
       document.body.appendChild(this._comboEl);
+    }
+    
+    // Trigger background warp on high combos
+    if (count >= 5) {
+      import('./backgrounds.js').then(m => {
+        m.applyTheme(this.theme || 'deep_nebula', { warp: true });
+      });
     }
     
     let msg = `COMBO x${count}!`;

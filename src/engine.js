@@ -87,27 +87,30 @@ function activateWrapped(board, r, c){
   return removed;
 }
 
-// Activate bomb: remove the bomb cell plus up to 6 surrounding tiles (prioritize orthogonals then diagonals)
+// Activate bomb: remove the bomb cell plus all 8 surrounding tiles (3x3 area)
 function activateBomb(board, r, c){
   const rows = board.length; const cols = board[0].length;
   const removed = new Set();
-  // include the bomb's own cell
-  if(r>=0 && r<rows && c>=0 && c<cols && board[r][c]) removed.add(`${r},${c}`);
-  const neighbors = [[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
-  let count = 0;
-  for(const [dr,dc] of neighbors){
-    if(count>=6) break;
-    const rr = r+dr, cc = c+dc;
-    if(rr>=0 && rr<rows && cc>=0 && cc<cols && board[rr][cc]){ removed.add(`${rr},${cc}`); count++; }
+  for(let dr=-1; dr<=1; dr++){
+    for(let dc=-1; dc<=1; dc++){
+      const rr = r+dr, cc = c+dc;
+      if(rr>=0 && rr<rows && cc>=0 && cc<cols && board[rr][cc]){ 
+        removed.add(`${rr},${cc}`); 
+      }
+    }
   }
   return removed;
 }
 
 function activateHammer(board, r, c){
+  const rows = board.length; const cols = board[0].length;
   const removed = new Set();
-  // Hammer destroys only the target cell
-  if(r>=0 && r<board.length && c>=0 && c<board[0].length && board[r][c]){
-    removed.add(`${r},${c}`);
+  // Hammer destroys a small cross shape
+  const coords = [[r,c], [r-1,c], [r+1,c], [r,c-1], [r,c+1]];
+  for(const [rr,cc] of coords){
+    if(rr>=0 && rr<rows && cc>=0 && cc<cols && board[rr][cc]){
+      removed.add(`${rr},${cc}`);
+    }
   }
   return removed;
 }
@@ -152,36 +155,98 @@ export function applyGravity(board){
 
 export function refillBoard(board, paletteSize, luck = 0){
   const rows = board.length; const cols = board[0].length;
-  for(let r=0;r<rows;r++){
-    for(let c=0;c<cols;c++){
+  const luckyPositions = [];
+  
+  // We'll process from bottom to top to ensure we can see what's below
+  for(let r=rows-1; r>=0; r--){
+    for(let c=0; c<cols; c++){
       if(!board[r][c]) {
         let tileValue = null;
+        let isLucky = false;
         
-        // Lucky biasing: try to create a match if luck triggers
+        // Smart Lucky Biasing
         if (luck > 0 && Math.random() < luck) {
-          // Check neighbors to see if we can create a match
-          const neighbors = [];
-          // Check below
-          if (r + 1 < rows && board[r+1][c]) neighbors.push(board[r+1][c].v);
-          // Check left
-          if (c > 0 && board[r][c-1]) neighbors.push(board[r][c-1].v);
-          // Check right
-          if (c + 1 < cols && board[r][c+1]) neighbors.push(board[r][c+1].v);
+          const candidates = [];
+          const possibleValues = [];
+          // Get all possible tile values (1 to paletteSize)
+          for(let v=1; v<=paletteSize; v++) possibleValues.push(v);
           
-          if (neighbors.length > 0) {
-            // Pick a random neighbor's value to increase match chance
-            tileValue = neighbors[Math.floor(Math.random() * neighbors.length)];
+          // For each possible value, check if it creates a match
+          for(const v of possibleValues) {
+            // Temporary placement
+            board[r][c] = { v };
+            if (checkMatchAt(board, r, c)) {
+              candidates.push({ v, weight: 10 }); // High weight for immediate match
+            } else {
+              // Check for "near matches" (match of 2)
+              if (checkNearMatchAt(board, r, c)) {
+                candidates.push({ v, weight: 3 }); // Medium weight for potential match
+              }
+            }
+            board[r][c] = null; // Reset
+          }
+          
+          if (candidates.length > 0) {
+            // Sort by weight and pick one of the best
+            candidates.sort((a, b) => b.weight - a.weight);
+            const bestWeight = candidates[0].weight;
+            const bestCandidates = candidates.filter(can => can.weight === bestWeight);
+            tileValue = bestCandidates[Math.floor(Math.random() * bestCandidates.length)].v;
+            if (bestWeight === 10) isLucky = true; // Only mark as lucky if it creates an immediate match
           }
         }
         
         if (tileValue !== null) {
           board[r][c] = { v: tileValue };
+          if (isLucky) luckyPositions.push({ r, c });
         } else {
           board[r][c] = getRandomTile(paletteSize);
         }
       }
     }
   }
+  return luckyPositions;
+}
+
+// Helper to check if a tile at (r,c) creates a match of 3+
+function checkMatchAt(board, r, c) {
+  const val = board[r][c].v;
+  const rows = board.length;
+  const cols = board[0].length;
+  
+  // Horizontal
+  let hCount = 1;
+  // Right
+  for(let i=c+1; i<cols && board[r][i] && board[r][i].v === val; i++) hCount++;
+  // Left
+  for(let i=c-1; i>=0 && board[r][i] && board[r][i].v === val; i++) hCount++;
+  if(hCount >= 3) return true;
+  
+  // Vertical
+  let vCount = 1;
+  // Down
+  for(let i=r+1; i<rows && board[i][c] && board[i][c].v === val; i++) vCount++;
+  // Up
+  for(let i=r-1; i>=0 && board[i][c] && board[i][c].v === val; i++) vCount++;
+  if(vCount >= 3) return true;
+  
+  return false;
+}
+
+// Helper to check if a tile at (r,c) creates a match of 2 (near match)
+function checkNearMatchAt(board, r, c) {
+  const val = board[r][c].v;
+  const rows = board.length;
+  const cols = board[0].length;
+  
+  const directions = [[0,1],[0,-1],[1,0],[-1,0]];
+  for(const [dr, dc] of directions) {
+    const nr = r + dr, nc = c + dc;
+    if(nr>=0 && nr<rows && nc>=0 && nc<cols && board[nr][nc] && board[nr][nc].v === val) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Resolve matches once and return phased snapshots for preview (swap already applied outside)
@@ -304,6 +369,50 @@ export function resolveAllWithPhases_returningDetail(board, paletteSize, luck = 
   return {phases: all, removedCount: totalRemoved, powerActivationsCount: totalPowerActivations};
 }
 
+// Helper to process removals with cascading power-up activations
+function processRemovalsWithCascades(board, initialRemovals, phases) {
+  const finalRemovals = new Set();
+  const processQueue = Array.from(initialRemovals);
+  const activatedPowers = new Set();
+  let removedCount = 0;
+
+  while(processQueue.length > 0){
+    const key = processQueue.shift();
+    if(finalRemovals.has(key)) continue;
+    
+    const [rr,cc] = key.split(',').map(Number);
+    const tile = board[rr][cc];
+    if(!tile) continue;
+
+    finalRemovals.add(key);
+
+    if(tile.p && !activatedPowers.has(key)){
+      activatedPowers.add(key);
+      let extra = new Set();
+      if(tile.p === 'striped') extra = activateStriped(board, rr, cc, tile.orientation || 'h');
+      else if(tile.p === 'wrapped') extra = activateWrapped(board, rr, cc);
+      else if(tile.p === 'bomb') extra = activateBomb(board, rr, cc);
+      else if(tile.p === 'hammer') extra = activateHammer(board, rr, cc);
+      
+      for(const ek of extra) if(!finalRemovals.has(ek)) processQueue.push(ek);
+      
+      phases.push({
+        type: 'power-activated',
+        power: tile.p,
+        origin: {r:rr, c:cc},
+        removals: Array.from(extra),
+        board: deepClone(board)
+      });
+    }
+  }
+
+  for(const key of finalRemovals){ 
+    const [rr,cc]=key.split(',').map(Number); 
+    if(board[rr][cc]){ board[rr][cc]=null; removedCount++; } 
+  }
+  return removedCount;
+}
+
 // Update resolveOnceWithPhases to return removed count and phases (we keep both named variants)
 function resolveOnceWithPhases_returningDetail(board, paletteSize, luck = 0){
   // reuse logic from resolveOnceWithPhases but return object
@@ -365,8 +474,8 @@ function resolveOnceWithPhases_returningDetail(board, paletteSize, luck = 0){
     try{ console.debug('resolveOnceWithPhases_returningDetail: rawGroups=', rawGroups.map(g=>({len:g.len, orientation:g.orientation}))); }catch(e){}
     phases.push({type:'match-found', board: deepClone(board), groups: rawGroups, powerCreations});
     
-    // apply removals
-    for(const key of toRemove){ const [rr,cc]=key.split(',').map(Number); if(board[rr][cc]){ board[rr][cc]=null; removedCount++; } }
+    // apply removals with cascades
+    removedCount = processRemovalsWithCascades(board, toRemove, phases);
     
     // apply power creations
     for(const pc of powerCreations){ 
@@ -381,8 +490,8 @@ function resolveOnceWithPhases_returningDetail(board, paletteSize, luck = 0){
   // gravity and refill
   applyGravity(board);
   phases.push({type:'after-gravity', board: deepClone(board)});
-  refillBoard(board, paletteSize, luck);
-  phases.push({type:'after-refill', board: deepClone(board)});
+  const luckyPositions = refillBoard(board, paletteSize, luck);
+  phases.push({type:'after-refill', board: deepClone(board), luckyPositions});
 
   return {phases, removed: removedCount, powerActivations};
 }
@@ -452,6 +561,33 @@ export function handleSwapAndResolve(board, a, b, opts = {}){
           const nr = a.r + dr, nc = a.c + dc;
           if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length) activationRemovals.add(`${nr},${nc}`);
         }
+      }
+    }
+    activationRemovals.add(`${a.r},${a.c}`);
+    activationRemovals.add(`${b.r},${b.c}`);
+  } else if ((ta && ta.p === 'bomb' && tb && tb.p === 'striped') || (ta && ta.p === 'striped' && tb && tb.p === 'bomb')) {
+    // bomb + striped -> ultra-cross: clear 5 rows and 5 columns
+    activationType = 'ultra-cross';
+    activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+    const origin = activationOrigin;
+    for(let dr=-2; dr<=2; dr++){
+      const r = origin.r + dr;
+      if(r>=0 && r<board.length) for(let c=0; c<board[0].length; c++) activationRemovals.add(`${r},${c}`);
+    }
+    for(let dc=-2; dc<=2; dc++){
+      const c = origin.c + dc;
+      if(c>=0 && c<board[0].length) for(let r=0; r<board.length; r++) activationRemovals.add(`${r},${c}`);
+    }
+    activationRemovals.add(`${a.r},${a.c}`);
+    activationRemovals.add(`${b.r},${b.c}`);
+  } else if ((ta && ta.p === 'bomb' && tb && tb.p === 'wrapped') || (ta && ta.p === 'wrapped' && tb && tb.p === 'bomb')) {
+    // bomb + wrapped -> super-nova: clear 7x7 area
+    activationType = 'super-nova';
+    activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+    for(let dr=-3; dr<=3; dr++){
+      for(let dc=-3; dc<=3; dc++){
+        const nr = activationOrigin.r + dr, nc = activationOrigin.c + dc;
+        if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length) activationRemovals.add(`${nr},${nc}`);
       }
     }
     activationRemovals.add(`${a.r},${a.c}`);
@@ -574,6 +710,7 @@ export function handleSwapAndResolve(board, a, b, opts = {}){
       const rem = activateStriped(board, a.r, a.c, ta.orientation||'h');
       activationRemovals = new Set([...activationRemovals, ...rem]);
       activationRemovals.add(`${a.r},${a.c}`);
+      activationOrigin = {r:a.r, c:a.c}; activationType = 'striped';
     }
     if(ta && ta.p==='bomb'){
       const rem = activateBomb(board, a.r, a.c);
@@ -593,6 +730,7 @@ export function handleSwapAndResolve(board, a, b, opts = {}){
       const rem = activateStriped(board, b.r, b.c, tb.orientation||'h');
       activationRemovals = new Set([...activationRemovals, ...rem]);
       activationRemovals.add(`${b.r},${b.c}`);
+      activationOrigin = {r:b.r, c:b.c}; activationType = 'striped';
     }
     if(tb && tb.p==='bomb'){
       const rem = activateBomb(board, b.r, b.c);
@@ -610,23 +748,23 @@ export function handleSwapAndResolve(board, a, b, opts = {}){
       const rem = activateWrapped(board, a.r, a.c);
       activationRemovals = new Set([...activationRemovals, ...rem]);
       activationRemovals.add(`${a.r},${a.c}`);
+      activationOrigin = {r:a.r, c:a.c}; activationType = 'wrapped';
     }
     if(tb && tb.p==='wrapped'){
       const rem = activateWrapped(board, b.r, b.c);
       activationRemovals = new Set([...activationRemovals, ...rem]);
       activationRemovals.add(`${b.r},${b.c}`);
+      activationOrigin = {r:b.r, c:b.c}; activationType = 'wrapped';
     }
   }
 
   let powerActivatedCount = 0;
   if(activationRemovals.size>0){
-    // apply activations
-    const removedNow = applyRemovalSet(board, activationRemovals); totalRemoved += removedNow;
+    // apply activations with cascades
+    const removedNow = processRemovalsWithCascades(board, activationRemovals, phases);
+    totalRemoved += removedNow;
     powerActivatedCount += 1;
-    const phase = {type:'power-activated', board: deepClone(board), removals:Array.from(activationRemovals)};
-    if(typeof activationType !== 'undefined') phase.power = activationType;
-    if(typeof activationOrigin !== 'undefined') phase.origin = activationOrigin;
-    phases.push(phase);
+    // Note: processRemovalsWithCascades already adds 'power-activated' phases
   }
 
   // after activations, resolve normal matches and cascading, collecting phases

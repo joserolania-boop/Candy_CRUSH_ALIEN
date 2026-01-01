@@ -1,123 +1,97 @@
+import { BackgroundEngine } from './background_engine.js';
+
+let bgEngine = null;
+
 const THEMES = [
   {
     key: 'deep_nebula',
     label: 'Deep Nebula',
+    environment: 'nebula',
     baseColor: '#050510',
-    bodyGradient: 'radial-gradient(120% 120% at 20% 20%, rgba(138, 87, 255, 0.32) 0%, transparent 45%), linear-gradient(180deg, #030114 0%, #000006 100%)',
-    gradient: 'radial-gradient(circle at 20% 40%, rgba(109, 78, 255, 0.45), transparent 55%), radial-gradient(circle at 80% 15%, rgba(92, 106, 255, 0.25), transparent 60%), linear-gradient(180deg, #010112 0%, #000003 100%)',
     accentColor: '#9C27B0',
     glowColor: '#7B1FA2',
-    panelColor: 'rgba(6, 10, 20, 0.74)',
-    starColors: ['#ffffff', '#c8d6ff', '#a89bff', '#7be6ff'],
-    nebulaColors: ['#6A1B9A', '#4527A0', '#283593']
+    panelColor: 'rgba(6, 10, 20, 0.4)',
+    gradient: 'linear-gradient(180deg, #010112 0%, #000003 100%)'
+  },
+  {
+    key: 'black_hole_void',
+    label: 'The Singularity',
+    environment: 'blackhole',
+    baseColor: '#020005',
+    accentColor: '#FF5722',
+    glowColor: '#E64A19',
+    panelColor: 'rgba(5, 2, 10, 0.4)',
+    gradient: 'linear-gradient(180deg, #020005 0%, #000000 100%)'
+  },
+  {
+    key: 'warp_speed',
+    label: 'Hyper-Jump',
+    environment: 'warp',
+    baseColor: '#000510',
+    accentColor: '#00E676',
+    glowColor: '#00C853',
+    panelColor: 'rgba(0, 10, 20, 0.4)',
+    gradient: 'linear-gradient(180deg, #000510 0%, #000000 100%)'
+  },
+  {
+    key: 'quantum_realm',
+    label: 'Quantum Lattice',
+    environment: 'quantum',
+    baseColor: '#08000F',
+    accentColor: '#00BCD4',
+    glowColor: '#0097A7',
+    panelColor: 'rgba(10, 0, 20, 0.4)',
+    gradient: 'linear-gradient(180deg, #08000F 0%, #010006 100%)'
   },
   {
     key: 'alien_green',
     label: 'Alien Green',
+    environment: 'nebula',
     baseColor: '#010d08',
-    bodyGradient: 'radial-gradient(120% 120% at 25% 20%, rgba(0, 200, 83, 0.25), transparent 55%), linear-gradient(180deg, #010d08 0%, #010203 100%)',
-    gradient: 'radial-gradient(circle at 30% 30%, rgba(0, 230, 118, 0.35), transparent 50%), radial-gradient(circle at 70% 15%, rgba(0, 255, 183, 0.25), transparent 45%), linear-gradient(180deg, #010d08 0%, #000204 100%)',
     accentColor: '#00E676',
     glowColor: '#00C853',
-    panelColor: 'rgba(4, 15, 10, 0.74)',
-    starColors: ['#ffffff', '#a6ffcb', '#b2ffc7', '#00ffcc'],
-    nebulaColors: ['#00C853', '#388E3C', '#1B5E20']
-  },
-  {
-    key: 'cosmic_blue',
-    label: 'Cosmic Blue',
-    baseColor: '#010814',
-    bodyGradient: 'radial-gradient(150% 150% at 30% 30%, rgba(3, 169, 244, 0.2), transparent 50%), linear-gradient(180deg, #010814 0%, #000313 100%)',
-    gradient: 'radial-gradient(circle at 25% 25%, rgba(66, 165, 245, 0.25), transparent 55%), radial-gradient(circle at 70% 10%, rgba(33, 150, 243, 0.25), transparent 55%), linear-gradient(180deg, #010814 0%, #000414 100%)',
-    accentColor: '#2196F3',
-    glowColor: '#1976D2',
-    panelColor: 'rgba(4, 10, 26, 0.76)',
-    starColors: ['#ffffff', '#bbdefb', '#8ad4ff', '#64b5f6'],
-    nebulaColors: ['#0D47A1', '#1565C0', '#1976D2']
-  },
-  {
-    key: 'void_dark',
-    label: 'Void Dark',
-    baseColor: '#020202',
-    bodyGradient: 'linear-gradient(180deg, #020202 0%, #000000 100%)',
-    gradient: 'radial-gradient(circle at 40% 40%, rgba(66, 66, 66, 0.35), transparent 60%), radial-gradient(circle at 70% 20%, rgba(255, 255, 255, 0.12), transparent 50%), linear-gradient(180deg, #010103 0%, #000000 100%)',
-    accentColor: '#607D8B',
-    glowColor: '#455A64',
-    panelColor: 'rgba(5, 5, 5, 0.75)',
-    starColors: ['#ffffff', '#b0bec5', '#cfd8dc', '#90a4ae'],
-    nebulaColors: ['#212121', '#424242', '#303030']
+    panelColor: 'rgba(4, 15, 10, 0.4)',
+    gradient: 'linear-gradient(180deg, #010d08 0%, #000204 100%)'
   },
   {
     key: 'inferno',
     label: 'Inferno',
+    environment: 'blackhole',
     baseColor: '#0D0502',
-    bodyGradient: 'radial-gradient(140% 140% at 70% 0%, rgba(255, 87, 34, 0.35), transparent 50%), linear-gradient(180deg, #0d0502 0%, #020000 80%)',
-    gradient: 'radial-gradient(circle at 70% 15%, rgba(255, 87, 34, 0.4), transparent 40%), radial-gradient(circle at 25% 45%, rgba(255, 152, 0, 0.25), transparent 55%), linear-gradient(180deg, #0d0502 0%, #030100 100%)',
     accentColor: '#FF5722',
     glowColor: '#E64A19',
-    panelColor: 'rgba(5, 4, 4, 0.8)',
-    starColors: ['#ffffff', '#ffcc80', '#ffc107', '#ff8a65'],
-    nebulaColors: ['#BF360C', '#E65100', '#F57C00']
+    panelColor: 'rgba(5, 4, 4, 0.4)',
+    gradient: 'linear-gradient(180deg, #0d0502 0%, #030100 100%)'
   },
   {
-    key: 'station_orbit',
-    label: 'Station Orbit',
-    baseColor: '#050814',
-    bodyGradient: 'radial-gradient(140% 140% at 40% 10%, rgba(63, 81, 181, 0.25), transparent 55%), linear-gradient(180deg, #050814 0%, #00030a 100%)',
-    gradient: 'radial-gradient(circle at 40% 20%, rgba(63, 81, 181, 0.35), transparent 50%), radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.15), transparent 60%), linear-gradient(180deg, #050814 0%, #000309 100%)',
-    accentColor: '#3F51B5',
-    glowColor: '#303F9F',
-    panelColor: 'rgba(4, 8, 16, 0.76)',
-    starColors: ['#ffffff', '#e8eaf6', '#c5cae9', '#7986cb'],
-    nebulaColors: ['#1A237E', '#283593', '#3949AB']
+    key: 'supernova',
+    label: 'Supernova',
+    environment: 'nebula',
+    baseColor: '#0A0015',
+    accentColor: '#FFD700',
+    glowColor: '#FFA500',
+    panelColor: 'rgba(15, 0, 25, 0.4)',
+    gradient: 'linear-gradient(180deg, #0A0015 0%, #000000 100%)'
   },
   {
-    key: 'aurora',
-    label: 'Aurora',
-    baseColor: '#021210',
-    bodyGradient: 'radial-gradient(140% 140% at 50% 12%, rgba(0, 255, 255, 0.3), transparent 50%), linear-gradient(180deg, #021210 0%, #000409 100%)',
-    gradient: 'radial-gradient(circle at 45% 25%, rgba(0, 255, 235, 0.35), transparent 60%), radial-gradient(circle at 70% 70%, rgba(64, 255, 196, 0.2), transparent 65%), linear-gradient(180deg, #021210 0%, #000409 100%)',
-    accentColor: '#1DE9B6',
-    glowColor: '#00BFA5',
-    panelColor: 'rgba(5, 14, 16, 0.75)',
-    starColors: ['#ffffff', '#b2dfdb', '#80cbc4', '#4dd0e1'],
-    nebulaColors: ['#00897B', '#00ACC1', '#4DB6AC']
+    key: 'void_echo',
+    label: 'Void Echo',
+    environment: 'quantum',
+    baseColor: '#000000',
+    accentColor: '#FFFFFF',
+    glowColor: '#888888',
+    panelColor: 'rgba(5, 5, 5, 0.5)',
+    gradient: 'linear-gradient(180deg, #000000 0%, #050505 100%)'
   },
   {
-    key: 'galaxy_core',
-    label: 'Galaxy Core',
-    baseColor: '#08000F',
-    bodyGradient: 'radial-gradient(140% 120% at 60% 20%, rgba(171, 71, 188, 0.3), transparent 60%), linear-gradient(180deg, #08000f 0%, #010006 100%)',
-    gradient: 'radial-gradient(circle at 25% 25%, rgba(139, 27, 163, 0.4), transparent 60%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.12), transparent 60%), linear-gradient(180deg, #08000F 0%, #010006 100%)',
-    accentColor: '#9C27B0',
-    glowColor: '#8E24AA',
-    panelColor: 'rgba(4, 4, 11, 0.78)',
-    starColors: ['#ffffff', '#f8bbd9', '#f3e5f5', '#c5cae9'],
-    nebulaColors: ['#7B1FA2', '#8E24AA', '#9C27B0']
-  },
-  {
-    key: 'binary_sunset',
-    label: 'Binary Sunset',
-    baseColor: '#0D0608',
-    bodyGradient: 'radial-gradient(140% 140% at 80% 0%, rgba(255, 110, 64, 0.25), transparent 55%), linear-gradient(180deg, #0E0608 0%, #020004 100%)',
-    gradient: 'radial-gradient(circle at 70% 20%, rgba(255, 110, 64, 0.4), transparent 40%), radial-gradient(circle at 20% 60%, rgba(255, 87, 34, 0.25), transparent 55%), linear-gradient(180deg, #0D0608 0%, #010103 100%)',
-    accentColor: '#FF7043',
-    glowColor: '#F4511E',
-    panelColor: 'rgba(5, 3, 5, 0.8)',
-    starColors: ['#ffffff', '#ffccbc', '#ffab91', '#ff8a65'],
-    nebulaColors: ['#FF6E40', '#FF8A65', '#FFAB91']
-  },
-  {
-    key: 'quantum_realm',
-    label: 'Quantum Realm',
-    baseColor: '#080410',
-    bodyGradient: 'radial-gradient(150% 150% at 35% 10%, rgba(124, 77, 255, 0.28), transparent 50%), linear-gradient(180deg, #080410 0%, #02000a 100%)',
-    gradient: 'radial-gradient(circle at 35% 25%, rgba(124, 77, 255, 0.4), transparent 55%), radial-gradient(circle at 80% 45%, rgba(64, 196, 255, 0.25), transparent 60%), linear-gradient(180deg, #02000a 0%, #000002 100%)',
-    accentColor: '#7C4DFF',
-    glowColor: '#536DFE',
-    panelColor: 'rgba(4, 4, 12, 0.75)',
-    starColors: ['#ffffff', '#c5cae9', '#e8eaf6', '#b388ff'],
-    nebulaColors: ['#7C4DFF', '#536DFE', '#448AFF']
+    key: 'event_horizon',
+    label: 'Event Horizon',
+    environment: 'blackhole',
+    baseColor: '#000000',
+    accentColor: '#00FFFF',
+    glowColor: '#0088FF',
+    panelColor: 'rgba(0, 5, 10, 0.4)',
+    gradient: 'linear-gradient(180deg, #000000 0%, #00050A 100%)'
   }
 ];
 
@@ -195,7 +169,7 @@ function updateSun(theme) {
 }
 
 export function getTheme(key) {
-  return THEME_MAP[key] || THEMES[0];
+  return THEMES.find(t => t.key === key) || THEMES[0];
 }
 
 export function getThemeForLevel(level) {
@@ -204,7 +178,29 @@ export function getThemeForLevel(level) {
 }
 
 export function applyTheme(themeKey, opts = { crossfade: true }) {
+  console.log('[backgrounds.js] applyTheme called with:', themeKey, opts);
   const theme = typeof themeKey === 'string' ? getTheme(themeKey) : themeKey;
+  
+  if (!bgEngine) {
+    bgEngine = new BackgroundEngine('bg-canvas');
+    const bgEl = document.getElementById('space-bg');
+    if (bgEl) bgEl.classList.add('webgl-active');
+    document.body.classList.add('webgl-active');
+    document.documentElement.classList.add('webgl-active');
+  }
+  if (bgEngine) {
+    bgEngine.setTheme(theme);
+    if (opts.warp) {
+      bgEngine.triggerWarp();
+    }
+    if (opts.glitch) {
+      bgEngine.triggerGlitch();
+    }
+    if (typeof opts.pulse !== 'undefined') {
+      bgEngine.setPulse(opts.pulse);
+    }
+  }
+
   const bg = document.getElementById('space-bg');
   if(bg) {
     if(opts.crossfade) {
