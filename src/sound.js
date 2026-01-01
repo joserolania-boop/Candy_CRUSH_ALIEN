@@ -47,6 +47,10 @@ export async function initAudio(){
       if (audioCtx && audioCtx.state === 'suspended') {
         await audioCtx.resume().catch(() => {});
         console.log('[initAudio] AudioContext resumed via gesture');
+        // If background music was supposed to be playing, try to start it now
+        if (_musicEnabled && !backgroundPlaying) {
+          playBackground().catch(() => {});
+        }
       }
       document.removeEventListener('click', resume);
       document.removeEventListener('touchstart', resume);
@@ -303,11 +307,13 @@ export async function playBackground(force = false){
     }
     
     const trackUrl = ambientPlaylist[currentTrackIndex];
+    // Use a cache-busting query to ensure the browser doesn't block the stream
+    const trackUrlWithCacheBuster = `${trackUrl}?cb=${Date.now()}`;
     const absoluteTrackUrl = new URL(trackUrl, window.location.href).href;
     
     if (ambientAudio.src !== absoluteTrackUrl) {
       console.log('[playBackground] Changing src to:', trackUrl);
-      ambientAudio.src = trackUrl;
+      ambientAudio.src = trackUrlWithCacheBuster;
       ambientAudio.load();
     }
 
@@ -321,6 +327,7 @@ export async function playBackground(force = false){
       })
       .catch(e => {
         isChangingTrack = false;
+        backgroundPlaying = false; // Reset flag on failure
         if (e.name === 'AbortError') {
           console.log('[playBackground] Playback aborted (normal)');
           return;

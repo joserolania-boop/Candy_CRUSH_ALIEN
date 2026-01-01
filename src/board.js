@@ -8,8 +8,9 @@ function makeTile(value, power=null){
 
 function randInt(n){ return Math.floor(Math.random()*n); }
 
-export function getRandomTile(){
-  return makeTile(PALETTE[randInt(PALETTE.length)]);
+export function getRandomTile(paletteSize = PALETTE.length){
+  const size = Math.max(3, Math.min(paletteSize, PALETTE.length));
+  return makeTile(PALETTE[randInt(size)]);
 }
 
 export function cloneBoard(board){
@@ -17,14 +18,14 @@ export function cloneBoard(board){
 }
 
 // Create board ensuring no immediate matches of 3 at start
-export function createBoardState(cols=9, rows=9){
+export function createBoardState(cols=9, rows=9, paletteSize = PALETTE.length){
   const board = Array.from({length:rows}, ()=> Array(cols).fill(null));
   for(let r=0;r<rows;r++){
     for(let c=0;c<cols;c++){
       let tile;
       let attempts=0;
       do{
-        tile = getRandomTile();
+        tile = getRandomTile(paletteSize);
         attempts++;
         // safety break
         if(attempts>20) break;

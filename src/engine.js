@@ -150,17 +150,42 @@ export function applyGravity(board){
   }
 }
 
-export function refillBoard(board){
+export function refillBoard(board, paletteSize, luck = 0){
   const rows = board.length; const cols = board[0].length;
   for(let r=0;r<rows;r++){
     for(let c=0;c<cols;c++){
-      if(!board[r][c]) board[r][c] = getRandomTile();
+      if(!board[r][c]) {
+        let tileValue = null;
+        
+        // Lucky biasing: try to create a match if luck triggers
+        if (luck > 0 && Math.random() < luck) {
+          // Check neighbors to see if we can create a match
+          const neighbors = [];
+          // Check below
+          if (r + 1 < rows && board[r+1][c]) neighbors.push(board[r+1][c].v);
+          // Check left
+          if (c > 0 && board[r][c-1]) neighbors.push(board[r][c-1].v);
+          // Check right
+          if (c + 1 < cols && board[r][c+1]) neighbors.push(board[r][c+1].v);
+          
+          if (neighbors.length > 0) {
+            // Pick a random neighbor's value to increase match chance
+            tileValue = neighbors[Math.floor(Math.random() * neighbors.length)];
+          }
+        }
+        
+        if (tileValue !== null) {
+          board[r][c] = { v: tileValue };
+        } else {
+          board[r][c] = getRandomTile(paletteSize);
+        }
+      }
     }
   }
 }
 
 // Resolve matches once and return phased snapshots for preview (swap already applied outside)
-export function resolveOnceWithPhases(board){
+export function resolveOnceWithPhases(board, paletteSize, luck = 0){
   const phases = [];
   const rawGroups = findMatches(board);
   
@@ -240,23 +265,23 @@ export function resolveOnceWithPhases(board){
     for(const pc of powerCreations){
       const existing = board[pc.r][pc.c];
       if(existing){ existing.p = pc.type; }
-      else { board[pc.r][pc.c] = {v: getRandomTile().v, p: pc.type}; }
+      else { board[pc.r][pc.c] = {v: getRandomTile(paletteSize).v, p: pc.type}; }
     }
     phases.push({type:'after-remove', board: deepClone(board), powerCreations});
   }
 
   applyGravity(board);
   phases.push({type:'after-gravity', board: deepClone(board)});
-  refillBoard(board);
+  refillBoard(board, paletteSize, luck);
   phases.push({type:'after-refill', board: deepClone(board)});
   return phases;
 }
 
 // Resolve all matches completely and return concatenated phases
-export function resolveAllWithPhases(board){
+export function resolveAllWithPhases(board, paletteSize){
   const all = [];
   while(true){
-    const phases = resolveOnceWithPhases(board);
+    const phases = resolveOnceWithPhases(board, paletteSize);
     // if first phase is nomatch -> done
     if(phases.length===1 && phases[0].type==='nomatch') break;
     all.push(...phases);
@@ -265,11 +290,11 @@ export function resolveAllWithPhases(board){
 }
 
 // Helper wrapper: modified resolveAllWithPhases to return phases AND removedCount
-export function resolveAllWithPhases_returningDetail(board){
+export function resolveAllWithPhases_returningDetail(board, paletteSize, luck = 0){
   const all = []; let totalRemoved = 0;
   let totalPowerActivations = 0;
   while(true){
-    const result = resolveOnceWithPhases_returningDetail(board);
+    const result = resolveOnceWithPhases_returningDetail(board, paletteSize, luck);
     if(result.isNomatch) break;
     all.push(...result.phases);
     totalRemoved += result.removed;
@@ -280,7 +305,7 @@ export function resolveAllWithPhases_returningDetail(board){
 }
 
 // Update resolveOnceWithPhases to return removed count and phases (we keep both named variants)
-function resolveOnceWithPhases_returningDetail(board){
+function resolveOnceWithPhases_returningDetail(board, paletteSize, luck = 0){
   // reuse logic from resolveOnceWithPhases but return object
   const phases = [];
   const rawGroups = findMatches(board);
@@ -347,7 +372,7 @@ function resolveOnceWithPhases_returningDetail(board){
     for(const pc of powerCreations){ 
       const existing = board[pc.r][pc.c]; 
       if(existing){ existing.p = pc.type; } 
-      else { board[pc.r][pc.c] = {v: getRandomTile().v, p: pc.type}; } 
+      else { board[pc.r][pc.c] = {v: getRandomTile(paletteSize).v, p: pc.type}; } 
     }
     powerActivations = powerCreations.length;
     phases.push({type:'after-remove', board: deepClone(board), powerCreations});
@@ -356,7 +381,7 @@ function resolveOnceWithPhases_returningDetail(board){
   // gravity and refill
   applyGravity(board);
   phases.push({type:'after-gravity', board: deepClone(board)});
-  refillBoard(board);
+  refillBoard(board, paletteSize, luck);
   phases.push({type:'after-refill', board: deepClone(board)});
 
   return {phases, removed: removedCount, powerActivations};
@@ -365,6 +390,8 @@ function resolveOnceWithPhases_returningDetail(board){
 // Handle a swap including power-up interactions and return {phases, removedCount}
 export function handleSwapAndResolve(board, a, b, opts = {}){
   const phases = [];
+  const paletteSize = opts.paletteSize || 8;
+  const luck = opts.luck || 0;
   // swap first unless caller already swapped
   if(!opts.skipSwap){
     swapTiles(board, a, b);
@@ -578,14 +605,14 @@ export function handleSwapAndResolve(board, a, b, opts = {}){
   // after activations, resolve normal matches and cascading, collecting phases
   let resolvedDetail;
   try{
-    resolvedDetail = resolveAllWithPhases_returningDetail(board);
+    resolvedDetail = resolveAllWithPhases_returningDetail(board, paletteSize, luck);
     phases.push(...resolvedDetail.phases);
     totalRemoved += (resolvedDetail.removedCount || 0);
     const createdPowers = (resolvedDetail && (resolvedDetail.powerActivationsCount || resolvedDetail.powerActivations)) || 0;
     powerActivatedCount += createdPowers;
   }catch(err){
     console.warn('detailed resolver failed, falling back', err);
-    const fallbackPhases = resolveAllWithPhases(board);
+    const fallbackPhases = resolveAllWithPhases(board, paletteSize, luck);
     phases.push(...fallbackPhases);
     const removedSet = new Set();
     for(const p of fallbackPhases){
@@ -600,10 +627,14 @@ export function handleSwapAndResolve(board, a, b, opts = {}){
   // scoring
   const POINTS_PER_TILE = 10;
   const POWER_BONUS = 50;
-  const COMBO_BONUS = (powerActivatedCount >= 2) ? 100 : 0;
+  
+  // Count how many match-found phases we have (cascades)
+  const cascadeCount = phases.filter(p => p.type === 'match-found').length;
+  const comboMultiplier = 1 + (cascadeCount * 0.5); // +50% per cascade
+  
   const base = totalRemoved * POINTS_PER_TILE;
   const powerBonus = powerActivatedCount * POWER_BONUS;
-  const score = base + powerBonus + COMBO_BONUS;
+  const score = Math.floor((base + powerBonus) * comboMultiplier);
 
   return {phases, removedCount: totalRemoved, score};
 }

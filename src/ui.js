@@ -43,6 +43,8 @@ export function renderBoard(board, root, cols, rows){
 export class UIManager{
   constructor(opts){
     this.root = opts.root; this.board = opts.board; this.cols = opts.cols; this.rows = opts.rows;
+    this.paletteSize = opts.paletteSize || 8;
+    this.luck = opts.luck || 0;
     this.onChange = opts.onChange || (()=>{});
     this.selected = null;
     this.previewQueue = []; this.previewTimer = null; this._animating=false; this._processingPreview=false;
@@ -176,6 +178,8 @@ export class UIManager{
 
   _applyEngineSwapAndResolve(a,b, opts={}){
     try{
+      opts.paletteSize = this.paletteSize;
+      opts.luck = this.luck;
       const result = Engine.handleSwapAndResolve(this.board,a,b,opts);
       if(result && result.phases){ for(const p of result.phases) this.previewQueue.push(p); }
       console.debug('Engine produced phases:', result.phases && result.phases.length, result.phases && result.phases.map(p=>p.type));
