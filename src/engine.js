@@ -433,19 +433,46 @@ export function handleSwapAndResolve(board, a, b, opts = {}){
       activationType = 'rainbow-bomb';
       activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
       for(let r=0;r<board.length;r++) for(let c=0;c<board[0].length;c++) activationRemovals.add(`${r},${c}`);
+    } else if(ta.p === 'hammer'){
+      // two hammers -> mega hammer: clear 5x5 area
+      activationType = 'mega-hammer';
+      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+      for(let dr=-2; dr<=2; dr++){
+        for(let dc=-2; dc<=2; dc++){
+          const nr = a.r + dr, nc = a.c + dc;
+          if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length) activationRemovals.add(`${nr},${nc}`);
+        }
+      }
+    } else if(ta.p === 'bomb'){
+      // two bombs -> nuclear bomb: clear 7x7 area
+      activationType = 'nuclear-bomb';
+      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+      for(let dr=-3; dr<=3; dr++){
+        for(let dc=-3; dc<=3; dc++){
+          const nr = a.r + dr, nc = a.c + dc;
+          if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length) activationRemovals.add(`${nr},${nc}`);
+        }
+      }
     }
     activationRemovals.add(`${a.r},${a.c}`);
     activationRemovals.add(`${b.r},${b.c}`);
   } else if ((ta && ta.p === 'striped' && tb && tb.p === 'wrapped') || (ta && ta.p === 'wrapped' && tb && tb.p === 'striped')) {
-    // striped + wrapped -> bomb: clear 3x3 area
-    activationType = 'bomb';
+    // striped + wrapped -> mega-cross: clear 3 rows and 3 columns
+    activationType = 'mega-cross';
     activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+    const origin = activationOrigin;
+    // clear 3 rows
     for(let dr=-1; dr<=1; dr++){
-      for(let dc=-1; dc<=1; dc++){
-        const nr = a.r + dr, nc = a.c + dc;
-        if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length){
-          activationRemovals.add(`${nr},${nc}`);
-        }
+      const r = origin.r + dr;
+      if(r>=0 && r<board.length){
+        for(let c=0; c<board[0].length; c++) activationRemovals.add(`${r},${c}`);
+      }
+    }
+    // clear 3 columns
+    for(let dc=-1; dc<=1; dc++){
+      const c = origin.c + dc;
+      if(c>=0 && c<board[0].length){
+        for(let r=0; r<board.length; r++) activationRemovals.add(`${r},${c}`);
       }
     }
     activationRemovals.add(`${a.r},${a.c}`);
@@ -528,7 +555,7 @@ export function handleSwapAndResolve(board, a, b, opts = {}){
     activationRemovals.add(`${b.r},${b.c}`);
   } else if ((ta && ta.p === 'bomb' && tb) || (tb && tb.p === 'bomb' && ta)) {
     // bomb + X -> massive 5x5 explosion
-    activationType = 'bomb-explode-mega';
+    activationType = 'mega-bomb';
     activationOrigin = (ta && ta.p === 'bomb') ? a : b;
     const origin = activationOrigin;
     for(let dr=-2; dr<=2; dr++){

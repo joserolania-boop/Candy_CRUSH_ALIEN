@@ -249,11 +249,12 @@ export class UIManager{
         this._combo++;
         if(this._combo > 1) {
           this.showComboFeedback(this._combo);
+          if(this._combo > 3) this.shakeBoard(this._combo);
         }
 
         // play staggered match SFX per group, pitch up slightly per combo
         try{
-          const baseRate = 1 + (this._combo * 0.05);
+          const baseRate = 1 + (this._combo * 0.1);
           next.groups.forEach((g, gi)=>{
             const firstCell = (g.cells && g.cells[0]) || null;
             const pan = firstCell ? this._mapColToPan(firstCell.c) : 0;
@@ -323,6 +324,7 @@ export class UIManager{
         }
         if(next.power==='mega-bomb'){
           this.showNotification('💣 MEGA BOMB! 💣');
+          this.shakeBoard(10);
           this._animating=true; try{ this._playSFX('bomb', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
@@ -337,6 +339,7 @@ export class UIManager{
         }
         if(next.power==='mega-wrapped'){
           this.showNotification('🎁 MEGA WRAPPED! 🎁');
+          this.shakeBoard(8);
           this._animating=true; try{ this._playSFX('power', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
@@ -351,6 +354,7 @@ export class UIManager{
         }
         if(next.power==='rainbow-bomb'){
           this.showNotification('🌈 RAINBOW BOMB! 🌈');
+          this.shakeBoard(15);
           this._animating=true; try{ this._playSFX('colorbomb', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
@@ -378,6 +382,7 @@ export class UIManager{
         }
         if(next.power==='mega-striped'){
           this.showNotification('⚡ MEGA STRIPED! ⚡');
+          this.shakeBoard(6);
           this._animating=true; try{ this._playSFX('power', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
@@ -387,6 +392,51 @@ export class UIManager{
           await new Promise(res=> setTimeout(res,40));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('power-activated'); }
+          if(next.board){ this._applySnapshot(next.board); }
+          this._animating=false; continue;
+        }
+        if(next.power==='mega-cross'){
+          this.showNotification('⚡ MEGA CROSS! ⚡');
+          this.shakeBoard(12);
+          this._animating=true; try{ this._playSFX('power', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          const origin = next.origin || null;
+          const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('power-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,30));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,60));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('power-activated'); }
+          if(next.board){ this._applySnapshot(next.board); }
+          this._animating=false; continue;
+        }
+        if(next.power==='mega-hammer'){
+          this.showNotification('🔨 MEGA HAMMER! 🔨');
+          this.shakeBoard(10);
+          this._animating=true; try{ this._playSFX('power', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          const origin = next.origin || null;
+          const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('hammer-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,30));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,60));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('hammer-activated'); }
+          if(next.board){ this._applySnapshot(next.board); }
+          this._animating=false; continue;
+        }
+        if(next.power==='nuclear-bomb'){
+          this.showNotification('☢️ NUCLEAR BOMB! ☢️');
+          this.shakeBoard(20);
+          this._animating=true; try{ this._playSFX('bomb', { volume:1.2, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          const origin = next.origin || null;
+          const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('bomb-primed'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,80));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,120));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('bomb-primed'); }
           if(next.board){ this._applySnapshot(next.board); }
           this._animating=false; continue;
         }
@@ -435,7 +485,14 @@ export class UIManager{
       this._comboEl.style.transform = 'translate(-50%, -50%)';
       document.body.appendChild(this._comboEl);
     }
-    this._comboEl.textContent = `COMBO x${count}!`;
+    
+    let msg = `COMBO x${count}!`;
+    if(count >= 10) msg = `👽 ¡EXTRATERRESTRE! x${count} 👽`;
+    else if(count >= 7) msg = `🚀 ¡INCREÍBLE! x${count} 🚀`;
+    else if(count >= 5) msg = `✨ ¡GENIAL! x${count} ✨`;
+    else if(count >= 3) msg = `🔥 ¡BUENO! x${count} 🔥`;
+    
+    this._comboEl.textContent = msg;
     this._comboEl.classList.remove('show');
     void this._comboEl.offsetWidth; // trigger reflow
     this._comboEl.classList.add('show');
@@ -452,6 +509,27 @@ export class UIManager{
         this._comboEl.classList.remove('show');
       }
     }, 800);
+  }
+
+  shakeBoard(intensity = 5) {
+    if(window.CCA_reduced_motion) return;
+    const root = this.root;
+    if(!root) return;
+    
+    const startTime = Date.now();
+    const duration = 200;
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      if(elapsed < duration) {
+        const x = (Math.random() - 0.5) * intensity;
+        const y = (Math.random() - 0.5) * intensity;
+        root.style.transform = `translate(${x}px, ${y}px)`;
+        requestAnimationFrame(animate);
+      } else {
+        root.style.transform = '';
+      }
+    };
+    animate();
   }
 
   // Hint helpers
