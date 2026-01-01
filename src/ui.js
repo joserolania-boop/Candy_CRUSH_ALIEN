@@ -3,6 +3,15 @@ import * as Sound from './sound.js';
 import Particles from './particles_helper.js';
 import {cloneBoard} from './board.js';
 
+function getPowerIcon(p){
+  if(p === 'hammer') return '🔨';
+  if(p === 'bomb') return '💣';
+  if(p === 'wrapped') return '🎁';
+  if(p === 'colorbomb') return '🌈';
+  if(p === 'striped') return '⚡';
+  return '?';
+}
+
 export function renderBoard(board, root, cols, rows){
   root.innerHTML = '';
   const container = document.createElement('div');
@@ -16,8 +25,12 @@ export function renderBoard(board, root, cols, rows){
       el.dataset.r = String(r);
       el.dataset.c = String(c);
       if(tile){
-        el.textContent = tile.v;
-        if(tile.p) el.classList.add('power-'+tile.p);
+        if(tile.p){
+          el.textContent = getPowerIcon(tile.p);
+          el.classList.add('power-'+tile.p);
+        } else {
+          el.textContent = tile.v;
+        }
       } else {
         el.classList.add('empty');
       }
@@ -208,6 +221,21 @@ export class UIManager{
         this._animating=false; continue;
       }
 
+      // Hammer destroy
+      if(next.type==='hammer-destroy'){
+        this._animating=true;
+        const origin = next.origin || {r: next.r, c: next.c};
+        try{ this._playSFX('power', { volume:0.8, pan: this._mapColToPan(origin.c) }); }catch(e){}
+        const mappedRemovals = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+        if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.add('hammer-activated'); }
+        await new Promise(res=> setTimeout(res,30));
+        for(const p of mappedRemovals){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.add('anim-remove'); }
+        await new Promise(res=> setTimeout(res,60));
+        for(const p of mappedRemovals){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+        if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('hammer-activated'); }
+        this._animating=false; continue;
+      }
+
       this.resetHintTimer();
 
       // match-found animations y power-up creation feedback
@@ -284,7 +312,7 @@ export class UIManager{
           this._animating=false; continue;
         }
         if(next.power==='mega-bomb'){
-          this.showNotification('B MEGA BOMB! B');
+          this.showNotification('💣 MEGA BOMB! 💣');
           this._animating=true; try{ this._playSFX('bomb', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
@@ -298,7 +326,7 @@ export class UIManager{
           this._animating=false; continue;
         }
         if(next.power==='mega-wrapped'){
-          this.showNotification('W MEGA WRAPPED! W');
+          this.showNotification('🎁 MEGA WRAPPED! 🎁');
           this._animating=true; try{ this._playSFX('power', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
@@ -312,7 +340,7 @@ export class UIManager{
           this._animating=false; continue;
         }
         if(next.power==='rainbow-bomb'){
-          this.showNotification('C RAINBOW BOMB! C');
+          this.showNotification('🌈 RAINBOW BOMB! 🌈');
           this._animating=true; try{ this._playSFX('colorbomb', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
@@ -322,6 +350,33 @@ export class UIManager{
           await new Promise(res=> setTimeout(res,150));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('colorbomb-activated'); }
+          if(next.board){ this._applySnapshot(next.board); }
+          this._animating=false; continue;
+        }
+        if(next.power==='hammer'){
+          this._animating=true; try{ this._playSFX('power', { volume:0.8, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          const origin = next.origin || null;
+          const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('hammer-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,30));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,60));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('hammer-activated'); }
+          if(next.board){ this._applySnapshot(next.board); }
+          this._animating=false; continue;
+        }
+        if(next.power==='mega-striped'){
+          this.showNotification('⚡ MEGA STRIPED! ⚡');
+          this._animating=true; try{ this._playSFX('power', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          const origin = next.origin || null;
+          const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('power-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,30));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
+          await new Promise(res=> setTimeout(res,60));
+          for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el) el.classList.remove('anim-remove'); }
+          if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel) oel.classList.remove('power-activated'); }
           if(next.board){ this._applySnapshot(next.board); }
           this._animating=false; continue;
         }

@@ -264,22 +264,22 @@ class EconomySystem {
   setLevelStars(level, stars) {
     const previousStars = this.getLevelStars(level);
     
-    // Only update if new stars are higher
+    // Award coins for the stars earned in THIS run
+    // (Base reward for completing the level + bonus for stars)
+    const baseReward = 25; // Guaranteed coins for winning
+    const starBonus = stars * 15; // Bonus per star
+    const coinsEarned = baseReward + starBonus;
+    
+    this.addCoins(coinsEarned);
+
+    // Only update record if new stars are higher
     if (stars > previousStars) {
       this.levelStars[level] = stars;
       this._saveLevelStars();
       
-      // Award coins for NEW stars only
-      const newStarsEarned = stars - previousStars;
-      const coinsEarned = newStarsEarned * CONFIG.COINS_PER_STAR[stars];
-      
-      if (coinsEarned > 0) {
-        this.addCoins(coinsEarned);
-      }
-      
       return {
         stars,
-        newStars: newStarsEarned,
+        newStars: stars - previousStars,
         coinsEarned,
         isNewRecord: true
       };
@@ -288,7 +288,7 @@ class EconomySystem {
     return {
       stars: previousStars,
       newStars: 0,
-      coinsEarned: 0,
+      coinsEarned,
       isNewRecord: false
     };
   }

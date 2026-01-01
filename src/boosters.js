@@ -12,24 +12,32 @@ const BOOSTER_TYPES = {
     id: 'hammer',
     name: 'Lollipop Hammer',
     icon: '🔨',
-    description: 'Remove any single tile',
-    cost: 50,
-    type: 'in-game' // Activated during gameplay
+    description: 'Destroys a 3x3 area when swapped with any tile',
+    cost: 100,
+    type: 'pre-game'
+  },
+  BOMB: {
+    id: 'bomb',
+    name: 'Mega Bomb',
+    icon: '💣',
+    description: 'Massive 5x5 explosion when swapped with any tile',
+    cost: 180,
+    type: 'pre-game'
   },
   EXTRA_MOVES: {
     id: 'extra_moves',
     name: '+5 Moves',
     icon: '⏱️',
-    description: 'Start with 5 extra moves',
-    cost: 100,
-    type: 'pre-game' // Applied before level starts
+    description: 'Start the level with 5 additional moves',
+    cost: 120,
+    type: 'pre-game'
   },
   COLOR_BOMB: {
     id: 'color_bomb',
     name: 'Color Bomb',
-    icon: '💣',
-    description: 'Start with a color bomb on the board',
-    cost: 150,
+    icon: '🌈',
+    description: 'Clears all tiles of the same color when swapped',
+    cost: 250,
     type: 'pre-game'
   }
 };
@@ -58,6 +66,7 @@ class BoosterSystem {
   _getDefaultInventory() {
     return {
       hammer: 0,
+      bomb: 0,
       extra_moves: 0,
       color_bomb: 0
     };
@@ -175,6 +184,20 @@ class BoosterSystem {
     
     if (this.activeBoosters.has('extra_moves')) {
       effects.extraMoves = 5;
+    }
+    
+    if (this.activeBoosters.has('hammer')) {
+      effects.startingPowerUps.push({
+        type: 'hammer',
+        position: 'random' // Will be placed randomly on board
+      });
+    }
+    
+    if (this.activeBoosters.has('bomb')) {
+      effects.startingPowerUps.push({
+        type: 'bomb',
+        position: 'random' // Will be placed randomly on board
+      });
     }
     
     if (this.activeBoosters.has('color_bomb')) {

@@ -9,6 +9,8 @@ import Story from './story.js';
 import economy from './economy.js';
 import boosters, { BOOSTER_TYPES } from './boosters.js';
 
+console.log('[game.js] Module loaded successfully');
+
 const THEME_KEY = 'candy_bg_theme';
 const DEFAULT_THEME = 'deep_nebula';
 const BOARD_HIDE_CLASS = 'story-cutscene-hidden';
@@ -24,31 +26,31 @@ const createLevel = (name, theme, moves, objective, storyCheckpoint) => ({
 });
 
 const LEVELS = [
-  createLevel('First Contact', 'deep_nebula', 30, { type: 'score', target: 300, description: 'Channel your magic to create a protective barrier around the approaching ship' }, 'intro'),
-  createLevel('City Defense', 'alien_green', 30, { type: 'pieces', target: 15, description: 'Destroy 15 alien probes threatening our cities with candy blasts' }),
-  createLevel('Building Power', 'cosmic_blue', 30, { type: 'score', target: 500, description: 'Build up magical energy to power our defense shields' }),
-  createLevel('Combo Training', 'void_dark', 32, { type: 'power_ups', target: 3, description: 'Master the art of creating power-ups to unleash devastating attacks' }),
-  createLevel('Final Prep', 'inferno', 32, { type: 'score', target: 800, description: 'Prepare the ultimate counter-spell against the alien invasion' }),
-  createLevel('Wave One', 'station_orbit', 32, { type: 'score', target: 1000, description: 'Lead the first wave of magical defense against the alien fleet' }, 'act1'),
-  createLevel('Coastal Raid', 'aurora', 34, { type: 'pieces', target: 20, description: 'Protect our coastlines by eliminating 20 alien landing craft' }),
-  createLevel('Arsenal Build', 'galaxy_core', 34, { type: 'power_ups', target: 5, description: 'Forge 5 powerful artifacts to strengthen our magical arsenal' }),
-  createLevel('Mid-Battle', 'binary_sunset', 34, { type: 'score', target: 1200, description: 'Turn the tide of battle with overwhelming magical force' }),
-  createLevel('Sector Clear', 'quantum_realm', 34, { type: 'pieces', target: 25, description: 'Clear Sector 7 of all alien presence - destroy 25 enemy units' }),
-  createLevel('Base Assault', 'deep_nebula', 36, { type: 'score', target: 1500, description: 'Assault the alien command base with coordinated magical strikes' }, 'act2'),
-  createLevel('Fortified Base', 'alien_green', 36, { type: 'pieces', target: 25, description: 'Breach the fortified alien base defenses - eliminate 25 guard units' }),
-  createLevel('Maximum Firepower', 'cosmic_blue', 36, { type: 'power_ups', target: 7, description: 'Unleash maximum firepower by creating 7 devastating power-ups' }),
-  createLevel('Strategic Victory', 'void_dark', 36, { type: 'score', target: 1800, description: 'Achieve strategic victory through superior magical tactics' }),
-  createLevel('Precision Bombing', 'inferno', 36, { type: 'combo', target: 3, description: 'Execute precision strikes with 3 massive combo explosions' }),
-  createLevel('Archaeological Dig', 'station_orbit', 38, { type: 'score', target: 2000, description: 'Unearth ancient artifacts that hold the key to understanding our visitors' }, 'act3'),
-  createLevel('Deep Excavation', 'aurora', 38, { type: 'pieces', target: 30, description: 'Excavate deeper to find 30 crucial alien artifacts' }),
-  createLevel('Full Potential', 'galaxy_core', 38, { type: 'power_ups', target: 10, description: 'Unlock the full potential of ancient magic by creating 10 power-ups' }),
-  createLevel('Ancient Knowledge', 'binary_sunset', 38, { type: 'score', target: 2200, description: 'Master the ancient knowledge to bridge our worlds' }),
-  createLevel('Master the Ruins', 'quantum_realm', 38, { type: 'power_ups', target: 12, description: 'Master the ancient ruins by harnessing 12 powerful artifacts' }),
-  createLevel('Peace Offering', 'deep_nebula', 40, { type: 'score', target: 2500, description: 'Create a grand peace offering through masterful magical displays' }, 'act4'),
-  createLevel('Shared Sacrifice', 'alien_green', 40, { type: 'pieces', target: 40, description: 'Make the ultimate sacrifice - destroy 40 enemy units in a final stand' }),
-  createLevel('Combined Might', 'cosmic_blue', 40, { type: 'power_ups', target: 15, description: 'Combine human and alien might by forging 15 legendary artifacts' }),
-  createLevel('United Strength', 'void_dark', 40, { type: 'score', target: 3000, description: 'Demonstrate united strength against the greater cosmic threat' }),
-  createLevel('Final Battle', 'inferno', 42, { type: 'score', target: 3500, description: 'Lead humanity and aliens together in the final battle for survival' })
+  createLevel('First Contact', 'deep_nebula', 20, { type: 'score', target: 1200, description: 'Channel your magic to create a protective barrier around the approaching ship' }),
+  createLevel('City Defense', 'alien_green', 22, { type: 'pieces', target: 40, description: 'Destroy 40 alien probes threatening our cities with candy blasts' }),
+  createLevel('Building Power', 'cosmic_blue', 22, { type: 'score', target: 2500, description: 'Build up magical energy to power our defense shields' }),
+  createLevel('Combo Training', 'void_dark', 24, { type: 'score', target: 3500, description: 'Master the art of creating combos to unleash devastating attacks' }),
+  createLevel('Final Prep', 'inferno', 24, { type: 'score', target: 4000, description: 'Prepare the ultimate counter-spell against the alien invasion' }),
+  createLevel('Wave One', 'station_orbit', 25, { type: 'score', target: 5000, description: 'Lead the first wave of magical defense against the alien fleet' }, 'act1'),
+  createLevel('Coastal Raid', 'aurora', 26, { type: 'pieces', target: 60, description: 'Protect our coastlines by eliminating 60 alien landing craft' }),
+  createLevel('Arsenal Build', 'galaxy_core', 26, { type: 'score', target: 6500, description: 'Forge powerful artifacts to strengthen our magical arsenal' }),
+  createLevel('Mid-Battle', 'binary_sunset', 28, { type: 'score', target: 7000, description: 'Turn the tide of battle with overwhelming magical force' }),
+  createLevel('Sector Clear', 'quantum_realm', 28, { type: 'pieces', target: 80, description: 'Clear Sector 7 of all alien presence - destroy 80 enemy units' }),
+  createLevel('Base Assault', 'deep_nebula', 30, { type: 'score', target: 10000, description: 'Assault the alien command base with coordinated magical strikes' }, 'act2'),
+  createLevel('Fortified Base', 'alien_green', 30, { type: 'pieces', target: 100, description: 'Breach the fortified alien base defenses - eliminate 100 guard units' }),
+  createLevel('Maximum Firepower', 'cosmic_blue', 32, { type: 'score', target: 12000, description: 'Unleash maximum firepower by creating devastating combos' }),
+  createLevel('Strategic Victory', 'void_dark', 32, { type: 'score', target: 15000, description: 'Achieve strategic victory through superior magical tactics' }),
+  createLevel('Precision Bombing', 'inferno', 34, { type: 'score', target: 18000, description: 'Execute precision strikes with massive combo explosions' }),
+  createLevel('Archaeological Dig', 'station_orbit', 34, { type: 'score', target: 20000, description: 'Unearth ancient artifacts that hold the key to understanding our visitors' }, 'act3'),
+  createLevel('Deep Excavation', 'aurora', 36, { type: 'pieces', target: 150, description: 'Excavate deeper to find 150 crucial alien artifacts' }),
+  createLevel('Full Potential', 'galaxy_core', 36, { type: 'score', target: 22000, description: 'Unlock the full potential of ancient magic through high scores' }),
+  createLevel('Ancient Knowledge', 'binary_sunset', 38, { type: 'score', target: 25000, description: 'Master the ancient knowledge to bridge our worlds' }),
+  createLevel('Master the Ruins', 'quantum_realm', 38, { type: 'score', target: 28000, description: 'Master the ancient ruins by harnessing powerful magical energy' }),
+  createLevel('Peace Offering', 'deep_nebula', 40, { type: 'score', target: 30000, description: 'Create a grand peace offering through masterful magical displays' }, 'act4'),
+  createLevel('Shared Sacrifice', 'alien_green', 40, { type: 'pieces', target: 200, description: 'Make the ultimate sacrifice - destroy 200 enemy units in a final stand' }),
+  createLevel('Combined Might', 'cosmic_blue', 42, { type: 'score', target: 35000, description: 'Combine human and alien might by forging legendary artifacts' }),
+  createLevel('United Strength', 'void_dark', 42, { type: 'score', target: 40000, description: 'Demonstrate united strength against the greater cosmic threat' }),
+  createLevel('Final Battle', 'inferno', 45, { type: 'score', target: 50000, description: 'Lead humanity and aliens together in the final battle for survival' })
 ];
 
 function resolveSavedLevel() {
@@ -136,6 +138,11 @@ function showPreLevelScreen() {
   
   const levelDef = LEVELS[level - 1] || LEVELS[0];
   
+  // Setup level state
+  currentObjective = levelDef.objective || {type: 'score', target: 500};
+  objectiveProgress = 0;
+  applyTheme(levelDef.theme);
+  
   // Update level info
   if (levelNumber) levelNumber.textContent = `Level ${level}`;
   if (levelName) levelName.textContent = levelDef.name;
@@ -200,9 +207,98 @@ function showPreLevelScreen() {
   if (btnStart) {
     btnStart.onclick = () => {
       screen.classList.add('hidden');
-      actuallyStartGame(true);
+      startLevel();
     };
   }
+}
+
+function startLevel(){
+  console.log('[startLevel] Starting level...');
+  
+  const levelDef = LEVELS[level - 1] || LEVELS[0];
+  
+  // Initialize board state
+  boardState = createBoardState();
+  
+  // Apply starting power-ups from boosters
+  const boosterEffects = boosters.applyPreGameBoosters();
+  movesLeft = levelDef.moves + boosterEffects.extraMoves;
+  
+  if (boosterEffects.startingPowerUps && boosterEffects.startingPowerUps.length > 0) {
+    for (const powerUp of boosterEffects.startingPowerUps) {
+      // Place power-up at random position
+      const randomRow = Math.floor(Math.random() * DEFAULT_ROWS);
+      const randomCol = Math.floor(Math.random() * DEFAULT_COLS);
+      if (boardState[randomRow] && boardState[randomRow][randomCol]) {
+        boardState[randomRow][randomCol].p = powerUp.type;
+        console.log(`[startLevel] Applied booster: ${powerUp.type} at ${randomRow},${randomCol}`);
+      }
+    }
+  }
+  
+  // Consume the boosters from inventory
+  boosters.consumeActiveBoosters();
+  
+  if(boardRoot) {
+    boardRoot.innerHTML = '';
+    console.log('[startLevel] board-root cleared');
+  }
+
+  try {
+    ui = new UIManager({
+      root: boardRoot,
+      board: boardState,
+      cols: DEFAULT_COLS,
+      rows: DEFAULT_ROWS,
+      onChange: (ev) => {
+        console.log('[UIManager.onChange]', ev.type, 'removed:', ev.removed);
+        if(ev.type === 'swap') {
+          if(ev.removed > 0) {
+            try { Sound.playMatch(); } catch(e) { console.warn('Sound error:', e); }
+            score += ev.score || 0;
+            
+            if(currentObjective) {
+              if(currentObjective.type === 'score') {
+                objectiveProgress = score;
+              } else if(currentObjective.type === 'pieces') {
+                objectiveProgress += ev.removed || 0;
+              } else if(currentObjective.type === 'power_ups') {
+                objectiveProgress += (ev.powerUps || 0);
+              }
+            }
+            
+            updateUI();
+            if(currentObjective && objectiveProgress >= currentObjective.target) {
+              console.log('[UIManager.onChange] ✅ OBJETIVO COMPLETADO!', objectiveProgress, 'vs', currentObjective.target);
+              levelWon();
+              return;
+            }
+            
+            movesLeft--;
+            if(movesLeft <= 0) {
+              console.log('[UIManager.onChange] ❌ SIN MOVIMIENTOS!');
+              checkLevelComplete();
+            }
+          } else {
+            try { Sound.playSwap(); } catch(e) { console.warn('Sound error:', e); }
+          }
+        }
+      }
+    });
+    console.log('[startLevel] UIManager created');
+    window.ui = ui; // Expose global instance for debug
+    ui.render();
+    console.log('[startLevel] Board rendered');
+  } catch(e) {
+    console.error('[startLevel] Error creating UIManager:', e);
+    return;
+  }
+
+  updateUI();
+  updateEconomyUI();
+  try { Sound.playBackground().catch(() => {}); } catch(e) { console.warn('Background music error:', e); }
+  try{ ui.playPreview(); }catch(e){ console.warn('Preview failed:', e); }
+  console.log('[startLevel] ✓ Completed');
 }
 
 function formatObjective(objective) {
@@ -235,126 +331,28 @@ function formatObjective(objective) {
 }
 
 function actuallyStartGame(resetScore = true){
-  console.log('[actuallyStartGame] Iniciando juego...');
-  levelInProgress = false;
+  console.log('[actuallyStartGame] Starting game with resetScore:', resetScore);
+  levelInProgress = true;
   if(resetScore) score = 0;
 
-  let currentTheme = localStorage.getItem(THEME_KEY) || LEVELS[0].theme;
-  applyTheme(currentTheme);
-
   const levelDef = LEVELS[level - 1] || LEVELS[0];
-  currentObjective = levelDef.objective || {type: 'score', target: 500};
-  objectiveProgress = 0;
   
-  // Apply booster effects
-  const boosterEffects = boosters.applyPreGameBoosters();
-  movesLeft = levelDef.moves + boosterEffects.extraMoves;
-  
-  // Consume the boosters from inventory
-  boosters.consumeActiveBoosters();
-  
-  updateUI();
-  updateEconomyUI();
-
-  const launchBoard = () => {
-    boardState = createBoardState();
-    console.log('[actuallyStartGame] boardState creado:', !!boardState);
-    
-    // Apply starting power-ups from boosters
-    const boosterEffects = boosters.applyPreGameBoosters();
-    if (boosterEffects.startingPowerUps && boosterEffects.startingPowerUps.length > 0) {
-      for (const powerUp of boosterEffects.startingPowerUps) {
-        // Place color bomb at random position
-        const randomRow = Math.floor(Math.random() * DEFAULT_ROWS);
-        const randomCol = Math.floor(Math.random() * DEFAULT_COLS);
-        if (boardState[randomRow] && boardState[randomRow][randomCol]) {
-          boardState[randomRow][randomCol].p = powerUp.type;
-        }
-      }
-    }
-    
-    if(boardRoot) {
-      boardRoot.innerHTML = '';
-      console.log('[actuallyStartGame] board-root limpiado');
-    }
-
-    try {
-      ui = new UIManager({
-        root: boardRoot,
-        board: boardState,
-        cols: DEFAULT_COLS,
-        rows: DEFAULT_ROWS,
-        onChange: (ev) => {
-          console.log('[UIManager.onChange]', ev.type, 'removed:', ev.removed);
-          if(ev.type === 'swap') {
-            if(ev.removed > 0) {
-              try { Sound.playMatch(); } catch(e) { console.warn('Sound error:', e); }
-              score += ev.score || 0;
-              
-              if(currentObjective) {
-                if(currentObjective.type === 'score') {
-                  objectiveProgress = score;
-                } else if(currentObjective.type === 'pieces') {
-                  objectiveProgress += ev.removed || 0;
-                } else if(currentObjective.type === 'power_ups') {
-                  objectiveProgress += (ev.powerUps || 0);
-                }
-              }
-              
-              updateUI();
-              if(currentObjective && objectiveProgress >= currentObjective.target) {
-                console.log('[UIManager.onChange] ✅ OBJETIVO COMPLETADO!', objectiveProgress, 'vs', currentObjective.target);
-                levelWon();
-                return;
-              }
-              
-              movesLeft--;
-              if(movesLeft <= 0) {
-                console.log('[UIManager.onChange] ❌ SIN MOVIMIENTOS!');
-                checkLevelComplete();
-              }
-            } else {
-              try { Sound.playSwap(); } catch(e) { console.warn('Sound error:', e); }
-            }
-          }
-        }
-      });
-      console.log('[startGame] UIManager creado');
-      window.ui = ui; // Exponer instancia global para debug
-      ui.render();
-      console.log('[startGame] Tablero renderizado');
-    } catch(e) {
-      console.error('[startGame] Error creando UIManager:', e);
-      return;
-    }
-
-    updateUI();
-    updateEconomyUI();
-    try { Sound.playBackground().catch(() => {}); } catch(e) { console.warn('Background music error:', e); }
-    try{ ui.playPreview(); }catch(e){ console.warn('Preview failed:', e); }
-    console.log('[actuallyStartGame] ✓ Completado');
+  const proceedToGame = () => {
+    if(boardRoot) boardRoot.classList.remove(BOARD_HIDE_CLASS);
+    startLevel();
   };
 
-  const startScene = () => {
-    if(!levelDef.story_checkpoint) {
-      if(boardRoot) boardRoot.classList.remove(BOARD_HIDE_CLASS);
-      launchBoard();
-      return;
-    }
+  if(!levelDef.story_checkpoint) {
+    proceedToGame();
+  } else {
     if(boardRoot) boardRoot.classList.add(BOARD_HIDE_CLASS);
     showStoryScene(levelDef.story_checkpoint)
-      .then(() => {
-        if(boardRoot) boardRoot.classList.remove(BOARD_HIDE_CLASS);
-        launchBoard();
-      })
+      .then(proceedToGame)
       .catch((err) => {
         console.warn('[actuallyStartGame] Story scene rejected', err);
-        if(boardRoot) boardRoot.classList.remove(BOARD_HIDE_CLASS);
-        launchBoard();
+        proceedToGame();
       });
-  };
-
-  startScene();
+  }
 }
 
 function resetGame(){
@@ -691,6 +689,12 @@ function toggleBoosterInPreLevel(boosterId) {
     card.classList.add('active');
   } else {
     // Try to purchase
+    const boosterInfo = boosters.getBoosterInfo(boosterId);
+    if (!economy.hasCoins(boosterInfo.cost)) {
+      showMessage(`❌ Not enough coins! Need 💰${boosterInfo.cost}`, 2000);
+      return;
+    }
+    
     const result = boosters.purchaseBooster(boosterId);
     if (result.success) {
       showMessage(`✅ Purchased ${boosterInfo.name}!`, 1500);
@@ -943,30 +947,42 @@ function setupGameUI(){
 }
 
 function initializeGame(){
-  boardRoot = document.getElementById('board-root');
-  if(!boardRoot) {
-    console.error('No board-root found!');
-    return;
+  console.log('[initializeGame] Starting initialization...');
+  try {
+    boardRoot = document.getElementById('board-root');
+    if(!boardRoot) {
+      console.error('No board-root found!');
+      return;
+    }
+    
+    console.log('[initializeGame] board-root encontrado, inicializando...');
+    setupGameUI();
+    console.log('[initializeGame] setupGameUI completed');
+    
+    // Initialize economy UI
+    updateEconomyUI();
+    console.log('[initializeGame] updateEconomyUI completed');
+    
+    startLivesTimer();
+    console.log('[initializeGame] startLivesTimer completed');
+    
+    // ESPERAR a que audio esté listo ANTES de jugar
+    Sound.initAudio().then(() => {
+      console.log('[initializeGame] ✓ Audio context está listo');
+      // Don't auto-start, wait for user to click Play button
+    }).catch(e => {
+      console.warn('[initializeGame] Audio warning (no crítico):', e);
+    });
+  } catch(e) {
+    console.error('[initializeGame] Error during initialization:', e);
   }
-  
-  console.log('[initializeGame] board-root encontrado, inicializando...');
-  setupGameUI();
-  
-  // Initialize economy UI
-  updateEconomyUI();
-  startLivesTimer();
-  
-  // ESPERAR a que audio esté listo ANTES de jugar
-  Sound.initAudio().then(() => {
-    console.log('[initializeGame] ✓ Audio context está listo');
-    // Don't auto-start, wait for user to click Play button
-  }).catch(e => {
-    console.warn('[initializeGame] Audio warning (no crítico):', e);
-  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('[DOMContentLoaded] Iniciando...');
+  console.log('[DOMContentLoaded] Starting initialization...');
+  
+  // Initialize audio early to allow user interaction to resume context
+  Sound.initAudio().catch(() => {});
   
   const mainMenu = document.getElementById('main-menu');
   const instructionsModal = document.getElementById('instructions-modal');
@@ -1031,7 +1047,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if(btnContinue) {
-    console.log('[btnContinue] Registrando click listener');
+    console.log('[btnContinue] Element found, registering click listener');
     btnContinue.addEventListener('click', async ()=>{
       console.log('[btnContinue] Clicked!');
       if(mainMenu) {
@@ -1053,45 +1069,64 @@ document.addEventListener('DOMContentLoaded', () => {
         try{ const shown = Decorations.debugShowAll(); console.log('[btnContinue] debugShowAll applied ->', shown); if(shown>0) showMessage('Astronautas visibles ✅', 1200); else showMessage('Astronautas: no aparecen (ver consola)', 1800); }catch(e){ }
       }catch(e){ console.warn('[btnContinue] Decorations start failed', e); showMessage('Decoraciones no activas', 1800); }
 
+      console.log('[btnContinue] Calling initializeGame...');
       initializeGame();
-      actuallyStartGame(false);
+      console.log('[btnContinue] Calling startGame...');
+      startGame(false);
+      console.log('[btnContinue] Game continue sequence completed');
     });
+    console.log('[btnContinue] Event listener registered successfully');
+  } else {
+    console.error('[btnContinue] Button not found!');
   }
 
   if(btnNewGame) {
-    console.log('[btnNewGame] Registrando click listener');
+    console.log('[btnNewGame] Element found, registering click listener');
     btnNewGame.addEventListener('click', async ()=>{
       console.log('[btnNewGame] Clicked!');
-      // Reset all progress
-      localStorage.removeItem('candy_current_level');
-      level = 1;
-      score = 0;
-      objectiveProgress = 0;
-      movesLeft = 0;
-      currentObjective = null;
+      try {
+        // Reset all progress
+        localStorage.removeItem('candy_current_level');
+        economy.reset();
+        boosters.reset();
+        level = 1;
+        score = 0;
+        objectiveProgress = 0;
+        movesLeft = 0;
+        currentObjective = null;
 
-      if(mainMenu) {
-        mainMenu.classList.add('hidden');
+        if(mainMenu) {
+          mainMenu.classList.add('hidden');
+        }
+        if(gameContainer) {
+          gameContainer.classList.remove('hidden');
+        }
+        // Ensure audio is initialized/resumed as part of the user gesture
+        try{
+          await Sound.initAudio();
+          console.log('[btnNewGame] Audio initialized from user gesture');
+          try{ Sound.testTone(); showMessage('Sonido activado ✅', 1200); }catch(e){ console.warn('[btnNewGame] testTone failed', e); showMessage('Sonido: fallo al reproducir tono', 1400); }
+        }catch(e){ console.warn('[btnNewGame] Audio init failed on click', e); showMessage('No se pudo activar sonido', 1800); }
+
+        // Start background decorations so astronauts/ships spawn
+        try{ Decorations.startDecorations('#space-bg', 0.7); console.log('[btnNewGame] Decorations started');
+          // debug: force show any decorations in case they are hidden behind layers
+          try{ const shown = Decorations.debugShowAll(); console.log('[btnNewGame] debugShowAll applied ->', shown); if(shown>0) showMessage('Astronautas visibles ✅', 1200); else showMessage('Astronautas: no aparecen (ver consola)', 1800); }catch(e){ }
+        }catch(e){ console.warn('[btnNewGame] Decorations start failed', e); showMessage('Decoraciones no activas', 1800); }
+
+        console.log('[btnNewGame] Calling initializeGame...');
+        initializeGame();
+        console.log('[btnNewGame] Calling startGame...');
+        startGame(true);
+        console.log('[btnNewGame] Game start sequence completed');
+      } catch(e) {
+        console.error('[btnNewGame] Error:', e);
+        showMessage('Error starting game: ' + e.message, 3000);
       }
-      if(gameContainer) {
-        gameContainer.classList.remove('hidden');
-      }
-      // Ensure audio is initialized/resumed as part of the user gesture
-      try{
-        await Sound.initAudio();
-        console.log('[btnNewGame] Audio initialized from user gesture');
-        try{ Sound.testTone(); showMessage('Sonido activado ✅', 1200); }catch(e){ console.warn('[btnNewGame] testTone failed', e); showMessage('Sonido: fallo al reproducir tono', 1400); }
-      }catch(e){ console.warn('[btnNewGame] Audio init failed on click', e); showMessage('No se pudo activar sonido', 1800); }
-
-      // Start background decorations so astronauts/ships spawn
-      try{ Decorations.startDecorations('#space-bg', 0.7); console.log('[btnNewGame] Decorations started');
-        // debug: force show any decorations in case they are hidden behind layers
-        try{ const shown = Decorations.debugShowAll(); console.log('[btnNewGame] debugShowAll applied ->', shown); if(shown>0) showMessage('Astronautas visibles ✅', 1200); else showMessage('Astronautas: no aparecen (ver consola)', 1800); }catch(e){ }
-      }catch(e){ console.warn('[btnNewGame] Decorations start failed', e); showMessage('Decoraciones no activas', 1800); }
-
-      initializeGame();
-      actuallyStartGame(true);
     });
+    console.log('[btnNewGame] Event listener registered successfully');
+  } else {
+    console.error('[btnNewGame] Button not found!');
   }
   
   // Connect Start button in game to restart functionality  
@@ -1124,7 +1159,12 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('[btnSettings] Registrando click listener');
     btnSettings.addEventListener('click', ()=>{
       console.log('[btnSettings] Clicked!');
-      alert('Settings coming soon!');
+      if(confirm('Reset all progress, coins and boosters?')) {
+        economy.reset();
+        boosters.reset();
+        localStorage.removeItem('candy_current_level');
+        location.reload();
+      }
     });
   }
   

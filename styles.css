@@ -791,14 +791,15 @@ main{width:100%; max-width:760px; padding:12px}
 
 .cell.selected{outline:3px solid rgba(139,108,255,0.28); transform:scale(1.03)}
 .cell.power-striped::after{content:'\2192'; position:absolute; color:#ffd966; font-size:14px}
-.cell.power-wrapped::after{content:'W'; position:absolute; color:#ff8ba7; font-size:14px; font-weight: bold;}
-.cell.power-colorbomb{box-shadow:0 0 8px #fff6; position:relative}
-.cell.power-colorbomb::after{content:'C'; position:absolute; color:#fffacd; font-size:16px; font-weight: bold;}
+.cell.power-wrapped{ font-weight: bold; }
+.cell.power-striped{ font-weight: bold; }
+.cell.power-colorbomb{ font-weight: bold; box-shadow:0 0 8px #fff6; }
 /* Bomb power visuals */
-.cell.power-bomb{ position:relative; }
-.cell.power-bomb::after{ content:'B'; position:absolute; font-size:18px; line-height:1; transform:translateY(-2px); color: #ff4444; font-weight: bold; }
+.cell.power-bomb{ font-weight: bold; }
 .cell.bomb-primed{ animation: bomb-pulse 440ms ease-in-out infinite; box-shadow: 0 0 18px 6px rgba(200,130,255,0.18), 0 0 30px rgba(120,60,220,0.12) inset; }
+.cell.hammer-activated{ animation: hammer-pulse 300ms ease-in-out infinite; box-shadow: 0 0 12px 4px rgba(255,215,0,0.3), 0 0 20px rgba(255,165,0,0.2) inset; }
 @keyframes bomb-pulse{ 0%{ transform:scale(1) } 50%{ transform:scale(1.08) } 100%{ transform:scale(1) } }
+@keyframes hammer-pulse{ 0%{ transform:scale(1) rotate(0deg) } 25%{ transform:scale(1.05) rotate(-2deg) } 75%{ transform:scale(1.05) rotate(2deg) } 100%{ transform:scale(1) rotate(0deg) } }
 
 .grid{position:relative}
 .cell{transition:transform 220ms ease, opacity 180ms ease; position:relative}

@@ -51,6 +51,11 @@ export function swapTiles(board, a, b){
 }
 
 export function isValidSwap(board, a, b){
+  const ta = board[a.r][a.c];
+  const tb = board[b.r][b.c];
+  // If either is a booster/power-up, it's a valid swap now
+  if((ta && ta.p) || (tb && tb.p)) return true;
+
   const copy = deepClone(board);
   swapTiles(copy, a, b);
   const groups = findMatches(copy);
@@ -98,6 +103,15 @@ function activateBomb(board, r, c){
   return removed;
 }
 
+function activateHammer(board, r, c){
+  const removed = new Set();
+  // Hammer destroys only the target cell
+  if(r>=0 && r<board.length && c>=0 && c<board[0].length && board[r][c]){
+    removed.add(`${r},${c}`);
+  }
+  return removed;
+}
+
 // Activate colorbomb swapped with a color value -> remove all tiles of that value
 function activateColorBomb(board, colorValue){
   const rows = board.length; const cols = board[0].length;
@@ -113,298 +127,6 @@ function applyRemovalSet(board, removalSet){
   let removed = 0;
   for(const key of removalSet){ const [r,c]=key.split(',').map(Number); if(board[r][c]){ board[r][c]=null; removed++; } }
   return removed;
-}
-
-// Handle a swap including power-up interactions and return {phases, removedCount}
-export function handleSwapAndResolve(board, a, b, opts = {}){
-  const phases = [];
-  // swap first unless caller already swapped
-  if(!opts.skipSwap){
-    swapTiles(board, a, b);
-  }
-  phases.push({type:'after-swap', board: deepClone(board), swap:[a,b]});
-
-  // check special combinations
-  const ta = board[a.r][a.c];
-  const tb = board[b.r][b.c];
-  let totalRemoved = 0;
-  let activationRemovals = new Set();
-  let activationType = undefined;
-  let activationOrigin = undefined;
-
-  // same power-up combinations
-  if(ta && tb && ta.p && tb.p && ta.p === tb.p){
-    if(ta.p === 'bomb'){
-      // two bombs -> mega bomb: clear 5x5 area
-      activationType = 'mega-bomb';
-      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
-      for(let dr=-2; dr<=2; dr++){
-        for(let dc=-2; dc<=2; dc++){
-          const nr = a.r + dr, nc = a.c + dc;
-          if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length){
-            activationRemovals.add(`${nr},${nc}`);
-          }
-        }
-      }
-    } else if(ta.p === 'wrapped'){
-      // two wrapped -> mega wrapped: clear 5x5 area with wrapped effect
-      activationType = 'mega-wrapped';
-      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
-      for(let dr=-2; dr<=2; dr++){
-        for(let dc=-2; dc<=2; dc++){
-          const nr = a.r + dr, nc = a.c + dc;
-          if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length){
-            activationRemovals.add(`${nr},${nc}`);
-          }
-        }
-      }
-    } else if(ta.p === 'colorbomb'){
-      // two colorbombs -> rainbow bomb: clear entire board
-      activationType = 'rainbow-bomb';
-      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
-      for(let r=0;r<board.length;r++) for(let c=0;c<board[0].length;c++) activationRemovals.add(`${r},${c}`);
-    }
-    activationRemovals.add(`${a.r},${a.c}`);
-    activationRemovals.add(`${b.r},${b.c}`);
-  } else if(ta && ta.p==='colorbomb' && tb){
-  if(ta && ta.p==='colorbomb' && tb){
-    // colorbomb + X
-    if(tb.p==='colorbomb'){
-      // both colorbombs -> clear entire board
-      for(let r=0;r<board.length;r++) for(let c=0;c<board[0].length;c++) activationRemovals.add(`${r},${c}`);
-      activationRemovals.add(`${a.r},${a.c}`); activationRemovals.add(`${b.r},${b.c}`);
-    } else if(tb.p==='striped' || tb.p==='wrapped'){
-      // convert all tiles with value tb.v into that power and activate them
-      const targetVal = tb.v;
-      for(let r=0;r<board.length;r++){
-        for(let c=0;c<board[0].length;c++){
-          if(board[r][c] && board[r][c].v===targetVal){
-            board[r][c].p = tb.p;
-            // activate immediately and collect removals
-            if(tb.p==='striped'){
-              const rem = activateStriped(board, r, c, tb.orientation||'h');
-              for(const k of rem) activationRemovals.add(k);
-            } else if(tb.p==='wrapped'){
-              const rem = activateWrapped(board, r, c);
-              for(const k of rem) activationRemovals.add(k);
-            }
-          }
-        }
-      }
-      activationRemovals.add(`${a.r},${a.c}`);
-    } else {
-      // colorbomb + normal tile -> remove all of that color
-      const rem = activateColorBomb(board, tb.v);
-      activationRemovals = new Set([...activationRemovals, ...rem]);
-      activationRemovals.add(`${a.r},${a.c}`);
-    }
-  } else if(tb && tb.p==='colorbomb' && ta){
-    // symmetric cases for tb being colorbomb
-    if(ta.p==='colorbomb'){
-      for(let r=0;r<board.length;r++) for(let c=0;c<board[0].length;c++) activationRemovals.add(`${r},${c}`);
-      activationRemovals.add(`${a.r},${a.c}`); activationRemovals.add(`${b.r},${b.c}`);
-    } else if(ta.p==='striped' || ta.p==='wrapped'){
-      const targetVal = ta.v;
-      for(let r=0;r<board.length;r++){
-        for(let c=0;c<board[0].length;c++){
-          if(board[r][c] && board[r][c].v===targetVal){
-            board[r][c].p = ta.p;
-            if(ta.p==='striped'){
-              const rem = activateStriped(board, r, c, ta.orientation||'h');
-              for(const k of rem) activationRemovals.add(k);
-            } else if(ta.p==='wrapped'){
-              const rem = activateWrapped(board, r, c);
-              for(const k of rem) activationRemovals.add(k);
-            }
-          }
-        }
-      }
-      activationRemovals.add(`${b.r},${b.c}`);
-    } else {
-      const rem = activateColorBomb(board, ta.v);
-      activationRemovals = new Set([...activationRemovals, ...rem]);
-      activationRemovals.add(`${b.r},${b.c}`);
-    }
-  } else {
-    // single power activation: if swapped into a tile
-    if(ta && ta.p==='striped'){
-      const rem = activateStriped(board, a.r, a.c, ta.orientation||'h');
-      activationRemovals = new Set([...activationRemovals, ...rem]);
-      activationRemovals.add(`${a.r},${a.c}`);
-    }
-    if(ta && ta.p==='bomb'){
-      const rem = activateBomb(board, a.r, a.c);
-      activationRemovals = new Set([...activationRemovals, ...rem]);
-      activationRemovals.add(`${a.r},${a.c}`);
-      // record origin for UI
-      activationOrigin = {r:a.r, c:a.c}; activationType = 'bomb';
-    }
-    if(tb && tb.p==='striped'){
-      const rem = activateStriped(board, b.r, b.c, tb.orientation||'h');
-      activationRemovals = new Set([...activationRemovals, ...rem]);
-      activationRemovals.add(`${b.r},${b.c}`);
-    }
-    if(tb && tb.p==='bomb'){
-      const rem = activateBomb(board, b.r, b.c);
-      activationRemovals = new Set([...activationRemovals, ...rem]);
-      activationRemovals.add(`${b.r},${b.c}`);
-      activationOrigin = {r:b.r, c:b.c}; activationType = 'bomb';
-    }
-    if(ta && ta.p==='wrapped'){
-      const rem = activateWrapped(board, a.r, a.c);
-      activationRemovals = new Set([...activationRemovals, ...rem]);
-      activationRemovals.add(`${a.r},${a.c}`);
-    }
-    if(tb && tb.p==='wrapped'){
-      const rem = activateWrapped(board, b.r, b.c);
-      activationRemovals = new Set([...activationRemovals, ...rem]);
-      activationRemovals.add(`${b.r},${b.c}`);
-    }
-  }
-
-  let powerActivatedCount = 0;
-  if(activationRemovals.size>0){
-    // apply activations
-    const removedNow = applyRemovalSet(board, activationRemovals); totalRemoved += removedNow;
-    powerActivatedCount += 1;
-    const phase = {type:'power-activated', board: deepClone(board), removals:Array.from(activationRemovals)};
-    if(typeof activationType !== 'undefined') phase.power = activationType;
-    if(typeof activationOrigin !== 'undefined') phase.origin = activationOrigin;
-    phases.push(phase);
-  }
-
-  // after activations, resolve normal matches and cascading, collecting phases
-  // Prefer the detailed resolver that returns removed counts so scoring accounts for cascades.
-  // If the detailed resolver fails for any reason, fall back to the simpler resolver and
-  // compute removed counts from the returned phases.
-  let resolvedDetail;
-  try{
-    resolvedDetail = resolveAllWithPhases_returningDetail(board);
-    phases.push(...resolvedDetail.phases);
-    totalRemoved += (resolvedDetail.removedCount || 0);
-    // include any power creations/activations reported by the resolver in bonuses
-    const createdPowers = (resolvedDetail && (resolvedDetail.powerActivationsCount || resolvedDetail.powerActivations)) || 0;
-    powerActivatedCount += createdPowers;
-  }catch(err){
-    console.warn('detailed resolver failed, falling back', err);
-    // fallback: use older resolver and infer removedCount from match-found groups
-    const fallbackPhases = resolveAllWithPhases(board);
-    phases.push(...fallbackPhases);
-    // infer removed cells from 'match-found' phases
-    const removedSet = new Set();
-    for(const p of fallbackPhases){
-      if(p.type==='match-found' && p.groups){
-        for(const g of p.groups){ for(const cell of g.cells) removedSet.add(`${cell.r},${cell.c}`); }
-        // if power creations exist, those creation cells are not removed
-        if(p.powerCreations){ for(const pc of p.powerCreations){ removedSet.delete(`${pc.r},${pc.c}`); } }
-      }
-    }
-    totalRemoved += removedSet.size;
-  }
-
-  // scoring: base points per tile removed + bonuses for power activations and combos
-  const POINTS_PER_TILE = 60;
-  const POWER_BONUS = 200; // per power activated
-  const COMBO_BONUS = (powerActivatedCount >= 2) ? 500 : 0;
-  const base = totalRemoved * POINTS_PER_TILE;
-  const powerBonus = powerActivatedCount * POWER_BONUS;
-  const score = base + powerBonus + COMBO_BONUS;
-
-  return {phases, removedCount: totalRemoved, score};
-}
-
-// Helper wrapper: modified resolveAllWithPhases to return phases AND removedCount
-export function resolveAllWithPhases_returningDetail(board){
-  const all = []; let totalRemoved = 0;
-  let totalPowerActivations = 0;
-  while(true){
-    const result = resolveOnceWithPhases_returningDetail(board);
-    if(result.isNomatch) break;
-    all.push(...result.phases);
-    totalRemoved += result.removed;
-    // count power creations/activations reported by the inner resolver
-    if(result.powerActivations) totalPowerActivations += result.powerActivations;
-  }
-  return {phases: all, removedCount: totalRemoved, powerActivationsCount: totalPowerActivations};
-}
-
-// Update resolveOnceWithPhases to return removed count and phases (we keep both named variants)
-function resolveOnceWithPhases_returningDetail(board){
-  // reuse logic from resolveOnceWithPhases but return object
-  const phases = [];
-  const rawGroups = findMatches(board);
-  if(rawGroups.length===0){ return {isNomatch:true, phases:[{type:'nomatch', board: deepClone(board)}], removed:0}; }
-
-  const rows = board.length; const cols = board[0].length;
-  const cellMap = Array.from({length:rows}, ()=> Array(cols).fill(0).map(()=>[]));
-  rawGroups.forEach((g, idx)=>{ for(const p of g.cells) cellMap[p.r][p.c].push(idx); });
-
-  const powerCreations = [];
-  const toRemove = new Set();
-  let powerActivations = 0;
-
-  rawGroups.forEach((g, idx)=>{
-    let isCross = false;
-    for(const p of g.cells) if(cellMap[p.r][p.c].length>1) { isCross=true; break; }
-    if(isCross){
-      let inter = g.cells.find(p=>cellMap[p.r][p.c].length>1) || g.cells[0];
-      powerCreations.push({r:inter.r, c:inter.c, type:'wrapped'});
-      const involved = new Set();
-      for(const gi of cellMap[inter.r][inter.c]) for(const p of rawGroups[gi].cells) involved.add(`${p.r},${p.c}`);
-      for(const key of involved) if(key!==`${inter.r},${inter.c}`) toRemove.add(key);
-      return;
-    }
-    if(g.len>=5){
-      const mid = g.cells[Math.floor(g.cells.length/2)];
-      powerCreations.push({r:mid.r, c:mid.c, type:'colorbomb'});
-      for(const p of g.cells) if(!(p.r===mid.r && p.c===mid.c)) toRemove.add(`${p.r},${p.c}`);
-      return;
-    }
-    if(g.len===4){
-      // immediate bomb explosion: remove the matched 4 plus the 4 orthogonal neighbors
-      // choose center as middle cell for adjacency
-      const center = g.cells[Math.floor(g.cells.length/2)];
-      const adj = [[-1,0],[1,0],[0,-1],[0,1]];
-      // mark matched cells for removal
-      for(const p of g.cells) toRemove.add(`${p.r},${p.c}`);
-      // add orthogonal neighbors (if in bounds) to a separate set to report as explosion removals
-      const explosionAdds = new Set();
-      for(const [dr,dc] of adj){
-        const rr = center.r + dr, cc = center.c + dc;
-        if(rr>=0 && rr<rows && cc>=0 && cc<cols){ explosionAdds.add(`${rr},${cc}`); }
-      }
-      // merge into toRemove
-      for(const key of explosionAdds) toRemove.add(key);
-      // annotate a special immediate bomb action as a pseudo-powerCreation so UI can animate
-      powerCreations.push({r:center.r, c:center.c, type:'bomb-explode', removals:Array.from(explosionAdds)});
-      return;
-    }
-    for(const p of g.cells) toRemove.add(`${p.r},${p.c}`);
-  });
-
-  // debug: report groups
-  try{ console.debug('resolveOnceWithPhases_returningDetail: rawGroups=', rawGroups.map(g=>({len:g.len, orientation:g.orientation}))); }catch(e){}
-  phases.push({type:'match-found', board: deepClone(board), groups: rawGroups, powerCreations});
-  // If we created any immediate bomb-explode powerCreations, emit a dedicated 'bomb-explode' phase
-  for(const pc of powerCreations){
-    if(pc.type==='bomb-explode'){
-      phases.push({type:'bomb-explode', board: deepClone(board), origin:{r:pc.r, c:pc.c}, removals: pc.removals || []});
-    }
-  }
-
-  // count removals
-  let removedCount = 0;
-  for(const key of toRemove){ const [rr,cc]=key.split(',').map(Number); if(board[rr][cc]){ board[rr][cc]=null; removedCount++; } }
-  for(const pc of powerCreations){ const existing = board[pc.r][pc.c]; if(existing){ existing.p = pc.type; } else { board[pc.r][pc.c] = {v: getRandomTile().v, p: pc.type}; } }
-  powerActivations = powerCreations.length;
-
-  phases.push({type:'after-remove', board: deepClone(board), powerCreations});
-  applyGravity(board);
-  phases.push({type:'after-gravity', board: deepClone(board)});
-  refillBoard(board);
-  phases.push({type:'after-refill', board: deepClone(board)});
-
-  return {isNomatch:false, phases, removed: removedCount, powerActivations};
 }
 
 export function removeGroups(board, groups){
@@ -441,77 +163,88 @@ export function refillBoard(board){
 export function resolveOnceWithPhases(board){
   const phases = [];
   const rawGroups = findMatches(board);
-  if(rawGroups.length===0){
+  
+  // Check for holes (nulls)
+  let hasHoles = false;
+  for(let r=0; r<board.length; r++) {
+    for(let c=0; c<board[0].length; c++) {
+      if(board[r][c] === null) { hasHoles = true; break; }
+    }
+    if(hasHoles) break;
+  }
+
+  if(rawGroups.length===0 && !hasHoles){
     phases.push({type:'nomatch', board: deepClone(board)});
     return phases;
   }
 
-  // Merge groups and detect T/L (cross) shapes and power-up creation
-  // Map cell -> list of groups indices
-  const rows = board.length; const cols = board[0].length;
-  const cellMap = Array.from({length:rows}, ()=> Array(cols).fill(0).map(()=>[]));
-  rawGroups.forEach((g, idx)=>{
-    for(const p of g.cells) cellMap[p.r][p.c].push(idx);
-  });
+  if(rawGroups.length > 0) {
+    // Merge groups and detect T/L (cross) shapes and power-up creation
+    // Map cell -> list of groups indices
+    const rows = board.length; const cols = board[0].length;
+    const cellMap = Array.from({length:rows}, ()=> Array(cols).fill(0).map(()=>[]));
+    rawGroups.forEach((g, idx)=>{
+      for(const p of g.cells) cellMap[p.r][p.c].push(idx);
+    });
 
-  const powerCreations = []; // {r,c,type}
-  const toRemove = new Set();
+    const powerCreations = []; // {r,c,type}
+    const toRemove = new Set();
 
-  rawGroups.forEach((g, idx)=>{
-    // if any cell is intersection of horiz & vert groups -> wrapped (T/L)
-    let isCross = false;
-    for(const p of g.cells){
-      if(cellMap[p.r][p.c].length>1) { isCross = true; break; }
-    }
-    if(isCross){
-      // find intersection cell (prefer one with >1 groups)
-      let inter = g.cells.find(p=>cellMap[p.r][p.c].length>1) || g.cells[0];
-      powerCreations.push({r:inter.r, c:inter.c, type:'wrapped'});
-      // mark all cells in involved groups for removal except the creation cell
-      const involved = new Set();
-      for(const gi of cellMap[inter.r][inter.c]){
-        for(const p of rawGroups[gi].cells) involved.add(`${p.r},${p.c}`);
+    rawGroups.forEach((g, idx)=>{
+      // if any cell is intersection of horiz & vert groups -> wrapped (T/L)
+      let isCross = false;
+      for(const p of g.cells){
+        if(cellMap[p.r][p.c].length>1) { isCross = true; break; }
       }
-      for(const key of involved){ if(key!==`${inter.r},${inter.c}`) toRemove.add(key); }
-      return;
+      if(isCross){
+        // find intersection cell (prefer one with >1 groups)
+        let inter = g.cells.find(p=>cellMap[p.r][p.c].length>1) || g.cells[0];
+        powerCreations.push({r:inter.r, c:inter.c, type:'wrapped'});
+        // mark all cells in involved groups for removal except the creation cell
+        const involved = new Set();
+        for(const gi of cellMap[inter.r][inter.c]){
+          for(const p of rawGroups[gi].cells) involved.add(`${p.r},${p.c}`);
+        }
+        for(const key of involved){ if(key!==`${inter.r},${inter.c}`) toRemove.add(key); }
+        return;
+      }
+
+      if(g.len>=5){
+        // color bomb: place at center
+        const mid = g.cells[Math.floor(g.cells.length/2)];
+        powerCreations.push({r:mid.r, c:mid.c, type:'colorbomb'});
+        // remove others
+        for(const p of g.cells){ if(!(p.r===mid.r && p.c===mid.c)) toRemove.add(`${p.r},${p.c}`); }
+        return;
+      }
+
+      if(g.len===4){
+        // create a striped for 4-in-a-row
+        const pos = g.cells[0];
+        powerCreations.push({r:pos.r, c:pos.c, type:'striped', orientation: g.orientation});
+        for(const p of g.cells){ if(!(p.r===pos.r && p.c===pos.c)) toRemove.add(`${p.r},${p.c}`); }
+        return;
+      }
+
+      // default length 3 -> remove all
+      for(const p of g.cells) toRemove.add(`${p.r},${p.c}`);
+    });
+
+    // before removal: show match-found
+    phases.push({type:'match-found', board: deepClone(board), groups: rawGroups, powerCreations});
+
+    // apply removals
+    for(const key of toRemove){ const [rr,cc]=key.split(',').map(Number); if(board[rr][cc]) board[rr][cc]=null; }
+
+    // apply power creations (place power-ups on their cell, replacing tile)
+    for(const pc of powerCreations){
+      const existing = board[pc.r][pc.c];
+      if(existing){ existing.p = pc.type; }
+      else { board[pc.r][pc.c] = {v: getRandomTile().v, p: pc.type}; }
     }
-
-    if(g.len>=5){
-      // color bomb: place at center
-      const mid = g.cells[Math.floor(g.cells.length/2)];
-      powerCreations.push({r:mid.r, c:mid.c, type:'colorbomb'});
-      // remove others
-      for(const p of g.cells){ if(!(p.r===mid.r && p.c===mid.c)) toRemove.add(`${p.r},${p.c}`); }
-      return;
-    }
-
-    if(g.len===4){
-      // create a bomb for 4-in-a-row
-      const pos = g.cells[0];
-      powerCreations.push({r:pos.r, c:pos.c, type:'bomb', orientation: g.orientation});
-      for(const p of g.cells){ if(!(p.r===pos.r && p.c===pos.c)) toRemove.add(`${p.r},${p.c}`); }
-      return;
-    }
-
-    // default length 3 -> remove all
-    for(const p of g.cells) toRemove.add(`${p.r},${p.c}`);
-  });
-
-  // before removal: show match-found
-  phases.push({type:'match-found', board: deepClone(board), groups: rawGroups, powerCreations});
-
-  // apply removals
-  for(const key of toRemove){ const [rr,cc]=key.split(',').map(Number); if(board[rr][cc]) board[rr][cc]=null; }
-
-  // apply power creations (place power-ups on their cell, replacing tile)
-  let powerActivations = 0;
-  for(const pc of powerCreations){
-    const existing = board[pc.r][pc.c];
-    if(existing){ existing.p = pc.type; }
-    else { board[pc.r][pc.c] = {v: getRandomTile().v, p: pc.type}; }
-    powerActivations++;
+    phases.push({type:'after-remove', board: deepClone(board), powerCreations});
   }
-  phases.push({type:'after-remove', board: deepClone(board), powerCreations});
+
   applyGravity(board);
   phases.push({type:'after-gravity', board: deepClone(board)});
   refillBoard(board);
@@ -529,4 +262,348 @@ export function resolveAllWithPhases(board){
     all.push(...phases);
   }
   return all;
+}
+
+// Helper wrapper: modified resolveAllWithPhases to return phases AND removedCount
+export function resolveAllWithPhases_returningDetail(board){
+  const all = []; let totalRemoved = 0;
+  let totalPowerActivations = 0;
+  while(true){
+    const result = resolveOnceWithPhases_returningDetail(board);
+    if(result.isNomatch) break;
+    all.push(...result.phases);
+    totalRemoved += result.removed;
+    // count power creations/activations reported by the inner resolver
+    if(result.powerActivations) totalPowerActivations += result.powerActivations;
+  }
+  return {phases: all, removedCount: totalRemoved, powerActivationsCount: totalPowerActivations};
+}
+
+// Update resolveOnceWithPhases to return removed count and phases (we keep both named variants)
+function resolveOnceWithPhases_returningDetail(board){
+  // reuse logic from resolveOnceWithPhases but return object
+  const phases = [];
+  const rawGroups = findMatches(board);
+  
+  // Check for holes (nulls) that might have been left by boosters
+  let hasHoles = false;
+  for(let r=0; r<board.length; r++) {
+    for(let c=0; c<board[0].length; c++) {
+      if(board[r][c] === null) { hasHoles = true; break; }
+    }
+    if(hasHoles) break;
+  }
+
+  if(rawGroups.length===0 && !hasHoles){ 
+    return {isNomatch:true, phases:[{type:'nomatch', board: deepClone(board)}], removed:0}; 
+  }
+
+  const rows = board.length; const cols = board[0].length;
+  let removedCount = 0;
+  let powerActivations = 0;
+
+  if(rawGroups.length > 0) {
+    const cellMap = Array.from({length:rows}, ()=> Array(cols).fill(0).map(()=>[]));
+    rawGroups.forEach((g, idx)=>{ for(const p of g.cells) cellMap[p.r][p.c].push(idx); });
+
+    const powerCreations = [];
+    const toRemove = new Set();
+
+    rawGroups.forEach((g, idx)=>{
+      let isCross = false;
+      for(const p of g.cells) if(cellMap[p.r][p.c].length>1) { isCross=true; break; }
+      if(isCross){
+        let inter = g.cells.find(p=>cellMap[p.r][p.c].length>1) || g.cells[0];
+        powerCreations.push({r:inter.r, c:inter.c, type:'wrapped'});
+        const involved = new Set();
+        for(const gi of cellMap[inter.r][inter.c]) for(const p of rawGroups[gi].cells) involved.add(`${p.r},${p.c}`);
+        for(const key of involved) if(key!==`${inter.r},${inter.c}`) toRemove.add(key);
+        return;
+      }
+      if(g.len>=5){
+        const mid = g.cells[Math.floor(g.cells.length/2)];
+        powerCreations.push({r:mid.r, c:mid.c, type:'colorbomb'});
+        for(const p of g.cells) if(!(p.r===mid.r && p.c===mid.c)) toRemove.add(`${p.r},${p.c}`);
+        return;
+      }
+      if(g.len===4){
+        // create a striped for 4-in-a-row
+        const pos = g.cells[0];
+        powerCreations.push({r:pos.r, c:pos.c, type:'striped', orientation: g.orientation});
+        for(const p of g.cells){ if(!(p.r===pos.r && p.c===pos.c)) toRemove.add(`${p.r},${p.c}`); }
+        return;
+      }
+      for(const p of g.cells) toRemove.add(`${p.r},${p.c}`);
+    });
+
+    // debug: report groups
+    try{ console.debug('resolveOnceWithPhases_returningDetail: rawGroups=', rawGroups.map(g=>({len:g.len, orientation:g.orientation}))); }catch(e){}
+    phases.push({type:'match-found', board: deepClone(board), groups: rawGroups, powerCreations});
+    
+    // apply removals
+    for(const key of toRemove){ const [rr,cc]=key.split(',').map(Number); if(board[rr][cc]){ board[rr][cc]=null; removedCount++; } }
+    
+    // apply power creations
+    for(const pc of powerCreations){ 
+      const existing = board[pc.r][pc.c]; 
+      if(existing){ existing.p = pc.type; } 
+      else { board[pc.r][pc.c] = {v: getRandomTile().v, p: pc.type}; } 
+    }
+    powerActivations = powerCreations.length;
+    phases.push({type:'after-remove', board: deepClone(board), powerCreations});
+  }
+
+  // gravity and refill
+  applyGravity(board);
+  phases.push({type:'after-gravity', board: deepClone(board)});
+  refillBoard(board);
+  phases.push({type:'after-refill', board: deepClone(board)});
+
+  return {phases, removed: removedCount, powerActivations};
+}
+
+// Handle a swap including power-up interactions and return {phases, removedCount}
+export function handleSwapAndResolve(board, a, b, opts = {}){
+  const phases = [];
+  // swap first unless caller already swapped
+  if(!opts.skipSwap){
+    swapTiles(board, a, b);
+  }
+  phases.push({type:'after-swap', board: deepClone(board), swap:[a,b]});
+
+  // check special combinations
+  const ta = board[a.r][a.c];
+  const tb = board[b.r][b.c];
+  let totalRemoved = 0;
+  let activationRemovals = new Set();
+  let activationType = undefined;
+  let activationOrigin = undefined;
+
+  // same power-up combinations
+  if(ta && tb && ta.p && tb.p && ta.p === tb.p){
+    if(ta.p === 'striped'){
+      // two striped -> mega striped: clear entire row and column
+      activationType = 'mega-striped';
+      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+      // clear row
+      for(let c=0; c<board[0].length; c++) activationRemovals.add(`${a.r},${c}`);
+      // clear column
+      for(let r=0; r<board.length; r++) activationRemovals.add(`${r},${a.c}`);
+    } else if(ta.p === 'wrapped'){
+      // two wrapped -> mega wrapped: clear 5x5 area with wrapped effect
+      activationType = 'mega-wrapped';
+      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+      for(let dr=-2; dr<=2; dr++){
+        for(let dc=-2; dc<=2; dc++){
+          const nr = a.r + dr, nc = a.c + dc;
+          if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length){
+            activationRemovals.add(`${nr},${nc}`);
+          }
+        }
+      }
+    } else if(ta.p === 'colorbomb'){
+      // two colorbombs -> rainbow bomb: clear entire board
+      activationType = 'rainbow-bomb';
+      activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+      for(let r=0;r<board.length;r++) for(let c=0;c<board[0].length;c++) activationRemovals.add(`${r},${c}`);
+    }
+    activationRemovals.add(`${a.r},${a.c}`);
+    activationRemovals.add(`${b.r},${b.c}`);
+  } else if ((ta && ta.p === 'striped' && tb && tb.p === 'wrapped') || (ta && ta.p === 'wrapped' && tb && tb.p === 'striped')) {
+    // striped + wrapped -> bomb: clear 3x3 area
+    activationType = 'bomb';
+    activationOrigin = {r: Math.floor((a.r + b.r)/2), c: Math.floor((a.c + b.c)/2)};
+    for(let dr=-1; dr<=1; dr++){
+      for(let dc=-1; dc<=1; dc++){
+        const nr = a.r + dr, nc = a.c + dc;
+        if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length){
+          activationRemovals.add(`${nr},${nc}`);
+        }
+      }
+    }
+    activationRemovals.add(`${a.r},${a.c}`);
+    activationRemovals.add(`${b.r},${b.c}`);
+  } else if(ta && ta.p==='colorbomb' && tb){
+    // colorbomb + X
+    if(tb.p==='colorbomb'){
+      // both colorbombs -> clear entire board
+      for(let r=0;r<board.length;r++) for(let c=0;c<board[0].length;c++) activationRemovals.add(`${r},${c}`);
+      activationRemovals.add(`${a.r},${a.c}`); activationRemovals.add(`${b.r},${b.c}`);
+    } else if(tb.p==='striped' || tb.p==='wrapped'){
+      // convert all tiles with value tb.v into that power and activate them
+      const targetVal = tb.v;
+      for(let r=0;r<board.length;r++){
+        for(let c=0;c<board[0].length;c++){
+          if(board[r][c] && board[r][c].v===targetVal){
+            board[r][c].p = tb.p;
+            // activate immediately and collect removals
+            if(tb.p==='striped'){
+              const rem = activateStriped(board, r, c, tb.orientation||'h');
+              for(const k of rem) activationRemovals.add(k);
+            } else if(tb.p==='wrapped'){
+              const rem = activateWrapped(board, r, c);
+              for(const k of rem) activationRemovals.add(k);
+            }
+          }
+        }
+      }
+      activationRemovals.add(`${a.r},${a.c}`);
+    } else {
+      // colorbomb + normal tile -> remove all of that color
+      const rem = activateColorBomb(board, tb.v);
+      activationRemovals = new Set([...activationRemovals, ...rem]);
+      activationRemovals.add(`${a.r},${a.c}`);
+      activationRemovals.add(`${b.r},${b.c}`);
+    }
+  } else if(tb && tb.p==='colorbomb' && ta){
+    // symmetric cases for tb being colorbomb
+    if(ta.p==='colorbomb'){
+      for(let r=0;r<board.length;r++) for(let c=0;c<board[0].length;c++) activationRemovals.add(`${r},${c}`);
+      activationRemovals.add(`${a.r},${a.c}`); activationRemovals.add(`${b.r},${b.c}`);
+    } else if(ta.p==='striped' || ta.p==='wrapped'){
+      const targetVal = ta.v;
+      for(let r=0;r<board.length;r++){
+        for(let c=0;c<board[0].length;c++){
+          if(board[r][c] && board[r][c].v===targetVal){
+            board[r][c].p = ta.p;
+            if(ta.p==='striped'){
+              const rem = activateStriped(board, r, c, ta.orientation||'h');
+              for(const k of rem) activationRemovals.add(k);
+            } else if(ta.p==='wrapped'){
+              const rem = activateWrapped(board, r, c);
+              for(const k of rem) activationRemovals.add(k);
+            }
+          }
+        }
+      }
+      activationRemovals.add(`${a.r},${a.c}`);
+      activationRemovals.add(`${b.r},${b.c}`);
+    } else {
+      const rem = activateColorBomb(board, ta.v);
+      activationRemovals = new Set([...activationRemovals, ...rem]);
+      activationRemovals.add(`${a.r},${a.c}`);
+      activationRemovals.add(`${b.r},${b.c}`);
+    }
+  } else if ((ta && ta.p === 'hammer' && tb) || (tb && tb.p === 'hammer' && ta)) {
+    // hammer + X -> destroy 3x3 area around the swap
+    activationType = 'hammer-explode';
+    activationOrigin = (ta && ta.p === 'hammer') ? a : b;
+    const origin = activationOrigin;
+    for(let dr=-1; dr<=1; dr++){
+      for(let dc=-1; dc<=1; dc++){
+        const nr = origin.r + dr, nc = origin.c + dc;
+        if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length){
+          activationRemovals.add(`${nr},${nc}`);
+        }
+      }
+    }
+    activationRemovals.add(`${a.r},${a.c}`);
+    activationRemovals.add(`${b.r},${b.c}`);
+  } else if ((ta && ta.p === 'bomb' && tb) || (tb && tb.p === 'bomb' && ta)) {
+    // bomb + X -> massive 5x5 explosion
+    activationType = 'bomb-explode-mega';
+    activationOrigin = (ta && ta.p === 'bomb') ? a : b;
+    const origin = activationOrigin;
+    for(let dr=-2; dr<=2; dr++){
+      for(let dc=-2; dc<=2; dc++){
+        const nr = origin.r + dr, nc = origin.c + dc;
+        if(nr>=0 && nr<board.length && nc>=0 && nc<board[0].length){
+          activationRemovals.add(`${nr},${nc}`);
+        }
+      }
+    }
+    activationRemovals.add(`${a.r},${a.c}`);
+    activationRemovals.add(`${b.r},${b.c}`);
+  } else {
+    // single power activation: if swapped into a tile
+    if(ta && ta.p==='striped'){
+      const rem = activateStriped(board, a.r, a.c, ta.orientation||'h');
+      activationRemovals = new Set([...activationRemovals, ...rem]);
+      activationRemovals.add(`${a.r},${a.c}`);
+    }
+    if(ta && ta.p==='bomb'){
+      const rem = activateBomb(board, a.r, a.c);
+      activationRemovals = new Set([...activationRemovals, ...rem]);
+      activationRemovals.add(`${a.r},${a.c}`);
+      // record origin for UI
+      activationOrigin = {r:a.r, c:a.c}; activationType = 'bomb';
+    }
+    if(ta && ta.p==='hammer'){
+      const rem = activateHammer(board, a.r, a.c);
+      activationRemovals = new Set([...activationRemovals, ...rem]);
+      activationRemovals.add(`${a.r},${a.c}`);
+      // record origin for UI
+      activationOrigin = {r:a.r, c:a.c}; activationType = 'hammer';
+    }
+    if(tb && tb.p==='striped'){
+      const rem = activateStriped(board, b.r, b.c, tb.orientation||'h');
+      activationRemovals = new Set([...activationRemovals, ...rem]);
+      activationRemovals.add(`${b.r},${b.c}`);
+    }
+    if(tb && tb.p==='bomb'){
+      const rem = activateBomb(board, b.r, b.c);
+      activationRemovals = new Set([...activationRemovals, ...rem]);
+      activationRemovals.add(`${b.r},${b.c}`);
+      activationOrigin = {r:b.r, c:b.c}; activationType = 'bomb';
+    }
+    if(tb && tb.p==='hammer'){
+      const rem = activateHammer(board, b.r, b.c);
+      activationRemovals = new Set([...activationRemovals, ...rem]);
+      activationRemovals.add(`${b.r},${b.c}`);
+      activationOrigin = {r:b.r, c:b.c}; activationType = 'hammer';
+    }
+    if(ta && ta.p==='wrapped'){
+      const rem = activateWrapped(board, a.r, a.c);
+      activationRemovals = new Set([...activationRemovals, ...rem]);
+      activationRemovals.add(`${a.r},${a.c}`);
+    }
+    if(tb && tb.p==='wrapped'){
+      const rem = activateWrapped(board, b.r, b.c);
+      activationRemovals = new Set([...activationRemovals, ...rem]);
+      activationRemovals.add(`${b.r},${b.c}`);
+    }
+  }
+
+  let powerActivatedCount = 0;
+  if(activationRemovals.size>0){
+    // apply activations
+    const removedNow = applyRemovalSet(board, activationRemovals); totalRemoved += removedNow;
+    powerActivatedCount += 1;
+    const phase = {type:'power-activated', board: deepClone(board), removals:Array.from(activationRemovals)};
+    if(typeof activationType !== 'undefined') phase.power = activationType;
+    if(typeof activationOrigin !== 'undefined') phase.origin = activationOrigin;
+    phases.push(phase);
+  }
+
+  // after activations, resolve normal matches and cascading, collecting phases
+  let resolvedDetail;
+  try{
+    resolvedDetail = resolveAllWithPhases_returningDetail(board);
+    phases.push(...resolvedDetail.phases);
+    totalRemoved += (resolvedDetail.removedCount || 0);
+    const createdPowers = (resolvedDetail && (resolvedDetail.powerActivationsCount || resolvedDetail.powerActivations)) || 0;
+    powerActivatedCount += createdPowers;
+  }catch(err){
+    console.warn('detailed resolver failed, falling back', err);
+    const fallbackPhases = resolveAllWithPhases(board);
+    phases.push(...fallbackPhases);
+    const removedSet = new Set();
+    for(const p of fallbackPhases){
+      if(p.type==='match-found' && p.groups){
+        for(const g of p.groups){ for(const cell of g.cells) removedSet.add(`${cell.r},${cell.c}`); }
+        if(p.powerCreations){ for(const pc of p.powerCreations){ removedSet.delete(`${pc.r},${pc.c}`); } }
+      }
+    }
+    totalRemoved += removedSet.size;
+  }
+
+  // scoring
+  const POINTS_PER_TILE = 10;
+  const POWER_BONUS = 50;
+  const COMBO_BONUS = (powerActivatedCount >= 2) ? 100 : 0;
+  const base = totalRemoved * POINTS_PER_TILE;
+  const powerBonus = powerActivatedCount * POWER_BONUS;
+  const score = base + powerBonus + COMBO_BONUS;
+
+  return {phases, removedCount: totalRemoved, score};
 }
