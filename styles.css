@@ -934,11 +934,39 @@ main{width:100%; max-width:760px; padding:12px}
 @keyframes hammer-pulse{ 0%{ transform:scale(1) rotate(0deg) } 25%{ transform:scale(1.05) rotate(-2deg) } 75%{ transform:scale(1.05) rotate(2deg) } 100%{ transform:scale(1) rotate(0deg) } }
 
 .grid{position:relative}
-.cell{transition:transform 220ms ease, opacity 180ms ease; position:relative}
+.cell{transition:transform 120ms ease, opacity 100ms ease; position:relative}
 
 /* swap animation helper */
-.anim-swap{will-change:transform; transition:transform 220ms cubic-bezier(.2,.8,.2,1)}
-.anim-remove{transition:opacity 220ms ease, transform 260ms ease; opacity:0; transform:scale(0.85)}
+.anim-swap{will-change:transform; transition:transform 120ms cubic-bezier(.2,.8,.2,1)}
+.anim-remove{transition:opacity 100ms ease, transform 120ms ease; opacity:0; transform:scale(0.5)}
+
+/* Combo Counter Popup */
+.combo-counter {
+  position: fixed;
+  font-size: 3.5em;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(139, 108, 255, 0.6);
+  pointer-events: none;
+  z-index: 3000;
+  opacity: 0;
+  display: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-style: italic;
+}
+
+.combo-counter.show {
+  display: block;
+  animation: combo-pop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes combo-pop {
+  0% { transform: translate(-50%, -50%) scale(0.5) rotate(-10deg); opacity: 0; }
+  30% { transform: translate(-50%, -50%) scale(1.2) rotate(5deg); opacity: 1; }
+  70% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.5) rotate(10deg); opacity: 0; }
+}
 
 /* Preview panel */
 #preview-panel{margin-top:12px}
