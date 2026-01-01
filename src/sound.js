@@ -10,30 +10,55 @@ let _volume = 0.8;  // Increased default volume for more attractive music
 let _sfxEnabled = true;
 let _musicEnabled = true;
 let backgroundPlaying = false;
+let currentTrackIndex = 0;
+let isChangingTrack = false;
+const ambientPlaylist = [
+  'assets/audio/ambient1.mp3',
+  'assets/audio/ambient2.mp3',
+  'assets/audio/ambient3.mp3'
+];
 // SFX buffer registry
 const sfxBuffers = new Map();
 let sfxManifest = null; // loaded from assets/audio/manifest.json if present
 window.CCA_audio_debug = window.CCA_audio_debug || false;
 
 export async function initAudio(){
-  if(audioCtx) return Promise.resolve();
+  if(audioCtx && audioCtx.state !== 'closed') return Promise.resolve();
+  
+  console.log('[initAudio] Initializing AudioContext...');
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    
+    // If created outside a gesture, it will be 'suspended'
+    if (audioCtx.state === 'suspended') {
+      console.log('[initAudio] AudioContext is suspended, waiting for gesture...');
+    }
+
     masterGain = audioCtx.createGain(); 
     masterGain.gain.value = _volume; 
     masterGain.connect(audioCtx.destination);
 
     // create Audio elements (they may 404 later when played)
-    try{ ambientAudio = new Audio('/assets/audio/ambient.wav'); ambientAudio.loop = true; ambientAudio.volume = 0.0; }catch(e){ ambientAudio = null; }
-    try{ swapAudio = new Audio('/assets/audio/swap.wav'); }catch(e){ swapAudio = null; }
-    try{ matchAudio = new Audio('/assets/audio/match.wav'); }catch(e){ matchAudio = null; }
+    try{ swapAudio = new Audio('assets/audio/swap.wav'); }catch(e){ swapAudio = null; }
+    try{ matchAudio = new Audio('assets/audio/match.wav'); }catch(e){ matchAudio = null; }
 
     // resume on user gesture if needed
-    try{ audioCtx.resume(); }catch(e){}
+    const resume = async () => {
+      if (audioCtx && audioCtx.state === 'suspended') {
+        await audioCtx.resume().catch(() => {});
+        console.log('[initAudio] AudioContext resumed via gesture');
+      }
+      document.removeEventListener('click', resume);
+      document.removeEventListener('touchstart', resume);
+      document.removeEventListener('keydown', resume);
+    };
+
     if(audioCtx.state === 'suspended'){
-      const resume = ()=>{ audioCtx.resume().catch(()=>{}); document.removeEventListener('click', resume); document.removeEventListener('touchstart', resume); };
       document.addEventListener('click', resume);
       document.addEventListener('touchstart', resume);
+      document.addEventListener('keydown', resume);
+    } else {
+      console.log('[initAudio] AudioContext is already running');
     }
 
     // load persisted audio + preference settings
@@ -53,7 +78,7 @@ export async function initAudio(){
 // load a small manifest mapping semantic names to file paths
 export async function loadSFXManifest(){
   try{
-    const resp = await fetch('/assets/audio/manifest.json', {cache: 'no-cache'});
+    const resp = await fetch('assets/audio/manifest.json', {cache: 'no-cache'});
     if(!resp.ok) throw new Error('no manifest');
     sfxManifest = await resp.json();
     if(window.CCA_audio_debug) console.debug('SFX manifest loaded', sfxManifest);
@@ -69,7 +94,7 @@ export async function preloadSFX(name){
   if(sfxBuffers.has(name)) return sfxBuffers.get(name);
   const file = sfxManifest[name];
   if(!file) return Promise.reject(new Error('no file for '+name));
-  const url = '/assets/audio/' + file;
+  const url = 'assets/audio/' + file;
   const resp = await fetch(url, {cache:'no-cache'});
   if(!resp.ok) throw new Error('failed fetch '+url);
   const ab = await resp.arrayBuffer();
@@ -109,29 +134,70 @@ export function playSFX(name, opts = {}){
 function startSynth(){
   if(!audioCtx || synthRefs) return;
   if(_muted || !_musicEnabled) return;
-  const bgGain = audioCtx.createGain(); bgGain.gain.value = 0.7; bgGain.connect(masterGain);
+  
+  console.log('[startSynth] Starting procedural background music');
+  const bgGain = audioCtx.createGain(); 
+  bgGain.gain.value = 0.001; 
+  bgGain.connect(masterGain);
+  bgGain.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 2);
   backgroundPlaying = true;
 
-  // pad
-  const pad1 = audioCtx.createOscillator(); const pad2 = audioCtx.createOscillator();
-  const padGain = audioCtx.createGain(); padGain.gain.value = 0.0; padGain.connect(bgGain);
-  const padFilter = audioCtx.createBiquadFilter(); padFilter.type = 'lowpass'; padFilter.frequency.value = 1200;
-  pad1.type = 'sine'; pad2.type = 'sine'; pad1.frequency.value = 55; pad2.frequency.value = 61.74;
-  pad1.connect(padFilter); pad2.connect(padFilter); padFilter.connect(padGain);
-  pad1.start(); pad2.start();
-  padGain.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 0.9);
+  // Deep space drone
+  const pad1 = audioCtx.createOscillator(); 
+  const pad2 = audioCtx.createOscillator();
+  const padGain = audioCtx.createGain(); 
+  padGain.gain.value = 0.05; 
+  padGain.connect(bgGain);
+  
+  const padFilter = audioCtx.createBiquadFilter(); 
+  padFilter.type = 'lowpass'; 
+  padFilter.frequency.value = 800;
+  
+  pad1.type = 'sine'; 
+  pad2.type = 'triangle'; 
+  pad1.frequency.value = 40; // Low E
+  pad2.frequency.value = 60; // Low B
+  
+  pad1.connect(padFilter); 
+  pad2.connect(padFilter); 
+  padFilter.connect(padGain);
+  
+  pad1.start(); 
+  pad2.start();
 
-  // simple arp interval
-  const patterns = [[220,277.18,329.63,369.99],[196,246.94,293.66,329.63]];
-  const arp = patterns[Math.floor(Math.random()*patterns.length)];
-  let idx = 0;
-  const arpInterval = setInterval(()=>{
-    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-    o.type = 'triangle'; o.frequency.value = arp[idx % arp.length] * (Math.random()>0.8?2:1);
-    g.gain.value = 0.01 + Math.random()*0.01; o.connect(g); g.connect(bgGain);
-    o.start(); o.stop(audioCtx.currentTime + 0.22 + Math.random()*0.28);
-    idx++;
-  }, 420 + Math.random()*200);
+  // Ethereal melody
+  const patterns = [
+    [261.63, 329.63, 392.00, 523.25], // C Major
+    [220.00, 261.63, 329.63, 440.00], // A Minor
+    [196.00, 246.94, 293.66, 392.00]  // G Major
+  ];
+  let patternIdx = 0;
+  let noteIdx = 0;
+  
+  const arpInterval = setInterval(() => {
+    if (!audioCtx || !backgroundPlaying) return;
+    
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'sine';
+    const currentPattern = patterns[patternIdx % patterns.length];
+    osc.frequency.value = currentPattern[noteIdx % currentPattern.length];
+    
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.05, now + 0.5);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 2);
+    
+    osc.connect(gain);
+    gain.connect(bgGain);
+    
+    osc.start(now);
+    osc.stop(now + 2.1);
+    
+    noteIdx++;
+    if (noteIdx % 8 === 0) patternIdx++;
+  }, 1500);
 
   synthRefs = { pad1, pad2, padGain, padFilter, arpInterval, bgGain };
 }
@@ -145,53 +211,157 @@ function stopSynth(){
   synthRefs = null;
 }
 
-export function playBackground(){
+let ambientSource = null;
+
+export async function playBackground(force = false){
   if(_muted || !_musicEnabled){
+    console.log('[playBackground] Muted or music disabled, stopping.');
     stopBackground();
     return;
   }
-  initAudio().catch(()=>{});
-  stopBackground();
-  // try to play ambient file if it exists (HEAD check)
-  try{
-    // Ensure audio context is running before attempting to play
+  
+  try {
+    await initAudio();
     if(audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume().catch(e => console.warn('AudioContext resume failed:', e));
+      await audioCtx.resume();
     }
-    
-    fetch('/assets/audio/ambient.wav', { method: 'HEAD' })
-      .then(resp => {
-        if(resp.ok && ambientAudio){
-          ambientAudio.volume = 0.0; 
-          ambientAudio.currentTime = 0;
-          ambientAudio.play().then(() => {
-            backgroundPlaying = true;
-            // fade in
-            const fadeTo = _volume * 0.9; 
-            let v = 0; 
-            const step = 0.06; 
-            const iv = setInterval(()=>{ 
-              v += step; 
-              ambientAudio.volume = Math.min(fadeTo, v); 
-              if(ambientAudio.volume>=fadeTo) clearInterval(iv); 
-            }, 60);
-            console.log('[playBackground] ✓ Ambient audio playing with fade-in');
-          }).catch(e => {
-            console.warn('[playBackground] ambient.play() failed:', e);
-            startSynth();
-          });
-        } else {
-          startSynth();
-        }
-      })
-      .catch(e => { 
-        console.warn('[playBackground] fetch failed:', e); 
+  } catch(e) {
+    console.warn('[playBackground] initAudio failed:', e);
+  }
+
+  // If already playing and not forced, stay quiet
+  if (!force && backgroundPlaying && ambientAudio && !ambientAudio.paused) {
+    console.log('[playBackground] Already playing, skipping.');
+    return;
+  }
+
+  console.log('[playBackground] State:', {
+    force,
+    backgroundPlaying,
+    isChangingTrack,
+    ambientAudio: ambientAudio ? {
+      src: ambientAudio.src,
+      paused: ambientAudio.paused,
+      volume: ambientAudio.volume,
+      readyState: ambientAudio.readyState
+    } : 'null'
+  });
+
+  if (isChangingTrack && !force) {
+    console.log('[playBackground] Change already in progress, skipping.');
+    return;
+  }
+  
+  isChangingTrack = true;
+
+  try{
+    if (!ambientAudio) {
+      console.log('[playBackground] Creating new Audio element');
+      ambientAudio = new Audio();
+      ambientAudio.crossOrigin = "anonymous"; 
+      
+      ambientAudio.addEventListener('ended', () => {
+        console.log('[playBackground] Track ended, playing next...');
+        currentTrackIndex = (currentTrackIndex + 1) % ambientPlaylist.length;
+        playBackground(true);
+      });
+      
+      ambientAudio.addEventListener('error', (e) => {
+        console.error('[playBackground] Audio element error:', e);
+        isChangingTrack = false;
         startSynth();
       });
+
+      ambientAudio.addEventListener('play', () => {
+        console.log('[playBackground] Audio element "play" event fired');
+      });
+      
+      ambientAudio.addEventListener('playing', () => {
+        console.log('[playBackground] Audio element "playing" event fired');
+      });
+
+      ambientAudio.addEventListener('pause', () => {
+        console.log('[playBackground] Audio element "pause" event fired');
+      });
+    }
+
+    // Ensure connected to WebAudio graph
+    if (audioCtx && !ambientSource && ambientAudio) {
+      try {
+        ambientSource = audioCtx.createMediaElementSource(ambientAudio);
+        ambientSource.connect(masterGain);
+        console.log('[playBackground] Connected ambient audio to masterGain');
+      } catch(err) {
+        console.warn('[playBackground] Could not connect to WebAudio:', err);
+      }
+    }
+
+    // Pick a random track if we are just starting
+    if (!backgroundPlaying && (!ambientAudio.src || ambientAudio.src === "")) {
+      currentTrackIndex = Math.floor(Math.random() * ambientPlaylist.length);
+      console.log('[playBackground] Initial track selection:', currentTrackIndex);
+    }
+    
+    const trackUrl = ambientPlaylist[currentTrackIndex];
+    const absoluteTrackUrl = new URL(trackUrl, window.location.href).href;
+    
+    if (ambientAudio.src !== absoluteTrackUrl) {
+      console.log('[playBackground] Changing src to:', trackUrl);
+      ambientAudio.src = trackUrl;
+      ambientAudio.load();
+    }
+
+    console.log('[playBackground] Attempting to play:', ambientAudio.src);
+    ambientAudio.play()
+      .then(() => {
+        console.log('[playBackground] ✓ Playback started successfully');
+        isChangingTrack = false;
+        backgroundPlaying = true;
+        fadeInAmbient();
+      })
+      .catch(e => {
+        isChangingTrack = false;
+        if (e.name === 'AbortError') {
+          console.log('[playBackground] Playback aborted (normal)');
+          return;
+        }
+        
+        console.warn('[playBackground] Track failed, trying next:', trackUrl, e);
+        currentTrackIndex = (currentTrackIndex + 1) % ambientPlaylist.length;
+        
+        if (currentTrackIndex === 0) {
+           console.error('[playBackground] All tracks failed, falling back to synth');
+           startSynth();
+        } else {
+           playBackground(true);
+        }
+      });
   } catch(e){ 
-    console.warn('[playBackground] error:', e); 
+    isChangingTrack = false;
+    console.warn('[playBackground] Critical error:', e); 
     startSynth();
   }
+}
+
+function fadeInAmbient() {
+  if (!ambientAudio) return;
+  const fadeTo = ambientSource ? 1.0 : _volume; 
+  let v = 0; 
+  ambientAudio.volume = 0;
+  const step = 0.05; 
+  console.log('[fadeInAmbient] Starting fade-in to:', fadeTo);
+  const iv = setInterval(()=>{ 
+    v += step; 
+    if (ambientAudio) {
+      ambientAudio.volume = Math.min(fadeTo, v); 
+      if(ambientAudio.volume >= fadeTo) {
+        clearInterval(iv);
+        console.log('[fadeInAmbient] Fade-in complete');
+      }
+    } else {
+      clearInterval(iv);
+    }
+  }, 100);
 }
 
 export function stopBackground(){
@@ -295,30 +465,106 @@ export async function testTone(){
   }catch(e){ console.warn('testTone failed', e); }
 }
 
-export function setVolume(v){ _volume = Math.max(0,Math.min(1,v)); if(masterGain) masterGain.gain.value = _volume; try{ if(ambientAudio) ambientAudio.volume = _volume; }catch(e){} try{ localStorage.setItem('cca_volume', String(_volume)); }catch(e){} }
+export function setVolume(v){ 
+  _volume = Math.max(0,Math.min(1,v)); 
+  if(masterGain) {
+    if (audioCtx) {
+      masterGain.gain.setTargetAtTime(_volume, audioCtx.currentTime, 0.1);
+    } else {
+      masterGain.gain.value = _volume;
+    }
+  }
+  try{ 
+    if(ambientAudio) {
+      ambientAudio.volume = ambientSource ? 1.0 : _volume;
+    }
+  }catch(e){} 
+  try{ localStorage.setItem('cca_volume', String(_volume)); }catch(e){} 
+}
 export function getVolume(){ return _volume; }
-export function toggleMute(){ _muted = !_muted; if(_muted){ try{ if(ambientAudio) ambientAudio.pause(); }catch(e){} if(masterGain) masterGain.gain.value = 0; } else { if(masterGain) masterGain.gain.value = _volume; try{ if(ambientAudio) ambientAudio.play().catch(()=>{}); }catch(e){} } try{ localStorage.setItem('cca_muted', _muted? '1':'0'); }catch(e){} return _muted; }
+export function toggleMute(){ 
+  _muted = !_muted; 
+  console.log('[toggleMute] Muted:', _muted);
+  if(_muted){ 
+    if(masterGain) masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+    try{ if(ambientAudio) ambientAudio.pause(); }catch(e){} 
+  } else { 
+    if(masterGain) masterGain.gain.setTargetAtTime(_volume, audioCtx.currentTime, 0.1);
+    try{ if(ambientAudio) ambientAudio.play().catch(e => console.warn('[toggleMute] play failed:', e)); }catch(e){} 
+  } 
+  try{ localStorage.setItem('cca_muted', _muted? '1':'0'); }catch(e){} 
+  return _muted; 
+}
 export function isMuted(){ return _muted; }
 
 export function setSFXEnabled(flag){ _sfxEnabled = !!flag; try{ localStorage.setItem('cca_sfx', _sfxEnabled ? '1' : '0'); }catch(e){} }
 export function isSFXEnabled(){ return _sfxEnabled; }
 
-export function setMusicEnabled(flag){ _musicEnabled = !!flag; try{ localStorage.setItem('cca_music', _musicEnabled ? '1' : '0'); }catch(e){} if(!_musicEnabled){ try{ stopBackground(); }catch(e){} } else { try{ playBackground(); }catch(e){} } }
+export function setMusicEnabled(flag){ 
+  console.log('[setMusicEnabled] Setting music enabled to:', flag);
+  _musicEnabled = !!flag; 
+  try{ localStorage.setItem('cca_music', _musicEnabled ? '1' : '0'); }catch(e){} 
+  if(!_musicEnabled){ 
+    try{ stopBackground(); }catch(e){} 
+  } else { 
+    try{ playBackground(true); }catch(e){} 
+  } 
+}
 export function isMusicEnabled(){ return _musicEnabled; }
 
-export function loadSettings(){ try{ const v = localStorage.getItem('cca_volume'); if(v!==null){ _volume = Number(v); if(masterGain) masterGain.gain.value = _volume; } const m = localStorage.getItem('cca_muted'); if(m!==null){ _muted = m==='1' || m==='true'; if(_muted && masterGain) masterGain.gain.value = 0; } }catch(e){} }
+export function loadSettings(){ 
+  try{ 
+    const v = localStorage.getItem('cca_volume'); 
+    if(v!==null){ 
+      _volume = Number(v); 
+      console.log('[loadSettings] Volume:', _volume);
+      if(masterGain) masterGain.gain.value = _volume; 
+    } 
+    const m = localStorage.getItem('cca_muted'); 
+    if(m!==null){ 
+      _muted = m==='1' || m==='true'; 
+      console.log('[loadSettings] Muted:', _muted);
+      if(_muted && masterGain) masterGain.gain.value = 0; 
+    } 
+  }catch(e){ console.warn('[loadSettings] error:', e); } 
+}
 
 // Enhanced load: also load SFX/music/reduced-motion flags
 export function loadSettingsEnhanced(){
   try{
     loadSettings();
-    const s = localStorage.getItem('cca_sfx'); if(s!==null) _sfxEnabled = s==='1' || s==='true';
-    const mu = localStorage.getItem('cca_music'); if(mu!==null) _musicEnabled = mu==='1' || mu==='true';
-    const red = localStorage.getItem('cca_reduced_motion'); if(red!==null){ window.CCA_reduced_motion = (red==='1' || red==='true'); if(window.CCA_reduced_motion) document.body.classList.add('cca-reduced-motion'); else document.body.classList.remove('cca-reduced-motion'); }
-  }catch(e){}
+    const s = localStorage.getItem('cca_sfx'); 
+    if(s!==null) {
+      _sfxEnabled = s==='1' || s==='true';
+      console.log('[loadSettingsEnhanced] SFX Enabled:', _sfxEnabled);
+    }
+    const mu = localStorage.getItem('cca_music'); 
+    if(mu!==null) {
+      _musicEnabled = mu==='1' || mu==='true';
+      console.log('[loadSettingsEnhanced] Music Enabled:', _musicEnabled);
+    }
+    const red = localStorage.getItem('cca_reduced_motion'); 
+    if(red!==null){ 
+      window.CCA_reduced_motion = (red==='1' || red==='true'); 
+      console.log('[loadSettingsEnhanced] Reduced Motion:', window.CCA_reduced_motion);
+      if(window.CCA_reduced_motion) document.body.classList.add('cca-reduced-motion'); 
+      else document.body.classList.remove('cca-reduced-motion'); 
+    }
+  }catch(e){ console.warn('[loadSettingsEnhanced] error:', e); }
 }
 
-export function setMuted(val){ _muted = !!val; try{ localStorage.setItem('cca_muted', _muted? '1':'0'); }catch(e){} if(_muted){ if(masterGain) masterGain.gain.value = 0; try{ if(ambientAudio) ambientAudio.pause(); }catch(e){} } else { if(masterGain) masterGain.gain.value = _volume; try{ if(ambientAudio) ambientAudio.play().catch(()=>{}); }catch(e){} } }
+export function setMuted(val){ 
+  _muted = !!val; 
+  console.log('[setMuted] Muted:', _muted);
+  try{ localStorage.setItem('cca_muted', _muted? '1':'0'); }catch(e){} 
+  if(_muted){ 
+    if(masterGain) masterGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
+    try{ if(ambientAudio) ambientAudio.pause(); }catch(e){} 
+  } else { 
+    if(masterGain) masterGain.gain.setTargetAtTime(_volume, audioCtx.currentTime, 0.1);
+    try{ if(ambientAudio) ambientAudio.play().catch(e => console.warn('[setMuted] play failed:', e)); }catch(e){} 
+  } 
+}
 
 export function playLevelUp(){ try{ if(!audioCtx) initAudio(); const now = audioCtx.currentTime; const g = audioCtx.createGain(); g.gain.value = 0.001; g.connect(masterGain); const o = audioCtx.createOscillator(); o.type = 'sawtooth'; o.connect(g); const freqs = [523.25,659.25,783.99,1046.5]; let t = now + 0.02; for(let i=0;i<freqs.length;i++){ o.frequency.setValueAtTime(freqs[i], t); g.gain.setValueAtTime(0.001 + 0.5*(1 - i/freqs.length), t); t += 0.12; } g.gain.setValueAtTime(0.0001, t+0.18); o.start(now+0.01); o.stop(t+0.2); }catch(e){ console.warn('playLevelUp failed', e); } }
 

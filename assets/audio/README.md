@@ -1,13 +1,12 @@
 Place audio assets here to use real ambient/effect files.
 
+Current Playlist:
+- ambient1.mp3 -> SoundHelix Song 8 (Electronic Ambient)
+- ambient2.mp3 -> Vibing Over Venus by Kevin MacLeod (Space Jazz)
+- ambient3.mp3 -> Equatorial Complex by Kevin MacLeod (Tech Ambient)
+
 Supported filenames (used by the game):
-- ambient.mp3   -> background music (looping)
 - swap.wav      -> swap sound effect
 - match.wav     -> match/clear sound effect
 
-If you add these files at `assets/audio/ambient.mp3` etc, the game will prefer them and crossfade from the synth to the audio file.
-
-Audio file tips:
-- Keep `ambient.mp3` short and loopable (2-5 minutes recommended).
-- Use small WAV files for effects (e.g., 100-300ms).
-- For testing, you can copy any MP3/WAV and rename it accordingly.
+The game will cycle through ambient1, ambient2, and ambient3 automatically.

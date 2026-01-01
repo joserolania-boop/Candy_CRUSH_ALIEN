@@ -202,6 +202,9 @@ function showPreLevelScreen() {
   // Show screen
   screen.classList.remove('hidden');
   
+  // Check for tutorials
+  setTimeout(checkContextualTutorials, 1000);
+  
   // Setup start button
   const btnStart = document.getElementById('btn-start-level');
   if (btnStart) {
@@ -375,10 +378,70 @@ function checkLevelComplete(){
   }
 }
 
+function showVictoryScreen(result) {
+  const overlay = document.createElement('div');
+  overlay.className = 'victory-overlay';
+  
+  const content = document.createElement('div');
+  content.className = 'victory-content';
+  
+  const title = document.createElement('h2');
+  title.className = 'victory-title';
+  title.textContent = '¡Victoria!';
+  
+  const stats = document.createElement('div');
+  stats.className = 'victory-stats';
+  stats.innerHTML = `
+    <div class="stat-item">
+      <span class="stat-value">${score.toLocaleString()}</span>
+      <span class="stat-label">Puntos</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">+${result.coinsEarned}</span>
+      <span class="stat-label">Monedas</span>
+    </div>
+  `;
+  
+  const starContainer = document.createElement('div');
+  starContainer.className = 'star-container';
+  for (let i = 0; i < 3; i++) {
+    const star = document.createElement('span');
+    star.className = 'victory-star';
+    star.textContent = '⭐';
+    if (i < result.stars) {
+      setTimeout(() => star.classList.add('active'), 500 + (i * 400));
+    }
+    starContainer.appendChild(star);
+  }
+  
+  const btnNext = document.createElement('button');
+  btnNext.className = 'btn btn-large btn-primary';
+  btnNext.style.marginTop = '20px';
+  btnNext.textContent = level < LEVELS.length ? 'Siguiente Nivel' : 'Volver al Menú';
+  btnNext.onclick = () => {
+    document.body.removeChild(overlay);
+    if (level < LEVELS.length) {
+      levelUp();
+    } else {
+      gameEnded('victory');
+    }
+  };
+  
+  content.appendChild(title);
+  content.appendChild(stats);
+  content.appendChild(starContainer);
+  content.appendChild(btnNext);
+  overlay.appendChild(content);
+  document.body.appendChild(overlay);
+  
+  // Play victory sound
+  try { Sound.playLevelUp(); } catch(e) {}
+}
+
 function levelWon(){
   // Prevent multiple level win triggers
-  if(levelInProgress) return;
-  levelInProgress = true;
+  if(!levelInProgress) return;
+  levelInProgress = false;
   
   console.log('[levelWon] Level', level, 'completed! Objective:', currentObjective);
   
@@ -386,30 +449,15 @@ function levelWon(){
   const result = economy.onLevelComplete(level, score, currentObjective.target);
   
   if (result.success) {
-    const starText = '⭐'.repeat(result.stars);
-    const coinsText = result.coinsEarned > 0 ? ` +${result.coinsEarned}💰` : '';
-    showMessage(`✅ LEVEL ${level} COMPLETE! ${starText}${coinsText}`, 3000);
-    
-    // Show star animations
-    if (result.newStars > 0) {
-      for (let i = 0; i < result.stars; i++) {
-        setTimeout(() => showStarAnimation(), i * 300);
-      }
-    }
-    
     updateEconomyUI();
-    
-    setTimeout(() => {
-      if(level < LEVELS.length) {
-        levelUp();
-      } else {
-        gameEnded('victory');
-      }
-    }, 3000);
+    showVictoryScreen(result);
   }
 }
 
 function levelFailed(){
+  if(!levelInProgress) return;
+  levelInProgress = false;
+  
   console.log('[levelFailed] Level', level, 'failed. Out of moves.');
   
   // Deduct a life
@@ -444,6 +492,41 @@ function onGameChange(){
   
   if(movesLeft <= 0) {
     setTimeout(() => { alert('Game Over! Score: ' + score); resetGame(); }, 500);
+  }
+}
+
+function showTutorialBubble(elementId, message, duration = 4000) {
+  const target = document.getElementById(elementId);
+  if (!target) return;
+  
+  const bubble = document.createElement('div');
+  bubble.className = 'tutorial-bubble';
+  bubble.textContent = message;
+  
+  // Position bubble above target
+  const rect = target.getBoundingClientRect();
+  bubble.style.left = `${rect.left + (rect.width / 2) - 100}px`;
+  bubble.style.top = `${rect.top - 60}px`;
+  
+  document.body.appendChild(bubble);
+  
+  setTimeout(() => {
+    if (bubble.parentElement) {
+      bubble.style.opacity = '0';
+      bubble.style.transition = 'opacity 0.5s';
+      setTimeout(() => document.body.removeChild(bubble), 500);
+    }
+  }, duration);
+}
+
+function checkContextualTutorials() {
+  // Tutorial for boosters if player has coins but no boosters
+  if (economy.getCoins() >= 100 && boosters.getInventory().length === 0) {
+    const hasShown = localStorage.getItem('cca_tutorial_boosters');
+    if (!hasShown) {
+      showTutorialBubble('coins-count', '¡Tienes monedas! Úsalas para comprar potenciadores antes de empezar.', 5000);
+      localStorage.setItem('cca_tutorial_boosters', '1');
+    }
   }
 }
 
@@ -581,11 +664,19 @@ function showMessage(msgText, duration = 1400){
 }
 
 function updateUI(){
-  const scoreEl = document.getElementById('score');
-  const movesEl = document.getElementById('moves');
-  const levelEl = document.getElementById('level');
+  const scoreEl = document.getElementById('score-value');
+  const movesEl = document.getElementById('moves-value');
+  const levelEl = document.getElementById('level-value');
   if(scoreEl) scoreEl.textContent = score;
-  if(movesEl) movesEl.textContent = movesLeft;
+  if(movesEl) {
+    movesEl.textContent = movesLeft;
+    // Tension effect when moves are low
+    if (movesLeft <= 5 && movesLeft > 0) {
+      movesEl.parentElement.classList.add('low-moves');
+    } else {
+      movesEl.parentElement.classList.remove('low-moves');
+    }
+  }
   if(levelEl) levelEl.textContent = level;
   
   // Update objective progress display with improved formatting
@@ -851,7 +942,7 @@ function setupGameUI(){
     btnPlayMusic.addEventListener('click', async () => {
       try {
         await Sound.initAudio();
-        Sound.playBackground();
+        Sound.playBackground(true);
         showMessage('🎵 Música en marcha...', 1200);
       } catch(e) {
         console.warn('Play music failed:', e);
@@ -969,7 +1060,8 @@ function initializeGame(){
     // ESPERAR a que audio esté listo ANTES de jugar
     Sound.initAudio().then(() => {
       console.log('[initializeGame] ✓ Audio context está listo');
-      // Don't auto-start, wait for user to click Play button
+      // Start background music as soon as audio is ready
+      Sound.playBackground().catch(e => console.warn('Auto-play background failed:', e));
     }).catch(e => {
       console.warn('[initializeGame] Audio warning (no crítico):', e);
     });
@@ -980,9 +1072,6 @@ function initializeGame(){
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('[DOMContentLoaded] Starting initialization...');
-  
-  // Initialize audio early to allow user interaction to resume context
-  Sound.initAudio().catch(() => {});
   
   const mainMenu = document.getElementById('main-menu');
   const instructionsModal = document.getElementById('instructions-modal');
