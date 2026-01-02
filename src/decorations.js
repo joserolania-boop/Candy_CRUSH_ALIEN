@@ -54,7 +54,11 @@ function spawnShip(root){
 
 function spawnAsteroid(root){
   const el = document.createElement('div'); el.className = 'asteroid';
-  const size = Math.floor(rand(10,48)); el.style.width = size+'px'; el.style.height = size+'px';
+  const meteorId = Math.random() > 0.5 ? '1' : '2';
+  const size = Math.floor(rand(20,60)); el.style.width = size+'px'; el.style.height = size+'px';
+  el.style.backgroundImage = `url('assets/images/meteor_${meteorId}.png')`;
+  el.style.backgroundSize = 'contain';
+  el.style.backgroundRepeat = 'no-repeat';
   const left = Math.floor(rand(2,92)); el.style.left = left+'%'; el.style.top = '-8%';
   root.appendChild(el);
   const dur = rand(6,18);
@@ -68,7 +72,12 @@ function spawnAsteroid(root){
 
 function spawnUFO(root){
   const el = document.createElement('div'); el.className = 'ufo dynamic';
-  const size = Math.floor(rand(48,120)); el.style.width = size+'px'; el.style.height = Math.floor(size*0.46)+'px';
+  const colors = ['blue', 'green', 'pink', 'yellow'];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  const size = Math.floor(rand(48,120)); el.style.width = size+'px'; el.style.height = size+'px';
+  el.style.backgroundImage = `url('assets/images/ufo_${color}.png')`;
+  el.style.backgroundSize = 'contain';
+  el.style.backgroundRepeat = 'no-repeat';
   el.style.top = Math.floor(rand(6,80))+'%'; el.style.left = '-30%';
   root.appendChild(el);
   const dur = rand(10,24);
@@ -79,7 +88,10 @@ function spawnUFO(root){
 
 function spawnAlien(root){
   const el = document.createElement('div'); el.className = 'alien dynamic';
-  const size = Math.floor(rand(24,56)); el.style.width = size+'px'; el.style.height = Math.floor(size*1.3)+'px';
+  const size = Math.floor(rand(24,56)); el.style.width = size+'px'; el.style.height = size+'px';
+  el.style.backgroundImage = `url('assets/images/ufo_pink.png')`; // Fallback to pink ufo for alien
+  el.style.backgroundSize = 'contain';
+  el.style.backgroundRepeat = 'no-repeat';
   el.style.left = Math.floor(rand(6,90))+'%'; el.style.top = '-10%';
   root.appendChild(el);
   const dur = rand(8,16);
@@ -90,7 +102,10 @@ function spawnAlien(root){
 
 function spawnAstronaut(root){
   const el = document.createElement('div'); el.className = 'astronaut dynamic';
-  const size = Math.floor(rand(28,68)); el.style.width = size+'px'; el.style.height = Math.floor(size*1.6)+'px';
+  const size = Math.floor(rand(40,80)); el.style.width = size+'px'; el.style.height = size+'px';
+  el.style.backgroundImage = `url('assets/images/astronaut_kenney.png')`;
+  el.style.backgroundSize = 'contain';
+  el.style.backgroundRepeat = 'no-repeat';
   el.style.left = Math.floor(rand(6,90))+'%'; el.style.top = '-8%';
   root.appendChild(el);
   const dur = rand(10,20);

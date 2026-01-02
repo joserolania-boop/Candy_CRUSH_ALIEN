@@ -1,9 +1,12 @@
 {
-  "swap": "swap.wav",
-  "match": "match.wav",
-  "hint": "swap.wav",
-  "power": "match.wav",
-  "bomb": "match.wav",
-  "colorbomb": "match.wav",
-  "ambient": "ambient.wav"
+  "swap": "laser.ogg",
+  "match": "laser.ogg",
+  "hint": "hint.ogg",
+  "power": "powerup.ogg",
+  "bomb": "explosion.ogg",
+  "colorbomb": "powerup.ogg",
+  "click": "click.ogg",
+  "ui": "ui.ogg",
+  "ambient": "ambient.wav",
+  "level_win": "level_win.ogg"
 }

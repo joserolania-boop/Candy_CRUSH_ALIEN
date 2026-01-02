@@ -3,44 +3,39 @@
 Fecha: 2025-12-13
 
 Resumen rápido
-- **Estado**: Prototipo jugable; motor de match-3 estable y UI funcional.
-- **Trabajo reciente**: mejoras visuales del marco del tablero, sistema de "score pop" y contador de combos, y soporte para la ficha astronauta.
+- **Estado**: Prototipo avanzado con campaña de 25 niveles, sistema de historia y assets de alta calidad (Kenney).
+- **Trabajo reciente**: Integración masiva de assets de Kenney (PNG/OGG), sistema de Speed Bonus, rebalanceo de dificultad y corrección de errores de persistencia de temas.
 
 Cambios realizados (ficheros clave)
-- `src/ui.js`: Añadido "score pop" por tile eliminado, contador de combos, lógica de animación de preview reforzada y helpers de depuración (`window.CCA_ui.forceAstronaut()` y `dumpBoard()`).
-- `src/board.js`: `PALETTE` actualizado para incluir `🧑‍🚀` (aparición con la misma frecuencia que el resto).
-- `styles.css`: Rediseño del `#game-root` -> acabado metálico; añadido rim-pulse y reflejo solar especular; estilos para `.score-pop` y `.combo-counter`.
+- `src/story.js`: Actualizado para usar assets PNG de Kenney (`ufo_blue.png`, `astronaut_kenney.png`, etc.) en todas las escenas narrativas.
+- `assets/audio/manifest.json`: Mapeo de sonidos sci-fi de Kenney para swap, match, bomb, power-ups, hints y UI.
+- `src/ui.js`: Implementación de popups de `Speed Bonus` con efectos visuales y sonoros; corrección de persistencia de tema en cascadas.
+- `src/game.js`: Rebalanceo de niveles (Nivel 25 reducido a 45k), eliminación del selector de temas manual, y adición de SFX global para botones.
+- `src/decorations.js`: Actualización de decoraciones dinámicas (UFOs, astronautas, meteoros) usando assets de Kenney.
+- `src/engine.js`: Integración del multiplicador de velocidad en el cálculo de puntuación.
 
 Comportamiento y pruebas
 - Iniciar servidor desde la carpeta del juego:
   ```powershell
-  Set-Location 'C:\Users\Admin\OneDrive\Escritorio\MCP SERVER\Candy Crush Alien'
   python -m http.server 8000
   ```
-- Abrir en navegador: `http://localhost:8000/Candy Crush Alien/` y recargar sin caché (Ctrl+F5).
+- Abrir en navegador: `http://localhost:8000/`
 - Validaciones rápidas:
-  - Ver que el tablero se renderiza y swaps funcionan.
-  - Al eliminar tiles verás pequeños popups `+N` y, en cascadas, un badge `COMBO xN`.
-  - El marco del tablero debe mostrar un brillo especular blanco en la esquina superior-derecha y un rim plateado pulsatil.
-  - El astronauta (`🧑‍🚀`) forma parte de la paleta y puede aparecer en tableros nuevos.
-
-Helpers de depuración (temporal)
-- `window.CCA_ui.forceAstronaut(r,c)`: fuerza una ficha `🧑‍🚀` en la casilla (r,c) 0-index; por defecto coloca en el centro.
-- `window.CCA_ui.dumpBoard()`: devuelve el estado actual del tablero (array serializado).
-- Nota: estos helpers son seguros y no afectan la lógica del engine; se pueden eliminar en la limpieza final.
+  - Jugar rápido para activar el `SPEED x1.5!` o `SPEED x2.0!` con sonido de confirmación.
+  - Observar las escenas de historia entre niveles con los nuevos personajes y naves.
+  - Escuchar los nuevos efectos de sonido (láseres, explosiones, sonidos de interfaz).
+  - Verificar que el fondo no cambia a morado inesperadamente durante el juego.
 
 Decisiones de diseño
-- Mantener cambios locales en la UI y CSS; no se refactorizó `engine.js` ni la lógica de resolución.
-- Prioricé mejoras de *feedback* visual (poca complejidad, alto impacto): pop de puntuación, combo, marco metálico.
+- Se priorizó la coherencia visual usando el pack de Kenney para reemplazar los SVGs procedimentales.
+- El sistema de Speed Bonus incentiva el juego fluido y ayuda a superar los niveles más difíciles.
+- Se eliminó el selector de temas para que cada nivel tenga su identidad visual única predefinida.
 
-Siguientes pasos recomendados (elige al volver)
-- [ ] Revisión final: eliminar helpers `window.CCA_ui` y consolidar estilos.
-- [ ] Ajustar intensidad del reflejo o color (si prefieres más blanco, magenta o cian).
-- [ ] Reemplazar el astronauta por un asset SVG si quieres coherencia visual con otros sprites.
-- [ ] Añadir métricas simples (contador de partidas, mayor feedback) para medir retención.
-
-Contacto rápido
-- Si quieres que haga alguno de los pasos anteriores, dime cuál y lo aplico con cambios pequeños y reversibles.
+Siguientes pasos recomendados
+- [ ] Pulir las transiciones entre niveles para que sean más suaves.
+- [ ] Añadir más variedad de enemigos o obstáculos en los niveles finales.
+- [ ] Implementar un sistema de "Daily Rewards" o misiones secundarias.
+- [ ] Optimizar la carga de assets (lazy loading para imágenes de niveles lejanos).
 
 -- Fin del estado (automático)
 ## Project Overview

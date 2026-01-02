@@ -108,9 +108,10 @@ export class UIManager{
 
   showSpeedBonus(multiplier, x, y) {
     if (multiplier <= 1) return;
+    this._playSFX('ui');
     const el = document.createElement('div');
     el.className = 'speed-bonus-popup';
-    el.textContent = `SPEED x${multiplier.toFixed(1)}!`;
+    el.innerHTML = `<div style="background: url('assets/images/speed_bg.png') no-repeat center; background-size: contain; padding: 10px;">SPEED x${multiplier.toFixed(1)}!</div>`;
     el.style.cssText = `
       position: fixed;
       left: ${x}px;
@@ -123,6 +124,9 @@ export class UIManager{
       text-shadow: 0 0 10px #000;
       animation: speed-bonus-anim 1s ease-out forwards;
       font-family: 'Courier New', monospace;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     `;
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 1000);

@@ -1443,6 +1443,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (mainMenu) mainMenu.classList.remove('hidden');
     });
   }
+
+  // Global SFX for buttons
+  document.addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+      try {
+        if (Sound && typeof Sound.playSFX === 'function') {
+          Sound.playSFX('click');
+        }
+      } catch (err) {}
+    }
+  });
   
   console.log('[DOMContentLoaded] ✓ Completado');
 });

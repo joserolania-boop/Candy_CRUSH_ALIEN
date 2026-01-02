@@ -13,8 +13,8 @@ Only you can wield it.
 Match, create, combine—
 your power is our hope.`,
       actors: [
-        { id: 'earth', asset: 'earth_silhouette.svg', x: 50, y: 80, scale: 4, anim: 'float' },
-        { id: 'ship', asset: 'spaceship_v2.svg', x: 50, y: 30, scale: 2.5, anim: 'descend' },
+        { id: 'planet', asset: 'planet_kenney_0.png', x: 50, y: 80, scale: 4, anim: 'float' },
+        { id: 'ship', asset: 'ufo_yellow.png', x: 50, y: 30, scale: 2.5, anim: 'descend' },
         { id: 'crystal1', asset: 'candy_crystal.svg', x: 20, y: 20, scale: 0.8, anim: 'twinkle' },
         { id: 'crystal2', asset: 'candy_crystal.svg', x: 80, y: 40, scale: 0.6, anim: 'twinkle' },
         { id: 'crystal3', asset: 'candy_crystal.svg', x: 30, y: 60, scale: 0.7, anim: 'twinkle' }
@@ -30,10 +30,9 @@ We must intercept them before they transmit our coordinates.
 Use the candy magic to disrupt their signals!`,
       actors: [
         { id: 'city', asset: 'city_skyline.svg', x: 50, y: 90, scale: 3, anim: 'none' },
-        { id: 'probe1', asset: 'probe_drone.svg', x: 20, y: 40, scale: 1, anim: 'scan' },
-        { id: 'probe2', asset: 'probe_drone.svg', x: 50, y: 30, scale: 0.8, anim: 'scan' },
-        { id: 'probe3', asset: 'probe_drone.svg', x: 80, y: 45, scale: 1.2, anim: 'scan' },
-        { id: 'defense', asset: 'spaceship_side.svg', x: -10, y: 50, scale: 1, anim: 'fly-across' }
+        { id: 'probe1', asset: 'ufo_blue.png', x: 20, y: 40, scale: 1, anim: 'scan' },
+        { id: 'probe2', asset: 'ufo_green.png', x: 50, y: 30, scale: 0.8, anim: 'scan' },
+        { id: 'probe3', asset: 'ufo_pink.png', x: 80, y: 45, scale: 1.2, anim: 'scan' }
       ]
     },
     lvl3: {
@@ -47,7 +46,7 @@ Keep the energy levels stable with your matches!`,
       actors: [
         { id: 'warp1', asset: 'warp_ring.svg', x: 50, y: 50, scale: 4, anim: 'float' },
         { id: 'warp2', asset: 'warp_ring.svg', x: 50, y: 50, scale: 2, anim: 'float-delayed' },
-        { id: 'ship', asset: 'interceptor_ship.svg', x: 50, y: 55, scale: 1.5, anim: 'strafe' },
+        { id: 'ship', asset: 'ufo_yellow.png', x: 50, y: 55, scale: 1.5, anim: 'strafe' },
         { id: 'crystal', asset: 'candy_crystal.svg', x: 50, y: 20, scale: 0.8, anim: 'twinkle' }
       ]
     },
@@ -63,7 +62,7 @@ Master the chaos to move forward!`,
         { id: 'q1', asset: 'quantum_particle.svg', x: 20, y: 30, scale: 1.5, anim: 'float' },
         { id: 'q2', asset: 'quantum_particle.svg', x: 80, y: 70, scale: 1.2, anim: 'float-delayed' },
         { id: 'q3', asset: 'quantum_particle.svg', x: 50, y: 20, scale: 1.8, anim: 'float' },
-        { id: 'astro', asset: 'astronaut.svg', x: 50, y: 55, scale: 1.5, anim: 'jump' },
+        { id: 'astro', asset: 'astronaut_kenney.png', x: 50, y: 55, scale: 1.5, anim: 'jump' },
         { id: 'crystal', asset: 'candy_crystal.svg', x: 80, y: 20, scale: 0.7, anim: 'twinkle' }
       ]
     },
@@ -80,7 +79,7 @@ Cool down the systems with powerful combos!`,
         { id: 'lava1', asset: 'magma_flow.svg', x: 50, y: 90, scale: 2, anim: 'none' },
         { id: 'bubble1', asset: 'lava_bubble.svg', x: 20, y: 80, scale: 1, anim: 'actor-heat-shimmer' },
         { id: 'bubble2', asset: 'lava_bubble.svg', x: 80, y: 85, scale: 0.8, anim: 'actor-heat-shimmer' },
-        { id: 'ufo', asset: 'ufo_v2.svg', x: 50, y: 30, scale: 1.2, anim: 'shake' }
+        { id: 'ufo', asset: 'ufo_yellow.png', x: 50, y: 30, scale: 1.2, anim: 'shake' }
       ]
     },
     act1: {
@@ -100,12 +99,11 @@ It's a staging ground for a full-scale invasion.
 
 Infiltrate their perimeter and take out their scouts!`,
       actors: [
-        { id: 'moon', asset: 'earth_silhouette.svg', x: 50, y: 120, scale: 8, anim: 'none' },
+        { id: 'moon', asset: 'planet_kenney_1.png', x: 50, y: 120, scale: 8, anim: 'none' },
         { id: 'base1', asset: 'structure.svg', x: 30, y: 70, scale: 1.5, anim: 'glow' },
         { id: 'base2', asset: 'structure_side.svg', x: 70, y: 75, scale: 1.8, anim: 'glow' },
-        { id: 'scout1', asset: 'ufo_side.svg', x: 20, y: 30, scale: 0.8, anim: 'float' },
-        { id: 'scout2', asset: 'ufo_v2.svg', x: 80, y: 20, scale: 1, anim: 'float-delayed' },
-        { id: 'scout3', asset: 'probe_drone.svg', x: 50, y: 40, scale: 0.6, anim: 'scan' }
+        { id: 'scout1', asset: 'ufo_blue.png', x: 20, y: 30, scale: 0.8, anim: 'float' },
+        { id: 'scout2', asset: 'ufo_green.png', x: 80, y: 20, scale: 1, anim: 'float-delayed' }
       ]
     },
     lvl8: {
@@ -117,8 +115,8 @@ The aliens are using its gravity to slingshot their fleet.
 Don't let the void consume you!`,
       actors: [
         { id: 'blackhole', asset: 'warp_ring.svg', x: 50, y: 50, scale: 5, anim: 'actor-rotate-slow' },
-        { id: 'ship1', asset: 'interceptor_ship.svg', x: 20, y: 20, scale: 1, anim: 'descend' },
-        { id: 'ship2', asset: 'spaceship_v2.svg', x: 80, y: 80, scale: 1.2, anim: 'descend' },
+        { id: 'ship1', asset: 'ufo_blue.png', x: 20, y: 20, scale: 1, anim: 'descend' },
+        { id: 'ship2', asset: 'ufo_green.png', x: 80, y: 80, scale: 1.2, anim: 'descend' },
         { id: 'debris1', asset: 'candy_crystal.svg', x: 40, y: 60, scale: 0.5, anim: 'twinkle' },
         { id: 'debris2', asset: 'quantum_particle.svg', x: 60, y: 30, scale: 0.4, anim: 'float' }
       ]
@@ -134,7 +132,7 @@ Stay focused. One wrong move and we're lost in space!`,
         { id: 'tunnel1', asset: 'warp_ring.svg', x: 50, y: 50, scale: 6, anim: 'actor-rotate-slow' },
         { id: 'tunnel2', asset: 'warp_ring.svg', x: 50, y: 50, scale: 3, anim: 'actor-rotate-slow' },
         { id: 'sat', asset: 'satellite.svg', x: 80, y: 20, scale: 1, anim: 'shake' },
-        { id: 'ship', asset: 'interceptor_ship.svg', x: 50, y: 60, scale: 1.5, anim: 'strafe' },
+        { id: 'ship', asset: 'ufo_pink.png', x: 50, y: 60, scale: 1.5, anim: 'strafe' },
         { id: 'debris', asset: 'candy_crystal.svg', x: 20, y: 80, scale: 0.5, anim: 'float' }
       ]
     },
@@ -148,8 +146,8 @@ A voice... calling from the darkness.
 Is someone—or something—trying to talk to us?`,
       actors: [
         { id: 'commander', asset: 'alien_commander.svg', x: 50, y: 40, scale: 2.5, anim: 'glow' },
-        { id: 'ghost1', asset: 'astronaut_side.svg', x: 20, y: 60, scale: 1, anim: 'float', opacity: 0.4 },
-        { id: 'ghost2', asset: 'ufo_v2.svg', x: 80, y: 30, scale: 0.8, anim: 'float-delayed', opacity: 0.3 },
+        { id: 'ghost1', asset: 'astronaut_kenney.png', x: 20, y: 60, scale: 1, anim: 'float', opacity: 0.4 },
+        { id: 'ghost2', asset: 'ufo_pink.png', x: 80, y: 30, scale: 0.8, anim: 'float-delayed', opacity: 0.3 },
         { id: 'nebula', asset: 'quantum_particle.svg', x: 50, y: 50, scale: 4, anim: 'actor-heat-shimmer' }
       ]
     },
@@ -161,11 +159,10 @@ If we take this down, we stop the invasion.
 
 All units, engage!`,
       actors: [
-        { id: 'station', asset: 'space_station.svg', x: 50, y: 50, scale: 3, anim: 'shake' },
-        { id: 'fleet1', asset: 'spaceship_v2.svg', x: 20, y: 20, scale: 1, anim: 'fly-across' },
-        { id: 'fleet2', asset: 'interceptor_ship.svg', x: 80, y: 80, scale: 1.2, anim: 'fly-across-reverse' },
-        { id: 'fleet3', asset: 'ufo_side.svg', x: 50, y: 20, scale: 0.8, anim: 'descend' },
-        { id: 'laser1', asset: 'candy_crystal.svg', x: 40, y: 40, scale: 0.3, anim: 'twinkle' }
+        { id: 'station', asset: 'station_kenney.png', x: 50, y: 50, scale: 3, anim: 'shake' },
+        { id: 'fleet1', asset: 'ufo_blue.png', x: 20, y: 20, scale: 1, anim: 'fly-across' },
+        { id: 'fleet2', asset: 'ufo_green.png', x: 80, y: 80, scale: 1.2, anim: 'fly-across-reverse' },
+        { id: 'fleet3', asset: 'ufo_pink.png', x: 50, y: 20, scale: 0.8, anim: 'descend' }
       ]
     },
     lvl12: {
@@ -178,9 +175,9 @@ Break through their defenses!`,
       actors: [
         { id: 'base', asset: 'structure_side.svg', x: 50, y: 60, scale: 3, anim: 'glow' },
         { id: 'shield', asset: 'warp_ring.svg', x: 50, y: 60, scale: 4, anim: 'actor-heat-shimmer', opacity: 0.5 },
-        { id: 'attacker', asset: 'interceptor_ship.svg', x: 20, y: 30, scale: 1.5, anim: 'strafe' },
-        { id: 'drone1', asset: 'probe_drone.svg', x: 80, y: 40, scale: 0.8, anim: 'scan' },
-        { id: 'drone2', asset: 'probe_drone.svg', x: 70, y: 20, scale: 0.7, anim: 'scan' }
+        { id: 'attacker', asset: 'ufo_yellow.png', x: 20, y: 30, scale: 1.5, anim: 'strafe' },
+        { id: 'drone1', asset: 'ufo_blue.png', x: 80, y: 40, scale: 0.8, anim: 'scan' },
+        { id: 'drone2', asset: 'ufo_green.png', x: 70, y: 20, scale: 0.7, anim: 'scan' }
       ]
     },
     lvl13: {
@@ -193,7 +190,7 @@ Unleash your full power!`,
       actors: [
         { id: 'cannon1', asset: 'plasma_cannon.svg', x: 20, y: 70, scale: 2, anim: 'shake' },
         { id: 'cannon2', asset: 'plasma_cannon.svg', x: 80, y: 70, scale: 2, anim: 'shake' },
-        { id: 'ship', asset: 'interceptor_ship.svg', x: 50, y: 30, scale: 1.5, anim: 'strafe' }
+        { id: 'ship', asset: 'ufo_pink.png', x: 50, y: 30, scale: 1.5, anim: 'strafe' }
       ]
     },
     lvl14: {
@@ -205,8 +202,8 @@ He's not fighting back. He looks... terrified.
 What is he so afraid of?`,
       actors: [
         { id: 'commander', asset: 'alien_commander.svg', x: 50, y: 40, scale: 2, anim: 'glow' },
-        { id: 'guard1', asset: 'astronaut_side.svg', x: 30, y: 60, scale: 1.2, anim: 'float' },
-        { id: 'guard2', asset: 'astronaut_side.svg', x: 70, y: 60, scale: 1.2, anim: 'float-delayed' }
+        { id: 'guard1', asset: 'astronaut_kenney.png', x: 30, y: 60, scale: 1.2, anim: 'float' },
+        { id: 'guard2', asset: 'astronaut_kenney.png', x: 70, y: 60, scale: 1.2, anim: 'float-delayed' }
       ]
     },
     lvl15: {
@@ -217,8 +214,8 @@ A single, well-placed explosion should do it.
 
 Aim for the core!`,
       actors: [
-        { id: 'station', asset: 'space_station.svg', x: 50, y: 40, scale: 3, anim: 'shake' },
-        { id: 'bomber', asset: 'spaceship_v2.svg', x: 50, y: 80, scale: 1.5, anim: 'descend' },
+        { id: 'station', asset: 'station_kenney.png', x: 50, y: 40, scale: 3, anim: 'shake' },
+        { id: 'bomber', asset: 'ufo_yellow.png', x: 50, y: 80, scale: 1.5, anim: 'descend' },
         { id: 'shield', asset: 'warp_ring.svg', x: 50, y: 40, scale: 4, anim: 'actor-heat-shimmer', opacity: 0.4 }
       ]
     },
@@ -231,7 +228,7 @@ They're older than the aliens... older than humanity.
 The truth is finally coming to light.`,
       actors: [
         { id: 'portal', asset: 'ancient_portal.svg', x: 50, y: 50, scale: 3, anim: 'glow' },
-        { id: 'drone', asset: 'probe_drone.svg', x: 20, y: 30, scale: 1, anim: 'scan' },
+        { id: 'drone', asset: 'ufo_blue.png', x: 20, y: 30, scale: 1, anim: 'scan' },
         { id: 'dust', asset: 'quantum_particle.svg', x: 50, y: 50, scale: 5, anim: 'actor-heat-shimmer', opacity: 0.3 }
       ]
     },
@@ -245,8 +242,8 @@ The aliens weren't invading us... they were running from IT.
 We've been fighting the wrong enemy.`,
       actors: [
         { id: 'portal', asset: 'ancient_portal.svg', x: 50, y: 50, scale: 3, anim: 'shake' },
-        { id: 'astro', asset: 'astronaut_v2.svg', x: 30, y: 70, scale: 1.5, anim: 'float' },
-        { id: 'ghost', asset: 'astronaut_side.svg', x: 80, y: 30, scale: 1, anim: 'float-delayed', opacity: 0.4 }
+        { id: 'astro', asset: 'astronaut_kenney.png', x: 30, y: 70, scale: 1.5, anim: 'float' },
+        { id: 'ghost', asset: 'astronaut_kenney.png', x: 80, y: 30, scale: 1, anim: 'float-delayed', opacity: 0.4 }
       ]
     },
     lvl18: {
@@ -272,7 +269,7 @@ They're asking for help. They want to join forces.
 Will you extend the hand of friendship?`,
       actors: [
         { id: 'commander', asset: 'alien_commander.svg', x: 30, y: 50, scale: 2, anim: 'float' },
-        { id: 'astro', asset: 'astronaut_v2.svg', x: 70, y: 50, scale: 2, anim: 'float-delayed' },
+        { id: 'astro', asset: 'astronaut_kenney.png', x: 70, y: 50, scale: 2, anim: 'float-delayed' },
         { id: 'symbol', asset: 'warp_ring.svg', x: 50, y: 30, scale: 1.5, anim: 'glow', opacity: 0.6 }
       ]
     },
@@ -298,8 +295,8 @@ Two worlds, one goal: survival.
 The Devourer is coming. We are ready.`,
       actors: [
         { id: 'commander', asset: 'alien_commander.svg', x: 40, y: 50, scale: 2, anim: 'float' },
-        { id: 'astro', asset: 'astronaut_v2.svg', x: 60, y: 50, scale: 2, anim: 'float-delayed' },
-        { id: 'fleet', asset: 'spaceship_v2.svg', x: 50, y: 20, scale: 1, anim: 'fly-across' }
+        { id: 'astro', asset: 'astronaut_kenney.png', x: 60, y: 50, scale: 2, anim: 'float-delayed' },
+        { id: 'fleet', asset: 'ufo_blue.png', x: 50, y: 20, scale: 1, anim: 'fly-across' }
       ]
     },
     lvl22: {
@@ -311,8 +308,8 @@ Many have already fallen.
 We must hold the line, no matter the cost!`,
       actors: [
         { id: 'tentacle', asset: 'devourer_tentacle.svg', x: 50, y: 30, scale: 4, anim: 'shake' },
-        { id: 'defender', asset: 'interceptor_ship.svg', x: 50, y: 70, scale: 1.5, anim: 'strafe' },
-        { id: 'debris', asset: 'ufo_side.svg', x: 20, y: 20, scale: 0.8, anim: 'descend', opacity: 0.5 }
+        { id: 'defender', asset: 'ufo_yellow.png', x: 50, y: 70, scale: 1.5, anim: 'strafe' },
+        { id: 'debris', asset: 'ufo_blue.png', x: 20, y: 20, scale: 0.8, anim: 'descend', opacity: 0.5 }
       ]
     },
     lvl23: {
@@ -325,8 +322,8 @@ For the future of the galaxy!`,
       actors: [
         { id: 'tentacle1', asset: 'devourer_tentacle.svg', x: 20, y: 30, scale: 3, anim: 'shake' },
         { id: 'tentacle2', asset: 'devourer_tentacle.svg', x: 80, y: 30, scale: 3, anim: 'shake' },
-        { id: 'fleet1', asset: 'spaceship_v2.svg', x: 40, y: 70, scale: 1.2, anim: 'fly-across' },
-        { id: 'fleet2', asset: 'ufo_v2.svg', x: 60, y: 70, scale: 1.2, anim: 'fly-across-reverse' }
+        { id: 'fleet1', asset: 'ufo_blue.png', x: 40, y: 70, scale: 1.2, anim: 'fly-across' },
+        { id: 'fleet2', asset: 'ufo_green.png', x: 60, y: 70, scale: 1.2, anim: 'fly-across-reverse' }
       ]
     },
     lvl24: {
@@ -353,7 +350,7 @@ A new era of peace has begun between our peoples.
 You are the hero of two worlds.`,
       actors: [
         { id: 'portal', asset: 'ancient_portal.svg', x: 50, y: 40, scale: 3, anim: 'glow' },
-        { id: 'astro', asset: 'astronaut_v2.svg', x: 40, y: 70, scale: 2, anim: 'jump' },
+        { id: 'astro', asset: 'astronaut_kenney.png', x: 40, y: 70, scale: 2, anim: 'jump' },
         { id: 'commander', asset: 'alien_commander.svg', x: 60, y: 70, scale: 2, anim: 'jump' },
         { id: 'stars', asset: 'candy_crystal.svg', x: 50, y: 20, scale: 1, anim: 'twinkle' }
       ]
