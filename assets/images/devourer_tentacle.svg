@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200">
+  <path d="M 50 200 Q 20 150 50 100 T 50 0" fill="none" stroke="#4a148c" stroke-width="15" stroke-linecap="round">
+    <animate attributeName="d" values="M 50 200 Q 20 150 50 100 T 50 0; M 50 200 Q 80 150 50 100 T 50 0; M 50 200 Q 20 150 50 100 T 50 0" dur="3s" repeatCount="indefinite" />
+  </path>
+  <path d="M 50 200 Q 20 150 50 100 T 50 0" fill="none" stroke="#7b1fa2" stroke-width="8" stroke-linecap="round" opacity="0.6">
+    <animate attributeName="d" values="M 50 200 Q 20 150 50 100 T 50 0; M 50 200 Q 80 150 50 100 T 50 0; M 50 200 Q 20 150 50 100 T 50 0" dur="3s" repeatCount="indefinite" />
+  </path>
+  <circle cx="50" cy="50" r="5" fill="#ea80fc">
+    <animate attributeName="opacity" values="1;0;1" dur="0.5s" repeatCount="indefinite" />
+  </circle>
+</svg>

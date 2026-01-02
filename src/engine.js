@@ -790,16 +790,19 @@ export function handleSwapAndResolve(board, a, b, opts = {}){
   }
 
   // scoring
-  const POINTS_PER_TILE = 10;
-  const POWER_BONUS = 50;
+  const POINTS_PER_TILE = 15; // Increased from 10
+  const POWER_BONUS = 100;    // Increased from 50
   
   // Count how many match-found phases we have (cascades)
   const cascadeCount = phases.filter(p => p.type === 'match-found').length;
-  const comboMultiplier = 1 + (cascadeCount * 0.5); // +50% per cascade
+  const comboMultiplier = 1 + (cascadeCount * 0.8); // Increased from 0.5 (+80% per cascade)
+  
+  // Speed multiplier from UI (rewards rapid correct moves)
+  const speedMultiplier = opts.speedMultiplier || 1;
   
   const base = totalRemoved * POINTS_PER_TILE;
   const powerBonus = powerActivatedCount * POWER_BONUS;
-  const score = Math.floor((base + powerBonus) * comboMultiplier);
+  const score = Math.floor((base + powerBonus) * comboMultiplier * speedMultiplier);
 
   return {phases, removedCount: totalRemoved, score};
 }

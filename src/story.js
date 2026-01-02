@@ -190,7 +190,11 @@ Break through their defenses!`,
 The sky is filled with plasma fire.
 
 Unleash your full power!`,
-      actors: [{ id: 'ufo', asset: 'ufo_v2.svg', x: 80, y: 30, scale: 1, anim: 'float-delayed' }]
+      actors: [
+        { id: 'cannon1', asset: 'plasma_cannon.svg', x: 20, y: 70, scale: 2, anim: 'shake' },
+        { id: 'cannon2', asset: 'plasma_cannon.svg', x: 80, y: 70, scale: 2, anim: 'shake' },
+        { id: 'ship', asset: 'interceptor_ship.svg', x: 50, y: 30, scale: 1.5, anim: 'strafe' }
+      ]
     },
     lvl14: {
       title: 'Strategic Victory',
@@ -199,7 +203,11 @@ Unleash your full power!`,
 He's not fighting back. He looks... terrified.
 
 What is he so afraid of?`,
-      actors: [{ id: 'ufo', asset: 'ufo.svg', x: 50, y: 50, scale: 1.5, anim: 'jump' }]
+      actors: [
+        { id: 'commander', asset: 'alien_commander.svg', x: 50, y: 40, scale: 2, anim: 'glow' },
+        { id: 'guard1', asset: 'astronaut_side.svg', x: 30, y: 60, scale: 1.2, anim: 'float' },
+        { id: 'guard2', asset: 'astronaut_side.svg', x: 70, y: 60, scale: 1.2, anim: 'float-delayed' }
+      ]
     },
     lvl15: {
       title: 'Precision Bombing',
@@ -208,7 +216,11 @@ What is he so afraid of?`,
 A single, well-placed explosion should do it.
 
 Aim for the core!`,
-      actors: [{ id: 'ship', asset: 'spaceship.svg', x: 50, y: 30, scale: 1.8, anim: 'descend' }]
+      actors: [
+        { id: 'station', asset: 'space_station.svg', x: 50, y: 40, scale: 3, anim: 'shake' },
+        { id: 'bomber', asset: 'spaceship_v2.svg', x: 50, y: 80, scale: 1.5, anim: 'descend' },
+        { id: 'shield', asset: 'warp_ring.svg', x: 50, y: 40, scale: 4, anim: 'actor-heat-shimmer', opacity: 0.4 }
+      ]
     },
     act3: {
       title: 'The Archaeological Discovery',
@@ -217,7 +229,11 @@ Aim for the core!`,
 They're older than the aliens... older than humanity.
 
 The truth is finally coming to light.`,
-      animation: 'artifact_glow'
+      actors: [
+        { id: 'portal', asset: 'ancient_portal.svg', x: 50, y: 50, scale: 3, anim: 'glow' },
+        { id: 'drone', asset: 'probe_drone.svg', x: 20, y: 30, scale: 1, anim: 'scan' },
+        { id: 'dust', asset: 'quantum_particle.svg', x: 50, y: 50, scale: 5, anim: 'actor-heat-shimmer', opacity: 0.3 }
+      ]
     },
     lvl17: {
       title: 'Deep Excavation',
@@ -227,7 +243,11 @@ A cosmic entity that eats entire galaxies.
 The aliens weren't invading us... they were running from IT.
 
 We've been fighting the wrong enemy.`,
-      actors: [{ id: 'astro', asset: 'astronaut_high.svg', x: 50, y: 50, scale: 1.5, anim: 'float' }]
+      actors: [
+        { id: 'portal', asset: 'ancient_portal.svg', x: 50, y: 50, scale: 3, anim: 'shake' },
+        { id: 'astro', asset: 'astronaut_v2.svg', x: 30, y: 70, scale: 1.5, anim: 'float' },
+        { id: 'ghost', asset: 'astronaut_side.svg', x: 80, y: 30, scale: 1, anim: 'float-delayed', opacity: 0.4 }
+      ]
     },
     lvl18: {
       title: 'Full Potential',
@@ -236,7 +256,12 @@ We've been fighting the wrong enemy.`,
 It's a key. A way to harmonize with the universe.
 
 Unlock your true potential!`,
-      actors: [{ id: 'artifact', asset: 'structure.svg', x: 50, y: 50, scale: 2, anim: 'glow' }]
+      actors: [
+        { id: 'portal', asset: 'ancient_portal.svg', x: 50, y: 50, scale: 3, anim: 'glow' },
+        { id: 'crystal1', asset: 'candy_crystal.svg', x: 30, y: 30, scale: 0.8, anim: 'twinkle' },
+        { id: 'crystal2', asset: 'candy_crystal.svg', x: 70, y: 30, scale: 0.8, anim: 'twinkle' },
+        { id: 'crystal3', asset: 'candy_crystal.svg', x: 50, y: 80, scale: 1, anim: 'jump' }
+      ]
     },
     lvl19: {
       title: 'Ancient Knowledge',
@@ -245,7 +270,11 @@ Unlock your true potential!`,
 They're asking for help. They want to join forces.
 
 Will you extend the hand of friendship?`,
-      actors: [{ id: 'ufo', asset: 'ufo_v2.svg', x: 30, y: 50, scale: 1.2, anim: 'float' }, { id: 'astro', asset: 'astronaut_v2.svg', x: 70, y: 50, scale: 1.2, anim: 'float-delayed' }]
+      actors: [
+        { id: 'commander', asset: 'alien_commander.svg', x: 30, y: 50, scale: 2, anim: 'float' },
+        { id: 'astro', asset: 'astronaut_v2.svg', x: 70, y: 50, scale: 2, anim: 'float-delayed' },
+        { id: 'symbol', asset: 'warp_ring.svg', x: 50, y: 30, scale: 1.5, anim: 'glow', opacity: 0.6 }
+      ]
     },
     lvl20: {
       title: 'Master the Ruins',
@@ -254,7 +283,11 @@ Will you extend the hand of friendship?`,
 It requires a massive amount of magical energy.
 
 Prepare the ritual!`,
-      actors: [{ id: 'base', asset: 'structure_side.svg', x: 50, y: 60, scale: 2, anim: 'shake' }]
+      actors: [
+        { id: 'portal', asset: 'ancient_portal.svg', x: 50, y: 50, scale: 4, anim: 'glow' },
+        { id: 'ring', asset: 'warp_ring.svg', x: 50, y: 50, scale: 5, anim: 'actor-heat-shimmer' },
+        { id: 'energy', asset: 'quantum_particle.svg', x: 50, y: 50, scale: 6, anim: 'twinkle', opacity: 0.5 }
+      ]
     },
     act4: {
       title: 'The Alliance Forged',
@@ -263,7 +296,11 @@ Prepare the ritual!`,
 Two worlds, one goal: survival.
 
 The Devourer is coming. We are ready.`,
-      animation: 'alliance'
+      actors: [
+        { id: 'commander', asset: 'alien_commander.svg', x: 40, y: 50, scale: 2, anim: 'float' },
+        { id: 'astro', asset: 'astronaut_v2.svg', x: 60, y: 50, scale: 2, anim: 'float-delayed' },
+        { id: 'fleet', asset: 'spaceship_v2.svg', x: 50, y: 20, scale: 1, anim: 'fly-across' }
+      ]
     },
     lvl22: {
       title: 'Shared Sacrifice',
@@ -272,7 +309,11 @@ The Devourer is coming. We are ready.`,
 Many have already fallen. 
 
 We must hold the line, no matter the cost!`,
-      actors: [{ id: 'ship', asset: 'spaceship_side.svg', x: 20, y: 40, scale: 1.2, anim: 'strafe' }]
+      actors: [
+        { id: 'tentacle', asset: 'devourer_tentacle.svg', x: 50, y: 30, scale: 4, anim: 'shake' },
+        { id: 'defender', asset: 'interceptor_ship.svg', x: 50, y: 70, scale: 1.5, anim: 'strafe' },
+        { id: 'debris', asset: 'ufo_side.svg', x: 20, y: 20, scale: 0.8, anim: 'descend', opacity: 0.5 }
+      ]
     },
     lvl23: {
       title: 'Combined Might',
@@ -281,7 +322,12 @@ We must hold the line, no matter the cost!`,
 Magic and technology, working as one.
 
 For the future of the galaxy!`,
-      actors: [{ id: 'ufo', asset: 'ufo_side.svg', x: 30, y: 30, scale: 1, anim: 'fly-across' }, { id: 'ship', asset: 'spaceship_v2.svg', x: 70, y: 70, scale: 1, anim: 'fly-across-reverse' }]
+      actors: [
+        { id: 'tentacle1', asset: 'devourer_tentacle.svg', x: 20, y: 30, scale: 3, anim: 'shake' },
+        { id: 'tentacle2', asset: 'devourer_tentacle.svg', x: 80, y: 30, scale: 3, anim: 'shake' },
+        { id: 'fleet1', asset: 'spaceship_v2.svg', x: 40, y: 70, scale: 1.2, anim: 'fly-across' },
+        { id: 'fleet2', asset: 'ufo_v2.svg', x: 60, y: 70, scale: 1.2, anim: 'fly-across-reverse' }
+      ]
     },
     lvl24: {
       title: 'United Strength',
@@ -291,7 +337,11 @@ The darkness is receding.
 One last push and we can end this forever!
 
 Give it everything you've got!`,
-      actors: [{ id: 'astro', asset: 'astronaut_v2.svg', x: 50, y: 50, scale: 2, anim: 'jump' }]
+      actors: [
+        { id: 'tentacle', asset: 'devourer_tentacle.svg', x: 50, y: 20, scale: 5, anim: 'shake' },
+        { id: 'cannon', asset: 'plasma_cannon.svg', x: 50, y: 80, scale: 2.5, anim: 'glow' },
+        { id: 'commander', asset: 'alien_commander.svg', x: 20, y: 50, scale: 1.5, anim: 'float' }
+      ]
     },
     victory: {
       title: 'The Final Victory',
@@ -301,7 +351,12 @@ The stars are bright once more.
 A new era of peace has begun between our peoples.
 
 You are the hero of two worlds.`,
-      animation: 'victory'
+      actors: [
+        { id: 'portal', asset: 'ancient_portal.svg', x: 50, y: 40, scale: 3, anim: 'glow' },
+        { id: 'astro', asset: 'astronaut_v2.svg', x: 40, y: 70, scale: 2, anim: 'jump' },
+        { id: 'commander', asset: 'alien_commander.svg', x: 60, y: 70, scale: 2, anim: 'jump' },
+        { id: 'stars', asset: 'candy_crystal.svg', x: 50, y: 20, scale: 1, anim: 'twinkle' }
+      ]
     }
   },
 

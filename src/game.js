@@ -40,19 +40,19 @@ const LEVELS = [
   createLevel('Void Echoes', 'void_echo', 28, { type: 'pieces', target: 80, description: 'Clear Sector 7 of all alien presence - destroy 80 enemy units' }, 'lvl10', 0.35),
   createLevel('Base Assault', 'deep_nebula', 30, { type: 'score', target: 10000, description: 'Assault the alien command base with coordinated magical strikes' }, 'act2', 0.3),
   createLevel('Fortified Base', 'alien_green', 30, { type: 'pieces', target: 100, description: 'Breach the fortified alien base defenses - eliminate 100 guard units' }, 'lvl12', 0.3),
-  createLevel('Maximum Firepower', 'black_hole_void', 32, { type: 'score', target: 12000, description: 'Unleash maximum firepower by creating devastating combos' }, 'lvl13', 0.25),
-  createLevel('Strategic Victory', 'warp_speed', 32, { type: 'score', target: 15000, description: 'Achieve strategic victory through superior magical tactics' }, 'lvl14', 0.25),
-  createLevel('Precision Bombing', 'inferno', 34, { type: 'score', target: 18000, description: 'Execute precision strikes with massive combo explosions' }, 'lvl15', 0.25),
-  createLevel('Archaeological Dig', 'quantum_realm', 34, { type: 'score', target: 20000, description: 'Unearth ancient artifacts that hold the key to understanding our visitors' }, 'act3', 0.2),
-  createLevel('Deep Excavation', 'deep_nebula', 36, { type: 'pieces', target: 150, description: 'Excavate deeper to find 150 crucial alien artifacts' }, 'lvl17', 0.2),
-  createLevel('Full Potential', 'alien_green', 36, { type: 'score', target: 22000, description: 'Unlock the full potential of ancient magic through high scores' }, 'lvl18', 0.2),
-  createLevel('Ancient Knowledge', 'black_hole_void', 38, { type: 'score', target: 25000, description: 'Master the ancient knowledge to bridge our worlds' }, 'lvl19', 0.2),
-  createLevel('Master the Ruins', 'warp_speed', 38, { type: 'score', target: 28000, description: 'Master the ancient ruins by harnessing powerful magical energy' }, 'lvl20', 0.2),
-  createLevel('Peace Offering', 'quantum_realm', 40, { type: 'score', target: 30000, description: 'Create a grand peace offering through masterful magical displays' }, 'act4', 0.1),
-  createLevel('Shared Sacrifice', 'inferno', 40, { type: 'pieces', target: 200, description: 'Make the ultimate sacrifice - destroy 200 enemy units in a final stand' }, 'lvl22', 0.1),
-  createLevel('Combined Might', 'deep_nebula', 42, { type: 'score', target: 35000, description: 'Combine human and alien might by forging legendary artifacts' }, 'lvl23', 0.1),
-  createLevel('United Strength', 'alien_green', 42, { type: 'score', target: 40000, description: 'Demonstrate united strength against the greater cosmic threat' }, 'lvl24', 0.1),
-  createLevel('Final Battle', 'black_hole_void', 45, { type: 'score', target: 50000, description: 'Lead humanity and aliens together in the final battle for survival' }, 'victory', 0.1)
+  createLevel('Maximum Firepower', 'black_hole_void', 30, { type: 'score', target: 15000, description: 'Unleash maximum firepower by creating devastating combos' }, 'lvl13', 0.2),
+  createLevel('Strategic Victory', 'warp_speed', 30, { type: 'score', target: 18000, description: 'Achieve strategic victory through superior magical tactics' }, 'lvl14', 0.2),
+  createLevel('Precision Bombing', 'inferno', 32, { type: 'score', target: 22000, description: 'Execute precision strikes with massive combo explosions' }, 'lvl15', 0.2),
+  createLevel('Archaeological Dig', 'quantum_realm', 32, { type: 'score', target: 25000, description: 'Unearth ancient artifacts that hold the key to understanding our visitors' }, 'act3', 0.2),
+  createLevel('Deep Excavation', 'deep_nebula', 34, { type: 'pieces', target: 180, description: 'Excavate deeper to find 180 crucial alien artifacts' }, 'lvl17', 0.2),
+  createLevel('Full Potential', 'alien_green', 34, { type: 'score', target: 28000, description: 'Unlock the full potential of ancient magic through high scores' }, 'lvl18', 0.2),
+  createLevel('Ancient Knowledge', 'black_hole_void', 36, { type: 'score', target: 32000, description: 'Master the ancient knowledge to bridge our worlds' }, 'lvl19', 0.2),
+  createLevel('Master the Ruins', 'warp_speed', 36, { type: 'score', target: 35000, description: 'Master the ancient ruins by harnessing powerful magical energy' }, 'lvl20', 0.2),
+  createLevel('Peace Offering', 'quantum_realm', 38, { type: 'score', target: 40000, description: 'Create a grand peace offering through masterful magical displays' }, 'act4', 0.1),
+  createLevel('Shared Sacrifice', 'inferno', 38, { type: 'pieces', target: 250, description: 'Make the ultimate sacrifice - destroy 250 enemy units in a final stand' }, 'lvl22', 0.1),
+  createLevel('Combined Might', 'deep_nebula', 40, { type: 'score', target: 45000, description: 'Combine human and alien might by forging legendary artifacts' }, 'lvl23', 0.15),
+  createLevel('United Strength', 'alien_green', 40, { type: 'score', target: 50000, description: 'Demonstrate united strength against the greater cosmic threat' }, 'lvl24', 0.15),
+  createLevel('Final Battle', 'black_hole_void', 42, { type: 'score', target: 45000, description: 'Lead humanity and aliens together in the final battle for survival' }, null, 0.25)
 ];
 
 function resolveSavedLevel() {
@@ -279,6 +279,7 @@ function startLevel(){
       rows: DEFAULT_ROWS,
       paletteSize: paletteSize,
       luck: luck,
+      theme: levelDef.theme,
       onChange: (ev) => {
         console.log('[UIManager.onChange]', ev.type, 'removed:', ev.removed);
         if(ev.type === 'swap') {
@@ -1049,19 +1050,6 @@ function setupGameUI(){
       try{ Sound.setVolume(v); localStorage.setItem('candy_volume', v); }catch(e){}
     });
     try{ volumeEl.value = localStorage.getItem('candy_volume') || 1; }catch(e){}
-  }
-  
-  const themeSelector = document.getElementById('bg-theme-select');
-  if(themeSelector) {
-    console.log('[setupGameUI] Theme selector encontrado');
-    themeSelector.addEventListener('change', (e) => {
-      const t = e.target.value;
-      console.log('[setupGameUI] Cambiando tema a:', t);
-      applyTheme(t);
-      localStorage.setItem(THEME_KEY, t);
-    });
-    const saved = localStorage.getItem(THEME_KEY);
-    if(saved) themeSelector.value = saved;
   }
   
   const btnReset = document.getElementById('btn-reset');

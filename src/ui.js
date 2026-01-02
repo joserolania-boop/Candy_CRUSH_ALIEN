@@ -48,6 +48,7 @@ export class UIManager{
     this.onChange = opts.onChange || (()=>{});
     this.selected = null;
     this.previewQueue = []; this.previewTimer = null; this._animating=false; this._processingPreview=false;
+    this.theme = opts.theme;
 
     // hint
     this.hint = null; this.hintTimer = null; this.hintDelay = (opts && opts.hintDelay) || 10000;
@@ -105,6 +106,28 @@ export class UIManager{
     // Debug helpers removed: no globals attached to `window` to keep namespace clean.
   }
 
+  showSpeedBonus(multiplier, x, y) {
+    if (multiplier <= 1) return;
+    const el = document.createElement('div');
+    el.className = 'speed-bonus-popup';
+    el.textContent = `SPEED x${multiplier.toFixed(1)}!`;
+    el.style.cssText = `
+      position: fixed;
+      left: ${x}px;
+      top: ${y}px;
+      color: #00ff88;
+      font-weight: bold;
+      font-size: 1.2em;
+      pointer-events: none;
+      z-index: 1000;
+      text-shadow: 0 0 10px #000;
+      animation: speed-bonus-anim 1s ease-out forwards;
+      font-family: 'Courier New', monospace;
+    `;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+  }
+
   render(){
     renderBoard(this.board, this.root, this.cols, this.rows);
     this.attachCellHandlers();
@@ -148,6 +171,22 @@ export class UIManager{
 
   _attemptSwap(a,b){
     this._clearSelection(); this.clearHint();
+    
+    // Speed reward logic
+    const now = Date.now();
+    const timeDiff = now - this.lastMoveTime;
+    this.lastMoveTime = now;
+    
+    // If move is within 3 seconds, increase combo streak
+    if (timeDiff < 3000) {
+      this.comboStreak++;
+    } else {
+      this.comboStreak = 0;
+    }
+    
+    const speedMultiplier = 1 + (Math.min(this.comboStreak, 10) * 0.1); // Up to 2x bonus
+    this._speedMultiplier = speedMultiplier;
+
     const elA=this.root.querySelector(`.cell[data-r="${a.r}"][data-c="${a.c}"]`);
     const elB=this.root.querySelector(`.cell[data-r="${b.r}"][data-c="${b.c}"]`);
     try{
@@ -163,6 +202,7 @@ export class UIManager{
             this.render(); this._applyEngineSwapAndResolve(a,b,{skipSwap:true});
             setTimeout(()=>{ const nA=this.root.querySelector(`.cell[data-r="${a.r}"][data-c="${a.c}"]`); const nB=this.root.querySelector(`.cell[data-r="${b.r}"][data-c="${b.c}"]`); if(nA){ nA.style.transform=''; nA.classList.remove('anim-swap'); } if(nB){ nB.style.transform=''; nB.classList.remove('anim-swap'); } },50);
           } else {
+            this.comboStreak = 0; // Reset streak on invalid move
             requestAnimationFrame(()=>{ elA.style.transform=''; elB.style.transform=''; });
             const onRevertEnd = ()=>{ elA.removeEventListener('transitionend', onRevertEnd); elA.classList.remove('anim-swap'); elB.classList.remove('anim-swap'); elA.style.transform=''; elB.style.transform=''; };
             elA.addEventListener('transitionend', onRevertEnd);
@@ -182,6 +222,7 @@ export class UIManager{
     try{
       opts.paletteSize = this.paletteSize;
       opts.luck = this.luck;
+      opts.speedMultiplier = this._speedMultiplier || 1;
       const result = Engine.handleSwapAndResolve(this.board,a,b,opts);
       if(result && result.phases){ for(const p of result.phases) this.previewQueue.push(p); }
       console.debug('Engine produced phases:', result.phases && result.phases.length, result.phases && result.phases.map(p=>p.type));
@@ -197,6 +238,16 @@ export class UIManager{
       }
 
       if(result && result.phases){ result.phases.forEach((p,i)=>{ if(p.board){ let nulls=0; for(const row of p.board) for(const cell of row) if(!cell) nulls++; console.debug(`phase[${i}]=${p.type} nulls=${nulls}`); } }); }
+      
+      // Show speed bonus feedback
+      if (this._speedMultiplier > 1) {
+        const elA = this.root.querySelector(`.cell[data-r="${a.r}"][data-c="${a.c}"]`);
+        if (elA) {
+          const rect = elA.getBoundingClientRect();
+          this.showSpeedBonus(this._speedMultiplier, rect.left, rect.top);
+        }
+      }
+
       this.render(); this.onChange && this.onChange({type:'swap', a,b, removed: result.removedCount, score: result.score, powerUps: powerUpsCreated});
       if(this.previewQueue.length>0) this.playPreview(120);
       this.resetHintTimer();
