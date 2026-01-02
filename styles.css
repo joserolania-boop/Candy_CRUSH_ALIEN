@@ -1285,7 +1285,7 @@ main{width:100%; max-width:760px; padding:12px}
   animation: tile-rotate 25s linear infinite;
 }
 
-/* Tile 1: Blue UFO - Pulsing */
+/* Tile 1: Satellite - Pulsing */
 .cell.tile-v-1::after { 
   background-image: url('assets/images/tile_1.png'); 
   animation: tile-pulse-glow 2.5s ease-in-out infinite;
@@ -1312,13 +1312,13 @@ main{width:100%; max-width:760px; padding:12px}
   z-index: 2;
 }
 
-/* Tile 4: Yellow UFO - Scale */
+/* Tile 4: Drone - Scale */
 .cell.tile-v-4::after { 
   background-image: url('assets/images/tile_4.png'); 
   animation: tile-scale 4s ease-in-out infinite;
 }
 
-/* Tile 5: Orange Ship - Subtle Rotation */
+/* Tile 5: Energy Cell - Subtle Rotation */
 .cell.tile-v-5::after { 
   background-image: url('assets/images/tile_5.png'); 
   animation: tile-rotate-subtle 10s linear infinite;
@@ -1336,7 +1336,7 @@ main{width:100%; max-width:760px; padding:12px}
   animation: tile-rotate 15s linear infinite reverse;
 }
 
-/* Tile 8: Spaceship - Swaying */
+/* Tile 8: Spaceship (Red Wings) - Swaying */
 .cell.tile-v-8::after { 
   background-image: url('assets/images/tile_8.png'); 
   animation: tile-sway 4.5s ease-in-out infinite;
@@ -1348,7 +1348,7 @@ main{width:100%; max-width:760px; padding:12px}
   animation: tile-pulse-glow 3s ease-in-out infinite;
 }
 
-/* Tile 10: Red UFO - Pulsing */
+/* Tile 10: Radar - Pulsing */
 .cell.tile-v-10::after { 
   background-image: url('assets/images/tile_10.png'); 
   animation: tile-pulse-glow 2s ease-in-out infinite;
