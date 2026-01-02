@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="warpGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff" />
+      <stop offset="50%" style="stop-color:#ff00ff" />
+      <stop offset="100%" style="stop-color:#00ffff" />
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="80" fill="none" stroke="url(#warpGrad)" stroke-width="4" opacity="0.6">
+    <animate attributeName="r" values="80;95;80" dur="2s" repeatCount="indefinite" />
+    <animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite" />
+  </circle>
+  <circle cx="100" cy="100" r="60" fill="none" stroke="url(#warpGrad)" stroke-width="2" opacity="0.4">
+    <animate attributeName="r" values="60;75;60" dur="1.5s" repeatCount="indefinite" />
+  </circle>
+</svg>

@@ -44,7 +44,12 @@ We've engaged the hyper-drive to follow them.
 The space-time continuum is warping around us.
 
 Keep the energy levels stable with your matches!`,
-      actors: [{ id: 'ship', asset: 'spaceship_side.svg', x: 50, y: 50, scale: 1.2, anim: 'strafe' }]
+      actors: [
+        { id: 'warp1', asset: 'warp_ring.svg', x: 50, y: 50, scale: 4, anim: 'float' },
+        { id: 'warp2', asset: 'warp_ring.svg', x: 50, y: 50, scale: 2, anim: 'float-delayed' },
+        { id: 'ship', asset: 'interceptor_ship.svg', x: 50, y: 55, scale: 1.5, anim: 'strafe' },
+        { id: 'crystal', asset: 'candy_crystal.svg', x: 50, y: 20, scale: 0.8, anim: 'twinkle' }
+      ]
     },
     lvl4: {
       title: 'Quantum Realm',
@@ -54,7 +59,13 @@ Physics don't work the same here.
 The candies are vibrating with quantum energy.
 
 Master the chaos to move forward!`,
-      actors: [{ id: 'astro', asset: 'astronaut.svg', x: 50, y: 50, scale: 1.5, anim: 'float' }]
+      actors: [
+        { id: 'q1', asset: 'quantum_particle.svg', x: 20, y: 30, scale: 1.5, anim: 'float' },
+        { id: 'q2', asset: 'quantum_particle.svg', x: 80, y: 70, scale: 1.2, anim: 'float-delayed' },
+        { id: 'q3', asset: 'quantum_particle.svg', x: 50, y: 20, scale: 1.8, anim: 'float' },
+        { id: 'astro', asset: 'astronaut.svg', x: 50, y: 55, scale: 1.5, anim: 'jump' },
+        { id: 'crystal', asset: 'candy_crystal.svg', x: 80, y: 20, scale: 0.7, anim: 'twinkle' }
+      ]
     },
     lvl5: {
       title: 'Inferno Core',
