@@ -1,0 +1,9 @@
+<svg width="80" height="40" viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 10 20 L 30 10 L 70 15 L 75 20 L 70 25 L 30 30 Z" fill="#455a64" stroke="#90a4ae" stroke-width="2" />
+  <rect x="35" y="18" width="20" height="4" fill="#03a9f4">
+    <animate attributeName="opacity" values="0.5;1;0.5" dur="0.5s" repeatCount="indefinite" />
+  </rect>
+  <path d="M 10 20 L 0 15 M 10 20 L 0 25" stroke="#ff5722" stroke-width="3" opacity="0.8">
+    <animate attributeName="stroke-width" values="1;4;1" dur="0.2s" repeatCount="indefinite" />
+  </path>
+</svg>

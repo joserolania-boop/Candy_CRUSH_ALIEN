@@ -75,7 +75,13 @@ We're approaching a binary star system.
 The alien trail leads straight into the fire.
 
 Cool down the systems with powerful combos!`,
-      actors: [{ id: 'ufo', asset: 'ufo_v2.svg', x: 50, y: 30, scale: 1.2, anim: 'shake' }]
+      actors: [
+        { id: 'stars', asset: 'binary_star.svg', x: 50, y: 40, scale: 3, anim: 'actor-rotate-slow' },
+        { id: 'lava1', asset: 'magma_flow.svg', x: 50, y: 90, scale: 2, anim: 'none' },
+        { id: 'bubble1', asset: 'lava_bubble.svg', x: 20, y: 80, scale: 1, anim: 'actor-heat-shimmer' },
+        { id: 'bubble2', asset: 'lava_bubble.svg', x: 80, y: 85, scale: 0.8, anim: 'actor-heat-shimmer' },
+        { id: 'ufo', asset: 'ufo_v2.svg', x: 50, y: 30, scale: 1.2, anim: 'shake' }
+      ]
     },
     act1: {
       title: 'Wave One - Supernova Blast',
@@ -876,19 +882,22 @@ You are the hero of two worlds.`,
     svg.appendChild(shield);
 
     // Alien fighters attacking
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 6; i++) {
       const fighterGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      fighterGroup.setAttribute('style', `animation: attack-dive ${2}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${i * 0.5}s infinite;`);
+      fighterGroup.setAttribute('style', `animation: attack-dive ${2.5}s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${i * 0.4}s infinite;`);
 
-      // Fighter body
-      const fighter = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      fighter.setAttribute('points', `${100 + i * 130},50 ${120 + i * 130},80 ${80 + i * 130},80`);
+      // Use the new fleet_ship asset if possible, or stick to polygon for speed
+      // Since this is a procedural SVG function, I'll stick to polygons but make them more complex
+      const fighter = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      fighter.setAttribute('d', 'M 0 0 L 10 20 L -10 20 Z M 0 5 L 15 25 L -15 25 Z');
+      fighter.setAttribute('transform', `translate(${100 + i * 80}, 50)`);
       fighter.setAttribute('fill', '#ff6b9d');
       fighterGroup.appendChild(fighter);
 
       // Fighter glow
-      const glow = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-      glow.setAttribute('points', `${100 + i * 130},50 ${120 + i * 130},80 ${80 + i * 130},80`);
+      const glow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      glow.setAttribute('d', 'M 0 0 L 10 20 L -10 20 Z M 0 5 L 15 25 L -15 25 Z');
+      glow.setAttribute('transform', `translate(${100 + i * 80}, 50)`);
       glow.setAttribute('fill', 'none');
       glow.setAttribute('stroke', '#ff1493');
       glow.setAttribute('stroke-width', '2');
@@ -896,6 +905,31 @@ You are the hero of two worlds.`,
       fighterGroup.appendChild(glow);
 
       svg.appendChild(fighterGroup);
+    }
+
+    // Add a "Boss" ship in the background
+    const bossShip = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    bossShip.setAttribute('style', 'animation: boss-float 10s ease-in-out infinite;');
+    const bossBody = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    bossBody.setAttribute('d', 'M 200 20 L 400 20 L 450 50 L 300 80 L 150 50 Z');
+    bossBody.setAttribute('fill', '#2c3e50');
+    bossBody.setAttribute('stroke', '#ff1493');
+    bossBody.setAttribute('stroke-width', '3');
+    bossShip.appendChild(bossBody);
+    svg.appendChild(bossShip);
+
+    // Laser beams from boss
+    for (let i = 0; i < 3; i++) {
+      const laser = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      laser.setAttribute('x1', '300');
+      laser.setAttribute('y1', '80');
+      laser.setAttribute('x2', `${100 + i * 200}`);
+      laser.setAttribute('y2', '200');
+      laser.setAttribute('stroke', '#ff1493');
+      laser.setAttribute('stroke-width', '4');
+      laser.setAttribute('opacity', '0');
+      laser.setAttribute('style', `animation: boss-laser 4s ease-in-out ${i * 1.3}s infinite;`);
+      svg.appendChild(laser);
     }
 
     const defenderGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -983,6 +1017,16 @@ You are the hero of two worlds.`,
         @keyframes building-blink {
           0%, 90%, 100% { opacity: 0.8; }
           95% { opacity: 0.1; }
+        }
+        @keyframes boss-float {
+          0%, 100% { transform: translateY(0) scale(1); }
+          50% { transform: translateY(10px) scale(1.05); }
+        }
+        @keyframes boss-laser {
+          0%, 80% { opacity: 0; stroke-width: 0; }
+          85% { opacity: 1; stroke-width: 6; }
+          90% { opacity: 1; stroke-width: 2; }
+          100% { opacity: 0; stroke-width: 0; }
         }
       `;
       document.head.appendChild(style);

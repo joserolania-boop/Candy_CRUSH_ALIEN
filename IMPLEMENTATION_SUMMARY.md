@@ -27,6 +27,9 @@ The game now features a **complete 25-level story campaign** with integrated nar
 - **Themed environments** per act (5 unique visual themes)
 - **Starfield backgrounds** for story scenes
 - **SVG animations** for each story checkpoint
+- **High-Complexity Scenes (1-5)**: Detailed actors with custom SVGs (Earth, Cities, Drones, Warp Rings, Binary Stars, Magma).
+- **Act 1 Cinematic**: Enhanced "Wave Attack" with a Boss Ship and laser beams.
+- **Floating Score Feedback**: Real-time "!score!" popups at match locations for better "juice".
 
 ### 💾 Game State Management
 - Automatic save to localStorage

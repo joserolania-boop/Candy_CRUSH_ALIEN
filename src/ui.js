@@ -271,10 +271,20 @@ export class UIManager{
         // play staggered match SFX per group, pitch up slightly per combo
         try{
           const baseRate = 1 + (this._combo * 0.1);
+          let totalScore = 0;
           next.groups.forEach((g, gi)=>{
             const firstCell = (g.cells && g.cells[0]) || null;
             const pan = firstCell ? this._mapColToPan(firstCell.c) : 0;
             this._playSFX('match', { volume:0.36, playbackRate: baseRate, pan, delay: gi*0.02 });
+            
+            // Calculate score for this group
+            const groupScore = (g.len || 3) * 10 * this._combo;
+            totalScore += groupScore;
+            
+            // Show floating score for each group
+            if (firstCell) {
+              this.showFloatingScore(firstCell.r, firstCell.c, groupScore);
+            }
           });
         }catch(e){}
         const cellsToAnimate=[]; for(const g of next.groups) for(const p of g.cells) cellsToAnimate.push(p);
@@ -303,6 +313,13 @@ export class UIManager{
           this._animating=true; try{ this._playSFX('bomb', { volume:0.72, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          
+          // Show floating score for power activation
+          if (origin) {
+            const score = (mapped.length + 1) * 15 * this._combo;
+            this.showFloatingScore(origin.r, origin.c, score);
+          }
+
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('bomb-primed'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
           await new Promise(res=> setTimeout(res,30));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
@@ -316,6 +333,12 @@ export class UIManager{
           this._animating=true; try{ this._playSFX('power', { volume:0.8, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          
+          if (origin) {
+            const score = (mapped.length + 1) * 15 * this._combo;
+            this.showFloatingScore(origin.r, origin.c, score);
+          }
+
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('power-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
           await new Promise(res=> setTimeout(res,15));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
@@ -329,6 +352,12 @@ export class UIManager{
           this._animating=true; try{ this._playSFX('power', { volume:0.8, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          
+          if (origin) {
+            const score = (mapped.length + 1) * 15 * this._combo;
+            this.showFloatingScore(origin.r, origin.c, score);
+          }
+
           if(origin){ 
             const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); 
             if(oel){ 
@@ -359,6 +388,12 @@ export class UIManager{
           this._animating=true; try{ this._playSFX('colorbomb', { volume:0.9, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          
+          if (origin) {
+            const score = (mapped.length + 1) * 20 * this._combo;
+            this.showFloatingScore(origin.r, origin.c, score);
+          }
+
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('colorbomb-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
           await new Promise(res=> setTimeout(res,20));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
@@ -617,6 +652,27 @@ export class UIManager{
         this._comboEl.classList.remove('show');
       }
     }, 800);
+  }
+
+  showFloatingScore(r, c, score) {
+    const cellEl = this.root.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+    if (!cellEl) return;
+
+    const rect = cellEl.getBoundingClientRect();
+    const floating = document.createElement('div');
+    floating.className = 'floating-score';
+    floating.textContent = `!${score}!`;
+    
+    // Position relative to viewport
+    floating.style.left = `${rect.left + rect.width / 2}px`;
+    floating.style.top = `${rect.top}px`;
+    
+    document.body.appendChild(floating);
+    
+    // Remove after animation
+    setTimeout(() => {
+      floating.remove();
+    }, 1000);
   }
 
   shakeBoard(intensity = 5) {
