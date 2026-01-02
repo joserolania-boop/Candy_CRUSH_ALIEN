@@ -4,12 +4,7 @@ import Particles from './particles_helper.js';
 import {cloneBoard} from './board.js';
 
 function getPowerIcon(p){
-  if(p === 'hammer') return '🔨';
-  if(p === 'bomb') return '💣';
-  if(p === 'wrapped') return '🎁';
-  if(p === 'colorbomb') return '🌈';
-  if(p === 'striped') return '⚡';
-  return '?';
+  return ''; // Using background images via CSS classes
 }
 
 export function renderBoard(board, root, cols, rows){
@@ -25,11 +20,10 @@ export function renderBoard(board, root, cols, rows){
       el.dataset.r = String(r);
       el.dataset.c = String(c);
       if(tile){
+        el.classList.add('tile-v-' + tile.v);
         if(tile.p){
-          el.textContent = getPowerIcon(tile.p);
-          el.classList.add('power-'+tile.p);
-        } else {
-          el.textContent = tile.v;
+          el.classList.add('power-' + tile.p);
+          if(tile.orientation) el.classList.add('dir-' + tile.orientation);
         }
       } else {
         el.classList.add('empty');
@@ -135,6 +129,10 @@ export class UIManager{
   render(){
     renderBoard(this.board, this.root, this.cols, this.rows);
     this.attachCellHandlers();
+    if(this.selected){
+      const el = this.root.querySelector(`.cell[data-r="${this.selected.r}"][data-c="${this.selected.c}"]`);
+      if(el) el.classList.add('selected');
+    }
     if(this.hint && this.hint.a && this.hint.b){
       const aEl = this.root.querySelector(`.cell[data-r="${this.hint.a.r}"][data-c="${this.hint.a.c}"]`);
       const bEl = this.root.querySelector(`.cell[data-r="${this.hint.b.r}"][data-c="${this.hint.b.c}"]`);

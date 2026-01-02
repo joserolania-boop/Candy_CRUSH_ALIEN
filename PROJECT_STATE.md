@@ -15,7 +15,10 @@ Cambios realizados (ficheros clave)
 - `src/engine.js`: Integración del multiplicador de velocidad en el cálculo de puntuación.
 - `src/backgrounds.js`: Migración de shaders procedimentales a un sistema de fondos basados en imágenes estáticas de alta calidad (8 temas únicos con imágenes de Pixabay/Pexels).
 - `assets/images/backgrounds/`: Nueva carpeta con 8 imágenes espaciales de alta resolución.
-- `styles.css`: Ajustes de opacidad en capas procedimentales para complementar los nuevos fondos fotográficos.
+- `assets/images/skins/`: Nueva carpeta con skins para el tablero (marcos, rejillas) y sets de fichas (planetas, gemas).
+- `styles.css`: Ajustes de opacidad en capas procedimentales y aplicación de nuevas skins al tablero y las fichas (planetas y UFOs). **Corrección de visibilidad de fichas usando assets individuales de alta distinción.**
+- `src/ui.js`: Actualización del renderizado para usar clases de CSS con imágenes en lugar de texto/emojis para las fichas y power-ups. **Mejora en la lógica de clases para soportar power-ups con su imagen base.**
+- `src/board.js`: **Migración de la paleta de emojis a identificadores numéricos (0-7) para una integración más limpia con el sistema de skins CSS.**
 
 Comportamiento y pruebas
 - Iniciar servidor desde la carpeta del juego:
