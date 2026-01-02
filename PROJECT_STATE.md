@@ -20,6 +20,7 @@ Cambios realizados (ficheros clave)
 - `src/ui.js`: Actualización del renderizado para usar clases de CSS con imágenes en lugar de texto/emojis para las fichas y power-ups. **Mejora en la lógica de clases para soportar power-ups con su imagen base.**
 - `src/board.js`: **Migración de la paleta de emojis a identificadores numéricos (0-7) para una integración más limpia con el sistema de skins CSS.**
 - **Nuevos Assets**: Descarga de 8 fichas espaciales de alta calidad desde repositorios externos para máxima distinción visual.
+- **Icono de la App**: Generación de un icono oficial de 512x512 px (`assets/images/app_icon.png`) siguiendo las especificaciones de Huawei AppGallery, con un diseño vibrante que incluye al alienígena protagonista, cristales y un fondo de galaxia.
 
 Comportamiento y pruebas
 - Iniciar servidor desde la carpeta del juego:
