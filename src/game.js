@@ -15,7 +15,7 @@ const THEME_KEY = 'candy_bg_theme';
 const DEFAULT_THEME = 'deep_nebula';
 const BOARD_HIDE_CLASS = 'story-cutscene-hidden';
 
-const createLevel = (name, theme, moves, objective, storyCheckpoint, luck = 0) => ({
+const createLevel = (name, theme, moves, objective, storyCheckpoint, luck = 0, paletteSize = 6) => ({
   name,
   theme,
   moves,
@@ -23,36 +23,36 @@ const createLevel = (name, theme, moves, objective, storyCheckpoint, luck = 0) =
   rows: DEFAULT_ROWS,
   objective,
   story_checkpoint: storyCheckpoint,
-  paletteSize: 6,
+  paletteSize,
   luck
 });
 
 const LEVELS = [
-  createLevel('First Contact', 'deep_nebula', 20, { type: 'score', target: 1200, description: 'Channel your magic to create a protective barrier around the approaching ship' }, 'intro', 0.8),
-  createLevel('The Singularity', 'black_hole_void', 22, { type: 'pieces', target: 40, description: 'Destroy 40 alien probes threatening our cities with candy blasts' }, 'lvl2', 0.75),
-  createLevel('Hyper-Jump', 'warp_speed', 22, { type: 'score', target: 2500, description: 'Build up magical energy to power our defense shields' }, 'lvl3', 0.7),
-  createLevel('Quantum Realm', 'quantum_realm', 24, { type: 'score', target: 3500, description: 'Master the art of creating combos to unleash devastating attacks' }, 'lvl4', 0.65),
-  createLevel('Inferno Core', 'inferno', 24, { type: 'score', target: 4000, description: 'Prepare the ultimate counter-spell against the alien invasion' }, 'lvl5', 0.6),
-  createLevel('Supernova Blast', 'supernova', 25, { type: 'score', target: 5000, description: 'Lead the first wave of magical defense against the alien fleet' }, 'act1', 0.55),
-  createLevel('Alien Outpost', 'alien_green', 26, { type: 'pieces', target: 60, description: 'Protect our coastlines by eliminating 60 alien landing craft' }, 'lvl7', 0.5),
-  createLevel('Event Horizon', 'event_horizon', 26, { type: 'score', target: 6500, description: 'Forge powerful artifacts to strengthen our magical arsenal' }, 'lvl8', 0.45),
-  createLevel('Warp Tunnel', 'warp_speed', 28, { type: 'score', target: 7000, description: 'Turn the tide of battle with overwhelming magical force' }, 'lvl9', 0.4),
-  createLevel('Void Echoes', 'void_echo', 28, { type: 'pieces', target: 80, description: 'Clear Sector 7 of all alien presence - destroy 80 enemy units' }, 'lvl10', 0.35),
-  createLevel('Base Assault', 'deep_nebula', 30, { type: 'score', target: 10000, description: 'Assault the alien command base with coordinated magical strikes' }, 'act2', 0.3),
-  createLevel('Fortified Base', 'alien_green', 30, { type: 'pieces', target: 100, description: 'Breach the fortified alien base defenses - eliminate 100 guard units' }, 'lvl12', 0.3),
-  createLevel('Maximum Firepower', 'black_hole_void', 30, { type: 'score', target: 15000, description: 'Unleash maximum firepower by creating devastating combos' }, 'lvl13', 0.2),
-  createLevel('Strategic Victory', 'warp_speed', 30, { type: 'score', target: 18000, description: 'Achieve strategic victory through superior magical tactics' }, 'lvl14', 0.2),
-  createLevel('Precision Bombing', 'inferno', 32, { type: 'score', target: 22000, description: 'Execute precision strikes with massive combo explosions' }, 'lvl15', 0.2),
-  createLevel('Archaeological Dig', 'quantum_realm', 32, { type: 'score', target: 25000, description: 'Unearth ancient artifacts that hold the key to understanding our visitors' }, 'act3', 0.2),
-  createLevel('Deep Excavation', 'deep_nebula', 34, { type: 'pieces', target: 180, description: 'Excavate deeper to find 180 crucial alien artifacts' }, 'lvl17', 0.2),
-  createLevel('Full Potential', 'alien_green', 34, { type: 'score', target: 28000, description: 'Unlock the full potential of ancient magic through high scores' }, 'lvl18', 0.2),
-  createLevel('Ancient Knowledge', 'black_hole_void', 36, { type: 'score', target: 32000, description: 'Master the ancient knowledge to bridge our worlds' }, 'lvl19', 0.2),
-  createLevel('Master the Ruins', 'warp_speed', 36, { type: 'score', target: 35000, description: 'Master the ancient ruins by harnessing powerful magical energy' }, 'lvl20', 0.2),
-  createLevel('Peace Offering', 'quantum_realm', 38, { type: 'score', target: 40000, description: 'Create a grand peace offering through masterful magical displays' }, 'act4', 0.1),
-  createLevel('Shared Sacrifice', 'inferno', 38, { type: 'pieces', target: 250, description: 'Make the ultimate sacrifice - destroy 250 enemy units in a final stand' }, 'lvl22', 0.1),
-  createLevel('Combined Might', 'deep_nebula', 40, { type: 'score', target: 45000, description: 'Combine human and alien might by forging legendary artifacts' }, 'lvl23', 0.15),
-  createLevel('United Strength', 'alien_green', 40, { type: 'score', target: 50000, description: 'Demonstrate united strength against the greater cosmic threat' }, 'lvl24', 0.15),
-  createLevel('Final Battle', 'black_hole_void', 42, { type: 'score', target: 45000, description: 'Lead humanity and aliens together in the final battle for survival' }, null, 0.25)
+  createLevel('First Contact', 'deep_nebula', 20, { type: 'score', target: 1200, description: 'Channel your magic to create a protective barrier around the approaching ship' }, 'intro', 0.2, 6),
+  createLevel('The Singularity', 'black_hole_void', 22, { type: 'pieces', target: 40, description: 'Destroy 40 alien probes threatening our cities with candy blasts' }, 'lvl2', 0.18, 6),
+  createLevel('Hyper-Jump', 'warp_speed', 22, { type: 'score', target: 2500, description: 'Build up magical energy to power our defense shields' }, 'lvl3', 0.15, 6),
+  createLevel('Quantum Realm', 'quantum_realm', 24, { type: 'score', target: 3500, description: 'Master the art of creating combos to unleash devastating attacks' }, 'lvl4', 0.12, 7),
+  createLevel('Inferno Core', 'inferno', 24, { type: 'score', target: 4000, description: 'Prepare the ultimate counter-spell against the alien invasion' }, 'lvl5', 0.1, 7),
+  createLevel('Supernova Blast', 'supernova', 25, { type: 'score', target: 5000, description: 'Lead the first wave of magical defense against the alien fleet' }, 'act1', 0.08, 8),
+  createLevel('Alien Outpost', 'alien_green', 26, { type: 'pieces', target: 60, description: 'Protect our coastlines by eliminating 60 alien landing craft' }, 'lvl7', 0.05, 8),
+  createLevel('Event Horizon', 'event_horizon', 26, { type: 'score', target: 6500, description: 'Forge powerful artifacts to strengthen our magical arsenal' }, 'lvl8', 0.05, 8),
+  createLevel('Warp Tunnel', 'warp_speed', 28, { type: 'score', target: 7000, description: 'Turn the tide of battle with overwhelming magical force' }, 'lvl9', 0.05, 9),
+  createLevel('Void Echoes', 'void_echo', 28, { type: 'pieces', target: 80, description: 'Clear Sector 7 of all alien presence - destroy 80 enemy units' }, 'lvl10', 0.05, 9),
+  createLevel('Base Assault', 'deep_nebula', 30, { type: 'score', target: 10000, description: 'Assault the alien command base with coordinated magical strikes' }, 'act2', 0.05, 10),
+  createLevel('Fortified Base', 'alien_green', 30, { type: 'pieces', target: 100, description: 'Breach the fortified alien base defenses - eliminate 100 guard units' }, 'lvl12', 0.05, 10),
+  createLevel('Maximum Firepower', 'black_hole_void', 30, { type: 'score', target: 15000, description: 'Unleash maximum firepower by creating devastating combos' }, 'lvl13', 0.05, 10),
+  createLevel('Strategic Victory', 'warp_speed', 30, { type: 'score', target: 18000, description: 'Achieve strategic victory through superior magical tactics' }, 'lvl14', 0.05, 11),
+  createLevel('Precision Bombing', 'inferno', 32, { type: 'score', target: 22000, description: 'Execute precision strikes with massive combo explosions' }, 'lvl15', 0.05, 11),
+  createLevel('Archaeological Dig', 'quantum_realm', 32, { type: 'score', target: 25000, description: 'Unearth ancient artifacts that hold the key to understanding our visitors' }, 'act3', 0.05, 11),
+  createLevel('Deep Excavation', 'deep_nebula', 34, { type: 'pieces', target: 180, description: 'Excavate deeper to find 180 crucial alien artifacts' }, 'lvl17', 0.05, 12),
+  createLevel('Full Potential', 'alien_green', 34, { type: 'score', target: 28000, description: 'Unlock the full potential of ancient magic through high scores' }, 'lvl18', 0.05, 12),
+  createLevel('Ancient Knowledge', 'black_hole_void', 36, { type: 'score', target: 32000, description: 'Master the ancient knowledge to bridge our worlds' }, 'lvl19', 0.05, 12),
+  createLevel('Master the Ruins', 'warp_speed', 36, { type: 'score', target: 35000, description: 'Master the ancient ruins by harnessing powerful magical energy' }, 'lvl20', 0.05, 12),
+  createLevel('Peace Offering', 'quantum_realm', 38, { type: 'score', target: 40000, description: 'Create a grand peace offering through masterful magical displays' }, 'act4', 0.05, 12),
+  createLevel('Shared Sacrifice', 'inferno', 38, { type: 'pieces', target: 250, description: 'Make the ultimate sacrifice - destroy 250 enemy units in a final stand' }, 'lvl22', 0.05, 12),
+  createLevel('Combined Might', 'deep_nebula', 40, { type: 'score', target: 45000, description: 'Combine human and alien might by forging legendary artifacts' }, 'lvl23', 0.05, 12),
+  createLevel('United Strength', 'alien_green', 40, { type: 'score', target: 50000, description: 'Demonstrate united strength against the greater cosmic threat' }, 'lvl24', 0.05, 12),
+  createLevel('Final Battle', 'black_hole_void', 42, { type: 'score', target: 45000, description: 'Lead humanity and aliens together in the final battle for survival' }, null, 0.05, 12)
 ];
 
 function resolveSavedLevel() {

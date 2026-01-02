@@ -1,6 +1,6 @@
 // Board utilities: tile palette, board state creation and helpers
 // Uniform palette: each symbol appears once to keep equal frequency
-const PALETTE = [0, 1, 2, 3, 4, 5, 6, 7];
+const PALETTE = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 function makeTile(value, power=null){
   return {v: value, p: power};

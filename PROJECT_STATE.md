@@ -19,8 +19,11 @@ Cambios realizados (ficheros clave)
 - `styles.css`: Ajustes de opacidad en capas procedimentales y aplicación de nuevas skins al tablero y las fichas (planetas y UFOs). **Integración de 8 nuevos assets externos (Phaser/Kenney) con animaciones únicas (rotación, pulso, flotación, destellos).**
 - `src/ui.js`: Actualización del renderizado para usar clases de CSS con imágenes en lugar de texto/emojis para las fichas y power-ups. **Mejora en la lógica de clases para soportar power-ups con su imagen base.**
 - `src/board.js`: **Migración de la paleta de emojis a identificadores numéricos (0-7) para una integración más limpia con el sistema de skins CSS.**
-- **Nuevos Assets**: Descarga de 8 fichas espaciales de alta calidad desde repositorios externos para máxima distinción visual.
+- **Nuevos Assets**: Descarga de 12 fichas espaciales de alta calidad y consistentes (Kenney Space Shooter Redux) para reemplazar los assets anteriores que tenían definición inconsistente.
+- **Paleta Ampliada**: La paleta de juego ahora cuenta con 12 tipos de fichas (0-11), permitiendo una mayor variedad visual y dificultad progresiva en los niveles avanzados.
+- **Rebalanceo de Dificultad**: Se han ajustado los valores de `luck` en todos los niveles para evitar combos infinitos al inicio del juego, proporcionando una experiencia más controlada y desafiante.
 - **Icono de la App**: Generación de un icono oficial de 512x512 px (`assets/images/app_icon.png`) siguiendo las especificaciones de Huawei AppGallery, con un diseño vibrante que incluye al alienígena protagonista, cristales y un fondo de galaxia.
+- **Limpieza de Proyecto**: Eliminación de archivos temporales y assets no relacionados (como los de la app de pesca) para mantener el repositorio enfocado exclusivamente en el juego.
 
 Comportamiento y pruebas
 - Iniciar servidor desde la carpeta del juego:

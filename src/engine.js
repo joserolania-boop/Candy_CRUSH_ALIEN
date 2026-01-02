@@ -168,8 +168,8 @@ export function refillBoard(board, paletteSize, luck = 0){
         if (luck > 0 && Math.random() < luck) {
           const candidates = [];
           const possibleValues = [];
-          // Get all possible tile values (1 to paletteSize)
-          for(let v=1; v<=paletteSize; v++) possibleValues.push(v);
+          // Get all possible tile values (0 to paletteSize-1)
+          for(let v=0; v<paletteSize; v++) possibleValues.push(v);
           
           // For each possible value, check if it creates a match
           for(const v of possibleValues) {
