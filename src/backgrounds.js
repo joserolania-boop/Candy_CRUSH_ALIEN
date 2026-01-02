@@ -7,6 +7,7 @@ const THEMES = [
     key: 'deep_nebula',
     label: 'Deep Nebula',
     environment: 'nebula',
+    bgImage: 'assets/images/backgrounds/bg_nebula.jpg',
     baseColor: '#050510',
     accentColor: '#9C27B0',
     glowColor: '#7B1FA2',
@@ -17,6 +18,7 @@ const THEMES = [
     key: 'black_hole_void',
     label: 'The Singularity',
     environment: 'blackhole',
+    bgImage: 'assets/images/backgrounds/bg_galaxy.jpg',
     baseColor: '#020005',
     accentColor: '#FF5722',
     glowColor: '#E64A19',
@@ -27,6 +29,7 @@ const THEMES = [
     key: 'warp_speed',
     label: 'Hyper-Jump',
     environment: 'warp',
+    bgImage: 'assets/images/backgrounds/bg_universe.jpg',
     baseColor: '#000510',
     accentColor: '#00E676',
     glowColor: '#00C853',
@@ -37,6 +40,7 @@ const THEMES = [
     key: 'quantum_realm',
     label: 'Quantum Lattice',
     environment: 'quantum',
+    bgImage: 'assets/images/backgrounds/bg_milkyway.jpg',
     baseColor: '#08000F',
     accentColor: '#00BCD4',
     glowColor: '#0097A7',
@@ -47,6 +51,7 @@ const THEMES = [
     key: 'alien_green',
     label: 'Alien Green',
     environment: 'nebula',
+    bgImage: 'assets/images/backgrounds/bg_green_nebula.png',
     baseColor: '#010d08',
     accentColor: '#00E676',
     glowColor: '#00C853',
@@ -57,6 +62,7 @@ const THEMES = [
     key: 'inferno',
     label: 'Inferno',
     environment: 'blackhole',
+    bgImage: 'assets/images/backgrounds/bg_cosmos.jpg',
     baseColor: '#0D0502',
     accentColor: '#FF5722',
     glowColor: '#E64A19',
@@ -67,6 +73,7 @@ const THEMES = [
     key: 'supernova',
     label: 'Supernova',
     environment: 'nebula',
+    bgImage: 'assets/images/backgrounds/bg_dark_nebula.jpg',
     baseColor: '#0A0015',
     accentColor: '#FFD700',
     glowColor: '#FFA500',
@@ -77,6 +84,7 @@ const THEMES = [
     key: 'void_echo',
     label: 'Void Echo',
     environment: 'quantum',
+    bgImage: 'assets/images/backgrounds/bg_lighthouse_space.jpg',
     baseColor: '#000000',
     accentColor: '#FFFFFF',
     glowColor: '#888888',
@@ -87,6 +95,7 @@ const THEMES = [
     key: 'event_horizon',
     label: 'Event Horizon',
     environment: 'blackhole',
+    bgImage: 'assets/images/backgrounds/bg_galaxy.jpg',
     baseColor: '#000000',
     accentColor: '#00FFFF',
     glowColor: '#0088FF',
@@ -181,6 +190,8 @@ export function applyTheme(themeKey, opts = { crossfade: true }) {
   console.log('[backgrounds.js] applyTheme called with:', themeKey, opts);
   const theme = typeof themeKey === 'string' ? getTheme(themeKey) : themeKey;
   
+  /* 
+  // Disabling WebGL engine to use high-quality static images as requested
   if (!bgEngine) {
     bgEngine = new BackgroundEngine('bg-canvas');
     const bgEl = document.getElementById('space-bg');
@@ -200,13 +211,20 @@ export function applyTheme(themeKey, opts = { crossfade: true }) {
       bgEngine.setPulse(opts.pulse);
     }
   }
+  */
 
   const bg = document.getElementById('space-bg');
   if(bg) {
     if(opts.crossfade) {
-      bg.style.transition = 'background 0.9s ease';
+      bg.style.transition = 'background 0.9s ease, background-image 0.9s ease';
     }
-    bg.style.background = theme.gradient;
+    if (theme.bgImage) {
+      bg.style.backgroundImage = `url(${theme.bgImage})`;
+      bg.style.backgroundSize = 'cover';
+      bg.style.backgroundPosition = 'center';
+    } else {
+      bg.style.background = theme.gradient;
+    }
     bg.setAttribute('data-theme', theme.key);
   }
   if(theme.bodyGradient) {

@@ -692,13 +692,23 @@ body.hammer-mode .cell:hover {
 }
 
 /* Space background layer */
-#space-bg{ position:fixed; inset:0; z-index:0; pointer-events:none; background: var(--space-bg-base); }
-
-body.webgl-active,
-#space-bg.webgl-active {
-  background: transparent !important;
+#space-bg{ 
+  position:fixed; 
+  inset:0; 
+  z-index:0; 
+  pointer-events:none; 
+  background: var(--space-bg-base);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
+
+#bg-canvas {
+  display: none;
+}
+
 html { background: #000; }
+/* 
 #space-bg.webgl-active::before, 
 #space-bg.webgl-active::after,
 #space-bg.webgl-active .stars-small,
@@ -708,6 +718,7 @@ html { background: #000; }
 #space-bg.webgl-active .sun {
   display: none !important;
 }
+*/
 
 #space-bg::before, #space-bg::after{
   content:""; position:absolute; inset:0; background-repeat:repeat;
@@ -742,7 +753,7 @@ html { background: #000; }
   background-size:2200px 2200px; mix-blend-mode: screen; opacity:0.22; animation: drift 120s linear infinite reverse, twinkle 10s ease-in-out infinite; }
 
 /* nebula and milky-way layers for richer space look - ENHANCED */
-#space-bg .nebula{ position:absolute; inset:-10% -20%; pointer-events:none; mix-blend-mode:normal; filter:blur(28px) saturate(1.15); opacity:0.92; transform:translateZ(0); }
+#space-bg .nebula{ position:absolute; inset:-10% -20%; pointer-events:none; mix-blend-mode:normal; filter:blur(28px) saturate(1.15); opacity:0.4; transform:translateZ(0); }
 /* darker, richer nebulae with more color variation */
 #space-bg .nebula.neb1{ 
   background: 
