@@ -58,6 +58,8 @@ export class UIManager{
     // combo counter
     this._combo = 0;
     this._comboEl = null; // will be created on first combo
+    this._lastMatchTime = 0;
+    this._speedBonusThreshold = 1500; // ms between matches for speed bonus
 
     // small helpers for audio mapping
     this._mapColToPan = (c)=>{
@@ -254,15 +256,22 @@ export class UIManager{
       if(next.type==='match-found' && next.groups && next.groups.length>0){
         this._animating=true;
         this._combo++;
-        if(this._combo > 1) {
+
+        // Speed bonus logic
+        const now = Date.now();
+        const timeDiff = now - this._lastMatchTime;
+        const isSpeedy = this._lastMatchTime > 0 && timeDiff < this._speedBonusThreshold;
+        this._lastMatchTime = now;
+
+        if(this._combo > 1 || isSpeedy) {
           this.showComboFeedback(this._combo);
-          if(this._combo > 3) {
-            this.shakeBoard(this._combo);
+          if(this._combo > 3 || isSpeedy) {
+            this.shakeBoard(isSpeedy ? 8 : this._combo);
             // Trigger background pulse/glitch on combos
             import('./backgrounds.js').then(m => {
               m.applyTheme(this.theme || 'deep_nebula', { 
-                pulse: Math.min(1.0, this._combo * 0.1),
-                glitch: this._combo > 5
+                pulse: Math.min(1.0, (this._combo + (isSpeedy ? 2 : 0)) * 0.1),
+                glitch: this._combo > 5 || isSpeedy
               });
             });
           }
@@ -270,20 +279,23 @@ export class UIManager{
 
         // play staggered match SFX per group, pitch up slightly per combo
         try{
-          const baseRate = 1 + (this._combo * 0.1);
+          const baseRate = 1 + (this._combo * 0.1) + (isSpeedy ? 0.2 : 0);
           let totalScore = 0;
           next.groups.forEach((g, gi)=>{
             const firstCell = (g.cells && g.cells[0]) || null;
             const pan = firstCell ? this._mapColToPan(firstCell.c) : 0;
-            this._playSFX('match', { volume:0.36, playbackRate: baseRate, pan, delay: gi*0.02 });
+            this._playSFX('match', { volume:0.45, playbackRate: baseRate, pan, delay: gi*0.02 });
             
-            // Calculate score for this group
-            const groupScore = (g.len || 3) * 10 * this._combo;
+            // Calculate score for this group (ensure at least 1 combo)
+            const effectiveCombo = Math.max(1, this._combo);
+            let groupScore = (g.len || 3) * 10 * effectiveCombo;
+            if (isSpeedy) groupScore = Math.floor(groupScore * 1.5);
+            
             totalScore += groupScore;
             
             // Show floating score for each group
             if (firstCell) {
-              this.showFloatingScore(firstCell.r, firstCell.c, groupScore);
+              this.showFloatingScore(firstCell.r, firstCell.c, groupScore, isSpeedy);
             }
           });
         }catch(e){}
@@ -309,14 +321,17 @@ export class UIManager{
 
       // power activated (e.g., bomb, wrapped, colorbomb)
       if(next.type==='power-activated'){
+        const effectiveCombo = Math.max(1, this._combo);
         if(next.power==='bomb'){
-          this._animating=true; try{ this._playSFX('bomb', { volume:0.72, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          this._animating=true; 
+          this.shakeBoard(10);
+          try{ this._playSFX('bomb', { volume:1.0, playbackRate: 0.8, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
           
           // Show floating score for power activation
           if (origin) {
-            const score = (mapped.length + 1) * 15 * this._combo;
+            const score = (mapped.length + 1) * 15 * effectiveCombo;
             this.showFloatingScore(origin.r, origin.c, score);
           }
 
@@ -330,12 +345,14 @@ export class UIManager{
           this._animating=false; continue;
         }
         if(next.power==='wrapped'){
-          this._animating=true; try{ this._playSFX('power', { volume:0.8, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          this._animating=true; 
+          this.shakeBoard(8);
+          try{ this._playSFX('power', { volume:1.0, playbackRate: 1.2, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
           
           if (origin) {
-            const score = (mapped.length + 1) * 15 * this._combo;
+            const score = (mapped.length + 1) * 15 * effectiveCombo;
             this.showFloatingScore(origin.r, origin.c, score);
           }
 
@@ -349,12 +366,14 @@ export class UIManager{
           this._animating=false; continue;
         }
         if(next.power==='striped'){
-          this._animating=true; try{ this._playSFX('power', { volume:0.8, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          this._animating=true; 
+          this.shakeBoard(6);
+          try{ this._playSFX('power', { volume:1.0, playbackRate: 1.5, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
           
           if (origin) {
-            const score = (mapped.length + 1) * 15 * this._combo;
+            const score = (mapped.length + 1) * 15 * effectiveCombo;
             this.showFloatingScore(origin.r, origin.c, score);
           }
 
@@ -385,12 +404,14 @@ export class UIManager{
           this._animating=false; continue;
         }
         if(next.power==='colorbomb'){
-          this._animating=true; try{ this._playSFX('colorbomb', { volume:0.9, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          this._animating=true; 
+          this.shakeBoard(15);
+          try{ this._playSFX('colorbomb', { volume:1.2, playbackRate: 1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
           
           if (origin) {
-            const score = (mapped.length + 1) * 20 * this._combo;
+            const score = (mapped.length + 1) * 20 * effectiveCombo;
             this.showFloatingScore(origin.r, origin.c, score);
           }
 
@@ -405,10 +426,17 @@ export class UIManager{
         }
         if(next.power==='mega-bomb'){
           this.showNotification('💣 MEGA BOMB! 💣');
-          this.shakeBoard(10);
-          this._animating=true; try{ this._playSFX('bomb', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          this.shakeBoard(12);
+          this._animating=true; 
+          try{ this._playSFX('bomb', { volume:1.2, playbackRate: 0.6, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          
+          if (origin) {
+            const score = (mapped.length + 1) * 25 * effectiveCombo;
+            this.showFloatingScore(origin.r, origin.c, score);
+          }
+
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('bomb-primed'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
           await new Promise(res=> setTimeout(res,50));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
@@ -420,10 +448,17 @@ export class UIManager{
         }
         if(next.power==='mega-wrapped'){
           this.showNotification('🎁 MEGA WRAPPED! 🎁');
-          this.shakeBoard(8);
-          this._animating=true; try{ this._playSFX('power', { volume:1.0, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          this.shakeBoard(10);
+          this._animating=true; 
+          try{ this._playSFX('power', { volume:1.2, playbackRate: 0.9, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          
+          if (origin) {
+            const score = (mapped.length + 1) * 25 * effectiveCombo;
+            this.showFloatingScore(origin.r, origin.c, score);
+          }
+
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('power-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
           await new Promise(res=> setTimeout(res,40));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
@@ -524,9 +559,16 @@ export class UIManager{
         if(next.power==='ultra-cross'){
           this.showNotification('⚡ ULTRA CROSS! ⚡');
           this.shakeBoard(15);
-          this._animating=true; try{ this._playSFX('power', { volume:1.1, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          this._animating=true; 
+          try{ this._playSFX('power', { volume:1.2, playbackRate: 1.8, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          
+          if (origin) {
+            const score = (mapped.length + 1) * 35 * effectiveCombo;
+            this.showFloatingScore(origin.r, origin.c, score);
+          }
+
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('power-activated'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
           await new Promise(res=> setTimeout(res,40));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
@@ -538,10 +580,17 @@ export class UIManager{
         }
         if(next.power==='super-nova'){
           this.showNotification('🌟 SUPER NOVA! 🌟');
-          this.shakeBoard(18);
-          this._animating=true; try{ this._playSFX('bomb', { volume:1.1, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
+          this.shakeBoard(20);
+          this._animating=true; 
+          try{ this._playSFX('bomb', { volume:1.3, playbackRate: 0.5, pan: (next.origin? this._mapColToPan(next.origin.c) : 0) }); }catch(e){}
           const origin = next.origin || null;
           const mapped = (next.removals||[]).map(k=>{ if(typeof k==='string'){ const [r,c]=k.split(',').map(Number); return {r,c}; } return k; });
+          
+          if (origin) {
+            const score = (mapped.length + 1) * 40 * effectiveCombo;
+            this.showFloatingScore(origin.r, origin.c, score);
+          }
+
           if(origin){ const oel=this.root.querySelector(`.cell[data-r="${origin.r}"][data-c="${origin.c}"]`); if(oel){ oel.classList.add('bomb-primed'); try{ this._spawnMatchParticlesAtCell(oel); }catch(e){} } }
           await new Promise(res=> setTimeout(res,50));
           for(const p of mapped){ const el=this.root.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`); if(el){ el.classList.add('anim-remove'); try{ this._spawnMatchParticlesAtCell(el); }catch(e){} } }
@@ -654,25 +703,25 @@ export class UIManager{
     }, 800);
   }
 
-  showFloatingScore(r, c, score) {
+  showFloatingScore(r, c, score, isSpeedBonus = false) {
     const cellEl = this.root.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
     if (!cellEl) return;
 
     const rect = cellEl.getBoundingClientRect();
     const floating = document.createElement('div');
-    floating.className = 'floating-score';
-    floating.textContent = `!${score}!`;
+    floating.className = 'floating-score' + (isSpeedBonus ? ' speed-bonus' : '');
+    floating.textContent = isSpeedBonus ? `¡QUÉ RÁPIDO! !${score}!` : `!${score}!`;
     
-    // Position relative to viewport
-    floating.style.left = `${rect.left + rect.width / 2}px`;
-    floating.style.top = `${rect.top}px`;
+    // Position relative to viewport, slightly offset to the right "al lado"
+    floating.style.left = `${rect.left + rect.width * 0.8}px`;
+    floating.style.top = `${rect.top + rect.height * 0.2}px`;
     
     document.body.appendChild(floating);
     
-    // Remove after animation
+    // Remove after animation (now 2 seconds)
     setTimeout(() => {
       floating.remove();
-    }, 1000);
+    }, 2000);
   }
 
   shakeBoard(intensity = 5) {
