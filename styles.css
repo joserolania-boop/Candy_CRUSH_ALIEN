@@ -1279,25 +1279,25 @@ main{width:100%; max-width:760px; padding:12px}
   z-index: 1;
 }
 
-/* Tile 0: Blue UFO - Pulsing */
+/* Tile 0: Planet - Slow Rotation */
 .cell.tile-v-0::after { 
   background-image: url('assets/images/tile_0.png'); 
+  animation: tile-rotate 25s linear infinite;
+}
+
+/* Tile 1: Blue UFO - Pulsing */
+.cell.tile-v-1::after { 
+  background-image: url('assets/images/tile_1.png'); 
   animation: tile-pulse-glow 2.5s ease-in-out infinite;
 }
 
-/* Tile 1: Green UFO - Floating */
-.cell.tile-v-1::after { 
-  background-image: url('assets/images/tile_1.png'); 
+/* Tile 2: Astronaut - Floating */
+.cell.tile-v-2::after { 
+  background-image: url('assets/images/tile_2.png'); 
   animation: tile-float 3.5s ease-in-out infinite;
 }
 
-/* Tile 2: Red UFO - Swaying */
-.cell.tile-v-2::after { 
-  background-image: url('assets/images/tile_2.png'); 
-  animation: tile-sway 4.5s ease-in-out infinite;
-}
-
-/* Tile 3: Yellow UFO - Shimmer */
+/* Tile 3: Gold Star - Shimmer */
 .cell.tile-v-3::after { 
   background-image: url('assets/images/tile_3.png'); 
 }
@@ -1312,52 +1312,52 @@ main{width:100%; max-width:760px; padding:12px}
   z-index: 2;
 }
 
-/* Tile 4: Blue Ship - Engine Glow */
+/* Tile 4: Blue Crystal - Engine Glow */
 .cell.tile-v-4::after { 
   background-image: url('assets/images/tile_4.png'); 
   animation: tile-scale 4s ease-in-out infinite;
 }
 
-/* Tile 5: Green Ship - Subtle Rotation */
+/* Tile 5: Gold Bolt - Subtle Rotation */
 .cell.tile-v-5::after { 
   background-image: url('assets/images/tile_5.png'); 
   animation: tile-rotate-subtle 10s linear infinite;
 }
 
-/* Tile 6: Orange Ship - Floating */
+/* Tile 6: Gold Shield - Floating */
 .cell.tile-v-6::after { 
   background-image: url('assets/images/tile_6.png'); 
   animation: tile-float 4s ease-in-out infinite;
 }
 
-/* Tile 7: Red Ship - Pulsing Glow */
+/* Tile 7: Space Station - Pulsing Glow */
 .cell.tile-v-7::after { 
   background-image: url('assets/images/tile_7.png'); 
   animation: tile-pulse-glow 3s ease-in-out infinite;
 }
 
-/* Tile 8: Brown Big Meteor - Slow Rotation */
+/* Tile 8: Brown Meteor - Slow Rotation */
 .cell.tile-v-8::after { 
   background-image: url('assets/images/tile_8.png'); 
   animation: tile-rotate 30s linear infinite;
 }
 
-/* Tile 9: Brown Med Meteor - Faster Rotation */
+/* Tile 9: Black Hole - Swirling */
 .cell.tile-v-9::after { 
   background-image: url('assets/images/tile_9.png'); 
-  animation: tile-rotate 20s linear infinite reverse;
+  animation: tile-rotate 15s linear infinite reverse;
 }
 
-/* Tile 10: Grey Big Meteor - Slow Rotation */
+/* Tile 10: Red UFO - Pulsing */
 .cell.tile-v-10::after { 
   background-image: url('assets/images/tile_10.png'); 
-  animation: tile-rotate 35s linear infinite;
+  animation: tile-pulse-glow 2s ease-in-out infinite;
 }
 
-/* Tile 11: Grey Med Meteor - Faster Rotation */
+/* Tile 11: Green Ship - Swaying */
 .cell.tile-v-11::after { 
   background-image: url('assets/images/tile_11.png'); 
-  animation: tile-rotate 25s linear infinite reverse;
+  animation: tile-sway 4s ease-in-out infinite;
 }
 
 /* Tile Animations */
