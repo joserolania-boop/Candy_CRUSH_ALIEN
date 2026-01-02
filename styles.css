@@ -1312,13 +1312,13 @@ main{width:100%; max-width:760px; padding:12px}
   z-index: 2;
 }
 
-/* Tile 4: Gold Star - Scale */
+/* Tile 4: Yellow UFO - Scale */
 .cell.tile-v-4::after { 
   background-image: url('assets/images/tile_4.png'); 
   animation: tile-scale 4s ease-in-out infinite;
 }
 
-/* Tile 5: Energy Bolt - Subtle Rotation */
+/* Tile 5: Orange Ship - Subtle Rotation */
 .cell.tile-v-5::after { 
   background-image: url('assets/images/tile_5.png'); 
   animation: tile-rotate-subtle 10s linear infinite;
