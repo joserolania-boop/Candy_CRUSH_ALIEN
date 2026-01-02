@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path d="M 30 80 Q 50 90 70 80 L 80 40 Q 50 20 20 40 Z" fill="#1b5e20" stroke="#00c853" stroke-width="2" />
+  <circle cx="35" cy="45" r="8" fill="black" />
+  <circle cx="65" cy="45" r="8" fill="black" />
+  <circle cx="38" cy="43" r="2" fill="white" />
+  <circle cx="68" cy="43" r="2" fill="white" />
+  <path d="M 40 65 Q 50 75 60 65" stroke="#b9f6ca" stroke-width="2" fill="none" />
+  <path d="M 20 30 L 10 10 M 80 30 L 90 10" stroke="#00c853" stroke-width="3" />
+  <rect x="45" y="10" width="10" height="20" fill="#ffd600" rx="2">
+    <animate attributeName="fill" values="#ffd600;#ff6d00;#ffd600" dur="1s" repeatCount="indefinite" />
+  </rect>
+</svg>

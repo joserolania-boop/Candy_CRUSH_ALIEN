@@ -118,8 +118,8 @@ function showStoryScene(checkpointId) {
     });
 }
 
-function startGame(resetScore = true){
-  console.log('[startGame] Iniciando... resetScore=', resetScore);
+function startGame(resetScore = true, skipStory = false){
+  console.log('[startGame] Iniciando... resetScore=', resetScore, 'skipStory=', skipStory);
   
   // Check if player has lives
   if (!economy.hasLives()) {
@@ -135,7 +135,7 @@ function startGame(resetScore = true){
   const levelDef = LEVELS[level - 1] || LEVELS[0];
   
   // If there's a story checkpoint, show it before the pre-level screen
-  if (levelDef.story_checkpoint) {
+  if (levelDef.story_checkpoint && !skipStory) {
     showStoryScene(levelDef.story_checkpoint).then(() => {
       showPreLevelScreen();
     });
@@ -466,6 +466,69 @@ function levelWon(){
   showVictoryScreen(result);
 }
 
+function showLifeLostOverlay() {
+  const overlay = document.createElement('div');
+  overlay.className = 'life-lost-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(8px);
+    color: white;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    padding: 20px;
+  `;
+
+  const content = document.createElement('div');
+  content.className = 'life-lost-content';
+  content.style.cssText = `
+    background: rgba(30, 10, 50, 0.9);
+    border: 4px solid #ff4444;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(255, 68, 68, 0.4);
+    max-width: 400px;
+    width: 90%;
+  `;
+
+  const icon = document.createElement('div');
+  icon.style.cssText = 'font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 10px #ff4444);';
+  icon.textContent = '💔';
+  
+  const title = document.createElement('h2');
+  title.style.cssText = 'color: #ff4444; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px;';
+  title.textContent = '¡Nivel Fallido!';
+
+  const msg = document.createElement('p');
+  msg.style.cssText = 'font-size: 1.2em; margin-bottom: 30px; line-height: 1.5;';
+  msg.innerHTML = `Has perdido una vida.<br>Vidas restantes: <span style="color: #ff4444; font-weight: bold;">${economy.getLives()}</span>`;
+
+  const btnRetry = document.createElement('button');
+  btnRetry.className = 'btn btn-large btn-primary';
+  btnRetry.style.cssText = 'background: #ff4444; border-color: #cc0000; box-shadow: 0 4px 0 #990000;';
+  btnRetry.textContent = 'REINTENTAR';
+  btnRetry.onclick = () => {
+    document.body.removeChild(overlay);
+    startGame(false, true); // Restart same level, keep score, SKIP STORY
+  };
+
+  content.appendChild(icon);
+  content.appendChild(title);
+  content.appendChild(msg);
+  content.appendChild(btnRetry);
+  overlay.appendChild(content);
+  document.body.appendChild(overlay);
+
+  // Play fail sound
+  try { Sound.playMatch(); /* Or a fail sound if available */ } catch(e) {}
+}
+
 function levelFailed(){
   if(!levelInProgress) return;
   levelInProgress = false;
@@ -476,15 +539,14 @@ function levelFailed(){
   economy.spendLife();
   updateEconomyUI();
   
-  showMessage(`❌ Out of Moves! Lost 1 life ❤️ (${economy.getLives()} remaining)`, 3000);
-  
+  // Show the new life lost overlay instead of just a message
   setTimeout(() => {
     if (economy.hasLives()) {
-      startGame(false); // Restart same level, keep score
+      showLifeLostOverlay();
     } else {
       showNoLivesModal();
     }
-  }, 3000);
+  }, 1000);
 }
 
 function shuffleGame(){
@@ -733,18 +795,23 @@ function updateEconomyUI() {
   // Update lives
   const livesCount = document.getElementById('lives-count');
   const livesTimer = document.getElementById('lives-timer');
-  if (livesCount) {
-    livesCount.textContent = economy.getLives();
-  }
+  const menuLives = document.getElementById('menu-lives');
+  
+  const currentLives = economy.getLives();
+  if (livesCount) livesCount.textContent = currentLives;
+  if (menuLives) menuLives.textContent = `❤️ ${currentLives}`;
+  
   if (livesTimer) {
     livesTimer.textContent = economy.getTimeToNextLifeFormatted();
   }
   
   // Update coins
   const coinsCount = document.getElementById('coins-count');
-  if (coinsCount) {
-    coinsCount.textContent = economy.getCoins();
-  }
+  const menuCoins = document.getElementById('menu-coins');
+  const currentCoins = economy.getCoins();
+  
+  if (coinsCount) coinsCount.textContent = currentCoins;
+  if (menuCoins) menuCoins.textContent = `🪙 ${currentCoins}`;
   
   // Update stars
   const starsCount = document.getElementById('stars-count');
@@ -821,15 +888,83 @@ function toggleBoosterInPreLevel(boosterId) {
 }
 
 function showNoLivesModal() {
-  const message = `
-    ❤️ Out of Lives!
-    
-    Wait ${economy.getTimeToNextLifeFormatted()} for next life
-    or
-    Get more lives from the shop (Coming soon!)
+  const overlay = document.createElement('div');
+  overlay.className = 'no-lives-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    backdrop-filter: blur(10px);
+    color: white;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+    padding: 20px;
   `;
+
+  const content = document.createElement('div');
+  content.style.cssText = `
+    background: rgba(20, 0, 40, 0.95);
+    border: 4px solid #ff4444;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 0 40px rgba(255, 0, 0, 0.5);
+    max-width: 450px;
+    width: 90%;
+    animation: slide-in-up 0.5s ease-out;
+  `;
+
+  const icon = document.createElement('div');
+  icon.style.cssText = 'font-size: 100px; margin-bottom: 20px; filter: drop-shadow(0 0 15px #ff0000);';
+  icon.textContent = '💀';
   
-  alert(message);
+  const title = document.createElement('h2');
+  title.style.cssText = 'color: #ff4444; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 3px; font-size: 2em;';
+  title.textContent = 'SIN VIDAS';
+
+  const msg = document.createElement('p');
+  msg.style.cssText = 'font-size: 1.3em; margin-bottom: 30px; line-height: 1.6;';
+  msg.innerHTML = `Has agotado todas tus vidas.<br><br>Próxima vida en:<br><span id="no-lives-timer" style="color: #ff4444; font-weight: bold; font-size: 1.5em;">${economy.getTimeToNextLifeFormatted()}</span>`;
+
+  const btnMenu = document.createElement('button');
+  btnMenu.className = 'btn btn-large btn-primary';
+  btnMenu.style.cssText = 'background: #444; border-color: #222; box-shadow: 0 4px 0 #000;';
+  btnMenu.textContent = 'VOLVER AL MENÚ';
+  btnMenu.onclick = () => {
+    document.body.removeChild(overlay);
+    // Return to main menu
+    const gameContainer = document.getElementById('game-container');
+    const mainMenu = document.getElementById('main-menu');
+    if (gameContainer) gameContainer.classList.add('hidden');
+    if (mainMenu) mainMenu.classList.remove('hidden');
+  };
+
+  content.appendChild(icon);
+  content.appendChild(title);
+  content.appendChild(msg);
+  content.appendChild(btnMenu);
+  overlay.appendChild(content);
+  document.body.appendChild(overlay);
+
+  // Update timer in real-time
+  const timerInterval = setInterval(() => {
+    const timerEl = document.getElementById('no-lives-timer');
+    if (timerEl) {
+      timerEl.textContent = economy.getTimeToNextLifeFormatted();
+      if (economy.hasLives()) {
+        clearInterval(timerInterval);
+        btnMenu.textContent = '¡VIDA RECARGADA! JUGAR';
+        btnMenu.style.background = '#00ff88';
+        btnMenu.style.color = '#000';
+      }
+    } else {
+      clearInterval(timerInterval);
+    }
+  }, 1000);
 }
 
 function showStarAnimation() {
@@ -1271,6 +1406,53 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('candy_current_level');
         location.reload();
       }
+    });
+  }
+
+  // Level Selector Logic
+  const btnLevelSelector = document.getElementById('btn-level-selector');
+  const levelSelectorModal = document.getElementById('level-selector-modal');
+  const btnCloseLevelSelector = document.getElementById('btn-close-level-selector');
+  const btnBackMenuLevels = document.getElementById('btn-back-menu-levels');
+  const levelGrid = document.getElementById('level-grid');
+
+  if (btnLevelSelector) {
+    btnLevelSelector.addEventListener('click', () => {
+      if (mainMenu) mainMenu.classList.add('hidden');
+      if (levelSelectorModal) {
+        levelSelectorModal.classList.remove('hidden');
+        // Populate grid
+        if (levelGrid) {
+          levelGrid.innerHTML = '';
+          LEVELS.forEach((l, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.style.cssText = 'padding: 10px; font-size: 0.9em; background: #311b92;';
+            btn.textContent = `Lvl ${index + 1}`;
+            btn.onclick = async () => {
+              level = index + 1;
+              localStorage.setItem('candy_current_level', level);
+              levelSelectorModal.classList.add('hidden');
+              if (gameContainer) gameContainer.classList.remove('hidden');
+              
+              // Init audio and start
+              try { await Sound.initAudio(); } catch(e) {}
+              try { Decorations.startDecorations('#space-bg', 0.7); } catch(e) {}
+              initializeGame();
+              startGame(true);
+            };
+            levelGrid.appendChild(btn);
+          });
+        }
+      }
+    });
+  }
+
+  if (btnCloseLevelSelector || btnBackMenuLevels) {
+    const backBtn = btnCloseLevelSelector || btnBackMenuLevels;
+    backBtn.addEventListener('click', () => {
+      if (levelSelectorModal) levelSelectorModal.classList.add('hidden');
+      if (mainMenu) mainMenu.classList.remove('hidden');
     });
   }
   

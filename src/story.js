@@ -99,7 +99,14 @@ Stand your ground. The defense of Earth begins now!`,
 It's a staging ground for a full-scale invasion.
 
 Infiltrate their perimeter and take out their scouts!`,
-      actors: [{ id: 'base', asset: 'structure.svg', x: 50, y: 60, scale: 2, anim: 'glow' }]
+      actors: [
+        { id: 'moon', asset: 'earth_silhouette.svg', x: 50, y: 120, scale: 8, anim: 'none' },
+        { id: 'base1', asset: 'structure.svg', x: 30, y: 70, scale: 1.5, anim: 'glow' },
+        { id: 'base2', asset: 'structure_side.svg', x: 70, y: 75, scale: 1.8, anim: 'glow' },
+        { id: 'scout1', asset: 'ufo_side.svg', x: 20, y: 30, scale: 0.8, anim: 'float' },
+        { id: 'scout2', asset: 'ufo_v2.svg', x: 80, y: 20, scale: 1, anim: 'float-delayed' },
+        { id: 'scout3', asset: 'probe_drone.svg', x: 50, y: 40, scale: 0.6, anim: 'scan' }
+      ]
     },
     lvl8: {
       title: 'Event Horizon',
@@ -108,7 +115,13 @@ Infiltrate their perimeter and take out their scouts!`,
 The aliens are using its gravity to slingshot their fleet.
 
 Don't let the void consume you!`,
-      actors: [{ id: 'ship', asset: 'spaceship_v2.svg', x: 30, y: 40, scale: 1, anim: 'descend' }]
+      actors: [
+        { id: 'blackhole', asset: 'warp_ring.svg', x: 50, y: 50, scale: 5, anim: 'actor-rotate-slow' },
+        { id: 'ship1', asset: 'interceptor_ship.svg', x: 20, y: 20, scale: 1, anim: 'descend' },
+        { id: 'ship2', asset: 'spaceship_v2.svg', x: 80, y: 80, scale: 1.2, anim: 'descend' },
+        { id: 'debris1', asset: 'candy_crystal.svg', x: 40, y: 60, scale: 0.5, anim: 'twinkle' },
+        { id: 'debris2', asset: 'quantum_particle.svg', x: 60, y: 30, scale: 0.4, anim: 'float' }
+      ]
     },
     lvl9: {
       title: 'Warp Tunnel',
@@ -117,7 +130,13 @@ Don't let the void consume you!`,
 Everything is moving at impossible speeds.
 
 Stay focused. One wrong move and we're lost in space!`,
-      actors: [{ id: 'ufo', asset: 'ufo_side.svg', x: 50, y: 50, scale: 1.5, anim: 'fly-across' }]
+      actors: [
+        { id: 'tunnel1', asset: 'warp_ring.svg', x: 50, y: 50, scale: 6, anim: 'actor-rotate-slow' },
+        { id: 'tunnel2', asset: 'warp_ring.svg', x: 50, y: 50, scale: 3, anim: 'actor-rotate-slow' },
+        { id: 'sat', asset: 'satellite.svg', x: 80, y: 20, scale: 1, anim: 'shake' },
+        { id: 'ship', asset: 'interceptor_ship.svg', x: 50, y: 60, scale: 1.5, anim: 'strafe' },
+        { id: 'debris', asset: 'candy_crystal.svg', x: 20, y: 80, scale: 0.5, anim: 'float' }
+      ]
     },
     lvl10: {
       title: 'Void Echoes',
@@ -127,7 +146,12 @@ But wait... do you hear that?
 A voice... calling from the darkness.
 
 Is someone—or something—trying to talk to us?`,
-      actors: [{ id: 'astro', asset: 'astronaut_side.svg', x: 50, y: 70, scale: 1.2, anim: 'walk' }]
+      actors: [
+        { id: 'commander', asset: 'alien_commander.svg', x: 50, y: 40, scale: 2.5, anim: 'glow' },
+        { id: 'ghost1', asset: 'astronaut_side.svg', x: 20, y: 60, scale: 1, anim: 'float', opacity: 0.4 },
+        { id: 'ghost2', asset: 'ufo_v2.svg', x: 80, y: 30, scale: 0.8, anim: 'float-delayed', opacity: 0.3 },
+        { id: 'nebula', asset: 'quantum_particle.svg', x: 50, y: 50, scale: 4, anim: 'actor-heat-shimmer' }
+      ]
     },
     act2: {
       title: 'Operation Base Assault',
@@ -136,7 +160,13 @@ Is someone—or something—trying to talk to us?`,
 If we take this down, we stop the invasion.
 
 All units, engage!`,
-      animation: 'base_attack'
+      actors: [
+        { id: 'station', asset: 'space_station.svg', x: 50, y: 50, scale: 3, anim: 'shake' },
+        { id: 'fleet1', asset: 'spaceship_v2.svg', x: 20, y: 20, scale: 1, anim: 'fly-across' },
+        { id: 'fleet2', asset: 'interceptor_ship.svg', x: 80, y: 80, scale: 1.2, anim: 'fly-across-reverse' },
+        { id: 'fleet3', asset: 'ufo_side.svg', x: 50, y: 20, scale: 0.8, anim: 'descend' },
+        { id: 'laser1', asset: 'candy_crystal.svg', x: 40, y: 40, scale: 0.3, anim: 'twinkle' }
+      ]
     },
     lvl12: {
       title: 'Fortified Base',
@@ -145,7 +175,13 @@ All units, engage!`,
 Only the pure energy of candy magic can pierce them.
 
 Break through their defenses!`,
-      actors: [{ id: 'base', asset: 'structure_side.svg', x: 50, y: 50, scale: 2.5, anim: 'shake' }]
+      actors: [
+        { id: 'base', asset: 'structure_side.svg', x: 50, y: 60, scale: 3, anim: 'glow' },
+        { id: 'shield', asset: 'warp_ring.svg', x: 50, y: 60, scale: 4, anim: 'actor-heat-shimmer', opacity: 0.5 },
+        { id: 'attacker', asset: 'interceptor_ship.svg', x: 20, y: 30, scale: 1.5, anim: 'strafe' },
+        { id: 'drone1', asset: 'probe_drone.svg', x: 80, y: 40, scale: 0.8, anim: 'scan' },
+        { id: 'drone2', asset: 'probe_drone.svg', x: 70, y: 20, scale: 0.7, anim: 'scan' }
+      ]
     },
     lvl13: {
       title: 'Maximum Firepower',
