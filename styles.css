@@ -1297,7 +1297,7 @@ main{width:100%; max-width:760px; padding:12px}
   animation: tile-float 3.5s ease-in-out infinite;
 }
 
-/* Tile 3: Gold Star - Shimmer */
+/* Tile 3: Crystal - Shimmer */
 .cell.tile-v-3::after { 
   background-image: url('assets/images/tile_3.png'); 
 }
@@ -1312,40 +1312,40 @@ main{width:100%; max-width:760px; padding:12px}
   z-index: 2;
 }
 
-/* Tile 4: Blue Crystal - Engine Glow */
+/* Tile 4: Gold Star - Scale */
 .cell.tile-v-4::after { 
   background-image: url('assets/images/tile_4.png'); 
   animation: tile-scale 4s ease-in-out infinite;
 }
 
-/* Tile 5: Gold Bolt - Subtle Rotation */
+/* Tile 5: Energy Bolt - Subtle Rotation */
 .cell.tile-v-5::after { 
   background-image: url('assets/images/tile_5.png'); 
   animation: tile-rotate-subtle 10s linear infinite;
 }
 
-/* Tile 6: Gold Shield - Floating */
+/* Tile 6: Shield - Floating */
 .cell.tile-v-6::after { 
   background-image: url('assets/images/tile_6.png'); 
   animation: tile-float 4s ease-in-out infinite;
 }
 
-/* Tile 7: Space Station - Pulsing Glow */
+/* Tile 7: Black Hole - Swirling */
 .cell.tile-v-7::after { 
   background-image: url('assets/images/tile_7.png'); 
-  animation: tile-pulse-glow 3s ease-in-out infinite;
+  animation: tile-rotate 15s linear infinite reverse;
 }
 
-/* Tile 8: Brown Meteor - Slow Rotation */
+/* Tile 8: Spaceship - Swaying */
 .cell.tile-v-8::after { 
   background-image: url('assets/images/tile_8.png'); 
-  animation: tile-rotate 30s linear infinite;
+  animation: tile-sway 4.5s ease-in-out infinite;
 }
 
-/* Tile 9: Black Hole - Swirling */
+/* Tile 9: Alien Green - Pulsing Glow */
 .cell.tile-v-9::after { 
   background-image: url('assets/images/tile_9.png'); 
-  animation: tile-rotate 15s linear infinite reverse;
+  animation: tile-pulse-glow 3s ease-in-out infinite;
 }
 
 /* Tile 10: Red UFO - Pulsing */
@@ -1354,10 +1354,10 @@ main{width:100%; max-width:760px; padding:12px}
   animation: tile-pulse-glow 2s ease-in-out infinite;
 }
 
-/* Tile 11: Green Ship - Swaying */
+/* Tile 11: Space Station - Subtle Scale */
 .cell.tile-v-11::after { 
   background-image: url('assets/images/tile_11.png'); 
-  animation: tile-sway 4s ease-in-out infinite;
+  animation: tile-scale 5s ease-in-out infinite;
 }
 
 /* Tile Animations */
